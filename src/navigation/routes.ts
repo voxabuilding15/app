@@ -15,7 +15,7 @@ export const HOME_ITEM: NavItem = { name: TABS_ROUTE, title: 'Home', icon: 'home
 export const TAB_ITEMS: readonly NavItem[] = [
   { name: 'index', title: 'Dashboard', icon: 'dashboard' },
   { name: 'tasks', title: 'Tasks', icon: 'check-circle', ownHeader: true },
-  { name: 'calendar', title: 'Calendar', icon: 'calendar-month' },
+  { name: 'calendar', title: 'Calendar', icon: 'calendar-month', ownHeader: true },
   { name: 'habits', title: 'Habits', icon: 'local-fire-department', ownHeader: true },
   { name: 'finance', title: 'Finance', icon: 'account-balance-wallet' },
 ];

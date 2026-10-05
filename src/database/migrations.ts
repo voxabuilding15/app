@@ -223,4 +223,58 @@ export const migrations: readonly Migration[] = [
       `CREATE UNIQUE INDEX idx_habit_pauses_open ON habit_pauses(habit_id) WHERE end_date IS NULL`,
     ],
   },
+  {
+    version: 4,
+    name: 'calendar_feature',
+    rebuildsTables: true,
+    statements: [
+      // `categories.kind` gains 'event' (same table rebuild as v3, since a CHECK cannot be altered).
+      `CREATE TABLE categories_new (
+        id TEXT PRIMARY KEY NOT NULL,
+        kind TEXT NOT NULL CHECK (kind IN ('task','habit','event','expense','income','note')),
+        name TEXT NOT NULL,
+        color TEXT NOT NULL,
+        icon TEXT NOT NULL,
+        created_at INTEGER NOT NULL
+      )`,
+      `INSERT INTO categories_new (id, kind, name, color, icon, created_at)
+         SELECT id, kind, name, color, icon, created_at FROM categories`,
+      `DROP TABLE categories`,
+      `ALTER TABLE categories_new RENAME TO categories`,
+      `CREATE INDEX idx_categories_kind ON categories(kind)`,
+      `CREATE UNIQUE INDEX idx_categories_kind_name ON categories(kind, name COLLATE NOCASE)`,
+
+      // Events. Times are epoch ms and `end_at` is exclusive. All-day events start at local
+      // midnight of their first day and end at local midnight after their last day.
+      `CREATE TABLE events (
+        id TEXT PRIMARY KEY NOT NULL,
+        title TEXT NOT NULL,
+        notes TEXT NOT NULL DEFAULT '',
+        location TEXT NOT NULL DEFAULT '',
+        category_id TEXT REFERENCES categories(id) ON DELETE SET NULL,
+        start_at INTEGER NOT NULL,
+        end_at INTEGER NOT NULL,
+        all_day INTEGER NOT NULL DEFAULT 0 CHECK (all_day IN (0,1)),
+        repeat_unit TEXT CHECK (repeat_unit IN ('day','week','month','year')),
+        repeat_interval INTEGER NOT NULL DEFAULT 1 CHECK (repeat_interval BETWEEN 1 AND 365),
+        repeat_weekdays INTEGER NOT NULL DEFAULT 0 CHECK (repeat_weekdays BETWEEN 0 AND 127),
+        repeat_until TEXT,
+        repeat_count INTEGER CHECK (repeat_count IS NULL OR repeat_count >= 1),
+        reminder_offset_minutes INTEGER CHECK (reminder_offset_minutes IS NULL OR reminder_offset_minutes >= 0),
+        notification_ids TEXT NOT NULL DEFAULT '[]',
+        created_at INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL,
+        CHECK (end_at > start_at)
+      )`,
+      `CREATE INDEX idx_events_single ON events(start_at) WHERE repeat_unit IS NULL`,
+      `CREATE INDEX idx_events_recurring ON events(start_at) WHERE repeat_unit IS NOT NULL`,
+      `CREATE INDEX idx_events_category ON events(category_id)`,
+      // Occurrences of a recurring event that were deleted or moved on their own.
+      `CREATE TABLE event_exceptions (
+        event_id TEXT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+        occurrence_date TEXT NOT NULL,
+        PRIMARY KEY (event_id, occurrence_date)
+      ) WITHOUT ROWID`,
+    ],
+  },
 ];

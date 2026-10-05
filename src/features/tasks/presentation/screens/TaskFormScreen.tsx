@@ -10,6 +10,7 @@ import {
   IconButton,
   Input,
   NameColorSheet,
+  RepeatSection,
   Screen,
   SegmentedControl,
   Text,
@@ -18,10 +19,10 @@ import { useHideTabBar } from '@/hooks';
 import { ACCENT_COLORS, spacing, useTheme } from '@/theme';
 
 import type { Priority } from '../../domain/entities';
+import { TASK_REPEAT_PRESETS, TASK_REPEAT_UNITS } from '../../domain/repeat';
 import { NOTES_MAX_LENGTH, TITLE_MAX_LENGTH } from '../../domain/validation';
 import { DueSection } from '../components/DueSection';
 import { ReminderSection } from '../components/ReminderSection';
-import { RepeatSection } from '../components/RepeatSection';
 import { SubtasksSection } from '../components/SubtasksSection';
 import { LabelSection } from '../components/TaxonomySections';
 import { PRIORITY_LABEL } from '../format';
@@ -184,9 +185,12 @@ function TaskFormBody({ taskId, initial, status }: TaskFormBodyProps) {
           />
           <RepeatSection
             rule={draft.repeat}
+            presets={TASK_REPEAT_PRESETS}
+            units={TASK_REPEAT_UNITS}
             error={errors.repeat}
             onPreset={vm.setRepeatPreset}
             onChange={vm.changeRepeat}
+            hint="Completing the task creates the next one automatically."
           />
         </>
       ) : null}

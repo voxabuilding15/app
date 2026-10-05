@@ -2,12 +2,18 @@ import { useRouter } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
 
-import { addDays, combineDayAndTime, startOfDay } from '@/core';
+import {
+  MAX_RECURRENCE_INTERVAL,
+  addDays,
+  combineDayAndTime,
+  ruleForRecurrencePreset,
+  startOfDay,
+  type RecurrencePreset,
+} from '@/core';
 import { pickDate, pickTime, showRemindersBlockedAlert } from '@/components';
 import { useDiscardGuard } from '@/hooks';
 import type { DueDate, Priority, RepeatRule, TaskDetail } from '../../domain/entities';
 import { isValidReminderOffset } from '../../domain/reminder';
-import { MAX_REPEAT_INTERVAL, ruleForPreset, type RepeatPreset } from '../../domain/repeat';
 import {
   emptyDraft,
   hasErrors,
@@ -208,7 +214,8 @@ export function useTaskFormViewModel(taskId: string | null, initial: TaskDraft) 
   const setAlarm = useCallback((isAlarm: boolean) => update({ isAlarm }), [update]);
 
   const setRepeatPreset = useCallback(
-    (preset: RepeatPreset) => update({ repeat: ruleForPreset(preset, draft.repeat) }, ['repeat']),
+    (preset: RecurrencePreset) =>
+      update({ repeat: ruleForRecurrencePreset(preset, draft.repeat) }, ['repeat']),
     [draft.repeat, update],
   );
 
@@ -218,7 +225,10 @@ export function useTaskFormViewModel(taskId: string | null, initial: TaskDraft) 
         return;
       }
       const next = { ...draft.repeat, ...changes };
-      next.interval = Math.min(MAX_REPEAT_INTERVAL, Math.max(1, Math.round(next.interval) || 1));
+      next.interval = Math.min(
+        MAX_RECURRENCE_INTERVAL,
+        Math.max(1, Math.round(next.interval) || 1),
+      );
       if (next.unit !== 'week') {
         next.weekdays = 0;
       }

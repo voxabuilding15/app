@@ -1,5 +1,6 @@
 export { Button } from './Button';
 export { Card } from './Card';
+export { CategoryManager } from './CategoryManager';
 export { CategorySection } from './CategorySection';
 export { Checkbox } from './Checkbox';
 export { Chip } from './Chip';
@@ -30,6 +31,8 @@ export { IconPicker } from './IconPicker';
 export { ListControls } from './ListControls';
 export { NameColorSheet } from './NameColorSheet';
 export { NamedItemList } from './NamedItemList';
+export { ReminderOffsetSection } from './ReminderOffsetSection';
+export { RepeatSection, describeRecurrence } from './RepeatSection';
 export { ScreenToolbar } from './ScreenToolbar';
 export { SortSheet } from './SortSheet';
 export { WEEKDAY_DISPLAY_ORDER, WEEKDAY_LABELS, WeekdayChips } from './WeekdayChips';

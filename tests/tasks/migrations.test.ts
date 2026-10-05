@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import { getSchemaVersion } from '@/database/migrate';
+import { migrations } from '@/database/migrations';
 
 import { createDatabaseAtVersion, createTestDatabase } from './test-database';
 
@@ -25,7 +26,7 @@ describe('migration v3 (habits)', () => {
     const { db, upgrade } = seededV2();
     upgrade();
 
-    assert.equal(getSchemaVersion(db), 3);
+    assert.equal(getSchemaVersion(db), migrations.at(-1)?.version);
     assert.deepEqual(
       db.getAllSync<{ id: string; kind: string }>('SELECT id, kind FROM categories ORDER BY id'),
       [
@@ -105,5 +106,59 @@ describe('migration v3 (habits)', () => {
     db.runSync(`DELETE FROM habits WHERE id='h'`);
     assert.equal(db.getFirstSync<{ n: number }>('SELECT COUNT(*) AS n FROM habit_logs')?.n, 0);
     assert.equal(db.getFirstSync<{ n: number }>('SELECT COUNT(*) AS n FROM habit_pauses')?.n, 0);
+  });
+});
+
+describe('migration v4 (calendar)', () => {
+  it('upgrades a v3 database, keeping all category links and adding event categories', () => {
+    const { db, upgrade } = createDatabaseAtVersion(3);
+    db.runSync(`INSERT INTO categories VALUES ('c1','task','Work','#111','folder',1)`);
+    db.runSync(`INSERT INTO categories VALUES ('c2','habit','Health','#222','folder',1)`);
+    db.runSync(
+      `INSERT INTO tasks (id,title,category_id,created_at,updated_at) VALUES ('t','T','c1',1,1)`,
+    );
+    db.runSync(
+      `INSERT INTO habits (id,name,icon,color,goal_period,category_id,created_at) VALUES ('h','H','i','#333','daily','c2',1)`,
+    );
+    upgrade();
+
+    assert.equal(getSchemaVersion(db), 4);
+    assert.equal(
+      db.getFirstSync<{ category_id: string }>(`SELECT category_id FROM tasks`)?.category_id,
+      'c1',
+    );
+    assert.equal(
+      db.getFirstSync<{ category_id: string }>(`SELECT category_id FROM habits`)?.category_id,
+      'c2',
+    );
+    assert.equal(db.getFirstSync<{ foreign_keys: number }>('PRAGMA foreign_keys')?.foreign_keys, 1);
+    db.runSync(`INSERT INTO categories VALUES ('e','event','Work','#444','folder',1)`);
+    assert.throws(() =>
+      db.runSync(`INSERT INTO categories VALUES ('e2','event','work','#444','folder',1)`),
+    );
+  });
+
+  it('validates events and cascades their exceptions', () => {
+    const db = createTestDatabase();
+    const insert = (end: number) =>
+      db.runSync(
+        `INSERT INTO events (id,title,start_at,end_at,created_at,updated_at) VALUES ('e','x',1000,?,1,1)`,
+        [end],
+      );
+    assert.throws(() => insert(1000)); // zero length
+    assert.throws(() => insert(500)); // ends before it starts
+    insert(2000);
+    db.runSync(`INSERT INTO event_exceptions VALUES ('e','2026-01-01')`);
+    assert.throws(() => db.runSync(`INSERT INTO event_exceptions VALUES ('e','2026-01-01')`));
+    assert.throws(() =>
+      db.runSync(
+        `INSERT INTO events (id,title,start_at,end_at,repeat_unit,created_at,updated_at) VALUES ('b','x',1,2,'hour',1,1)`,
+      ),
+    );
+    db.runSync(`DELETE FROM events WHERE id='e'`);
+    assert.equal(
+      db.getFirstSync<{ n: number }>('SELECT COUNT(*) AS n FROM event_exceptions')?.n,
+      0,
+    );
   });
 });

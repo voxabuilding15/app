@@ -7,13 +7,14 @@ import {
   ProgressBar,
   SwipeableRow,
   Text,
+  describeRecurrence,
   type IconName,
   type SwipeAction,
 } from '@/components';
 import { radius, spacing, useTheme, type ColorScheme } from '@/theme';
 
 import type { Priority, Task } from '../../domain/entities';
-import { PRIORITY_LABEL, describeRepeat, describeTask, formatDue, isOverdue } from '../format';
+import { PRIORITY_LABEL, describeTask, formatDue, isOverdue } from '../format';
 
 const BAR_WIDTH = 4;
 const MAX_VISIBLE_LABELS = 2;
@@ -216,7 +217,7 @@ function TaskRowComponent({
                 />
               ) : null}
               {task.repeat ? (
-                <Meta icon="repeat" text={describeRepeat(task.repeat)} color={muted} />
+                <Meta icon="repeat" text={describeRecurrence(task.repeat)} color={muted} />
               ) : null}
               {task.reminderOffsetMinutes !== null ? (
                 <Meta

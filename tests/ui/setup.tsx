@@ -4,10 +4,14 @@ jest.mock('react-native-reanimated', () => {
   const { View } = require('react-native');
   return {
     __esModule: true,
-    default: { View },
-    useSharedValue: (value: number) => ({ get: () => value, set: () => undefined }),
+    default: { View, createAnimatedComponent: (component: unknown) => component },
+    useSharedValue: (initial: number) => {
+      const box = { value: initial };
+      return { get: () => box.value, set: (next: number) => void (box.value = next) };
+    },
     useAnimatedStyle: (factory: () => object) => factory(),
     withSpring: (value: number) => value,
+    useEvent: () => () => undefined,
   };
 });
 
@@ -82,6 +86,7 @@ jest.mock('expo-router', () => {
       dispatch: jest.fn(),
     }),
     useLocalSearchParams: () => ({}),
+    useFocusEffect: (callback: () => void) => React.useEffect(callback, [callback]),
     // Renders the header buttons screens put in navigator options so tests can press them.
     Stack: {
       Screen: ({ options }: { options?: { headerRight?: () => React.ReactNode } }) =>

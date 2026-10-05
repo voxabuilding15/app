@@ -1,8 +1,6 @@
-import { atHour, DAY_MINUTES, MINUTE_MS } from '@/core';
-import type { DueDate } from './entities';
+import { DAY_MINUTES, reminderInstant } from '@/core';
 
-/** All-day tasks notify at this local hour on the due day. */
-const ALL_DAY_REMINDER_HOUR = 9;
+import type { DueDate } from './entities';
 
 const TIMED_OFFSETS: readonly number[] = [0, 5, 15, 30, 60, DAY_MINUTES];
 const ALL_DAY_OFFSETS: readonly number[] = [0, DAY_MINUTES, 2 * DAY_MINUTES];
@@ -17,6 +15,5 @@ export function isValidReminderOffset(offset: number, hasTime: boolean): boolean
 }
 
 export function computeReminderAt(due: DueDate, offsetMinutes: number): number {
-  const base = due.hasTime ? due.at : atHour(due.at, ALL_DAY_REMINDER_HOUR);
-  return base - offsetMinutes * MINUTE_MS;
+  return reminderInstant(due.at, due.hasTime, offsetMinutes);
 }

@@ -7,7 +7,7 @@ export interface Category {
   color: string;
 }
 
-export type CategoryKind = 'task' | 'habit' | 'expense' | 'income' | 'note';
+export type CategoryKind = 'task' | 'habit' | 'event' | 'expense' | 'income' | 'note';
 
 export const NAME_MAX_LENGTH = 30;
 

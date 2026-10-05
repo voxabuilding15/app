@@ -2,8 +2,8 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import { computeReminderAt } from '@/features/tasks/domain/reminder';
-import { weekdayBit } from '@/core';
-import { nextDueAfter, presetOf, ruleForPreset } from '@/features/tasks/domain/repeat';
+import { recurrencePresetOf, ruleForRecurrencePreset, weekdayBit } from '@/core';
+import { nextDueAfter } from '@/features/tasks/domain/repeat';
 import { emptyDraft, hasErrors, validateDraft } from '@/features/tasks/domain/validation';
 import type { RepeatRule } from '@/features/tasks/domain/entities';
 
@@ -82,14 +82,14 @@ describe('repeat rules', () => {
   });
 
   it('maps rules to presets and back', () => {
-    assert.equal(presetOf(null), 'none');
-    assert.equal(presetOf(rule('day')), 'daily');
-    assert.equal(presetOf(rule('week')), 'weekly');
-    assert.equal(presetOf(rule('month')), 'monthly');
-    assert.equal(presetOf(rule('week', 1, weekdayBit(2))), 'custom');
-    assert.equal(presetOf(rule('day', 3)), 'custom');
-    assert.deepEqual(ruleForPreset('daily', null), rule('day'));
-    assert.equal(ruleForPreset('none', rule('day')), null);
+    assert.equal(recurrencePresetOf(null), 'none');
+    assert.equal(recurrencePresetOf(rule('day')), 'daily');
+    assert.equal(recurrencePresetOf(rule('week')), 'weekly');
+    assert.equal(recurrencePresetOf(rule('month')), 'monthly');
+    assert.equal(recurrencePresetOf(rule('week', 1, weekdayBit(2))), 'custom');
+    assert.equal(recurrencePresetOf(rule('day', 3)), 'custom');
+    assert.deepEqual(ruleForRecurrencePreset('daily', null), rule('day'));
+    assert.equal(ruleForRecurrencePreset('none', rule('day')), null);
   });
 });
 

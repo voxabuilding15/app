@@ -1,18 +1,10 @@
-import type { Category } from '@/core';
+import type { Category, RecurrenceRule, RecurrenceUnit } from '@/core';
 
 export type Priority = 'low' | 'medium' | 'high';
 
-export type RepeatUnit = 'day' | 'week' | 'month';
-
-/**
- * Recurrence rule. `weekdays` is a bitmask (Sunday = bit 0 ... Saturday = bit 6) that only applies
- * to the `week` unit; 0 means "same weekday as the due date".
- */
-export interface RepeatRule {
-  unit: RepeatUnit;
-  interval: number;
-  weekdays: number;
-}
+/** Tasks repeat on the shared recurrence rules; yearly repeats are not offered for tasks. */
+export type RepeatRule = RecurrenceRule;
+export type RepeatUnit = RecurrenceUnit;
 
 /** `at` is the due instant; when `hasTime` is false the task is due "any time that day". */
 export interface DueDate {

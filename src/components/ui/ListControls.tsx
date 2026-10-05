@@ -23,10 +23,10 @@ interface ListControlsProps<S extends string> {
   activeFilterCount: number;
   isFiltering: boolean;
   onOpenFilter: () => void;
-  /** Name of the field being sorted, e.g. "Due date". */
-  sortLabel: string;
-  sortAscending: boolean;
-  onOpenSort: () => void;
+  /** Sorting chip; omit all three when the list has no sort order. */
+  sortLabel?: string;
+  sortAscending?: boolean;
+  onOpenSort?: () => void;
   onClear: () => void;
 }
 
@@ -44,7 +44,7 @@ export function ListControls<S extends string>({
   isFiltering,
   onOpenFilter,
   sortLabel,
-  sortAscending,
+  sortAscending = true,
   onOpenSort,
   onClear,
 }: ListControlsProps<S>) {
@@ -75,12 +75,14 @@ export function ListControls<S extends string>({
           selected={activeFilterCount > 0}
           onPress={onOpenFilter}
         />
-        <Chip
-          icon={sortAscending ? 'arrow-upward' : 'arrow-downward'}
-          label={sortLabel}
-          accessibilityLabel={`Sort by ${sortLabel}, ${sortAscending ? 'ascending' : 'descending'}`}
-          onPress={onOpenSort}
-        />
+        {sortLabel !== undefined && onOpenSort !== undefined ? (
+          <Chip
+            icon={sortAscending ? 'arrow-upward' : 'arrow-downward'}
+            label={sortLabel}
+            accessibilityLabel={`Sort by ${sortLabel}, ${sortAscending ? 'ascending' : 'descending'}`}
+            onPress={onOpenSort}
+          />
+        ) : null}
         {isFiltering ? <Chip icon="clear" label="Clear" onPress={onClear} /> : null}
       </ScrollView>
     </View>

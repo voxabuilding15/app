@@ -6,6 +6,7 @@ const NOTIFICATION_CHANNELS = {
   default: 'default',
   tasks: 'tasks',
   habits: 'habits',
+  events: 'events',
   expenses: 'expenses',
   pomodoro: 'pomodoro',
   summary: 'summary',
@@ -44,6 +45,13 @@ const CHANNELS: readonly ChannelDefinition[] = [
     name: 'Habit reminders',
     description: 'Daily nudges to complete your habits',
     importance: Notifications.AndroidImportance.DEFAULT,
+    vibrationPattern: STANDARD_VIBRATION,
+  },
+  {
+    id: NOTIFICATION_CHANNELS.events,
+    name: 'Event reminders',
+    description: 'Reminders before calendar events',
+    importance: Notifications.AndroidImportance.HIGH,
     vibrationPattern: STANDARD_VIBRATION,
   },
   {

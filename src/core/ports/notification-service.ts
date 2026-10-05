@@ -1,7 +1,7 @@
 export type PermissionState = 'granted' | 'denied' | 'undetermined';
 
 export type NotificationChannelId =
-  'default' | 'tasks' | 'habits' | 'expenses' | 'pomodoro' | 'summary' | 'alarms';
+  'default' | 'tasks' | 'habits' | 'events' | 'expenses' | 'pomodoro' | 'summary' | 'alarms';
 
 type NotificationCategoryId = 'reminder' | 'alarm' | 'habit';
 

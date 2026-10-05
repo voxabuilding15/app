@@ -9,6 +9,7 @@ import {
   type NotificationService,
 } from '@/core';
 import { SqliteCategoryRepository } from '@/database/category-repository';
+import { getCalendarModule } from '@/features/calendar/presentation/module';
 import { getHabitsModule } from '@/features/habits/presentation/module';
 import { getTasksModule } from '@/features/tasks/presentation/module';
 import { ThemeProvider } from '@/theme';
@@ -81,6 +82,7 @@ export function createApp() {
     client,
     tasks: getTasksModule(container),
     habits: getHabitsModule(container).habits,
+    calendar: getCalendarModule(container).calendar,
     notifications,
   };
 }

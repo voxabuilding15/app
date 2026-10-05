@@ -6,7 +6,6 @@ export {
   addDays,
   addDaysToKey,
   addMonthsToKey,
-  atHour,
   combineDayAndTime,
   dateKeyToNoon,
   daysBetweenKeys,
@@ -23,6 +22,15 @@ export {
 export type { DateKey } from './dates';
 export { createId } from './ids';
 export { ensureNotificationPermission } from './notifications';
+export { reminderInstant } from './reminders';
+export {
+  MAX_RECURRENCE_INTERVAL,
+  addMonthsClamped,
+  nextOccurrenceKey,
+  recurrencePresetOf,
+  ruleForRecurrencePreset,
+} from './recurrence';
+export type { RecurrencePreset, RecurrenceRule, RecurrenceUnit } from './recurrence';
 export { NAME_MAX_LENGTH, NO_CATEGORY, createCategoryUseCases } from './taxonomy';
 export type {
   Category,

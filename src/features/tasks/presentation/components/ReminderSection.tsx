@@ -1,10 +1,9 @@
 import { View } from 'react-native';
 
-import { Chip, FormSection, SwitchRow, Text, WRAP_ROW } from '@/components';
+import { ReminderOffsetSection, SwitchRow, Text } from '@/components';
 
 import type { DueDate } from '../../domain/entities';
 import { reminderOffsetsFor } from '../../domain/reminder';
-import { describeReminderOffset } from '../format';
 
 interface ReminderSectionProps {
   due: DueDate;
@@ -24,34 +23,28 @@ export function ReminderSection({
   onAlarm,
 }: ReminderSectionProps) {
   return (
-    <FormSection title="Reminder" error={error}>
-      <View style={WRAP_ROW}>
-        <Chip label="None" selected={offsetMinutes === null} onPress={() => onOffset(null)} />
-        {reminderOffsetsFor(due.hasTime).map((offset) => (
-          <Chip
-            key={offset}
-            label={describeReminderOffset(offset, due.hasTime)}
-            selected={offsetMinutes === offset}
-            onPress={() => onOffset(offset)}
-          />
-        ))}
+    <ReminderOffsetSection
+      offsets={reminderOffsetsFor(due.hasTime)}
+      value={offsetMinutes}
+      timed={due.hasTime}
+      atLabel="At due time"
+      error={error}
+      onChange={onOffset}
+    >
+      <View>
+        <SwitchRow
+          title="Ring as an alarm"
+          subtitle="Uses the high-priority Alarms channel with a Complete, Snooze and Dismiss action."
+          value={isAlarm}
+          onChange={onAlarm}
+        />
+        {isAlarm ? (
+          <Text variant="labelSmall" tone="muted">
+            Exact delivery needs the system “Alarms & reminders” permission; without it Android may
+            deliver a few minutes late.
+          </Text>
+        ) : null}
       </View>
-      {offsetMinutes !== null ? (
-        <View>
-          <SwitchRow
-            title="Ring as an alarm"
-            subtitle="Uses the high-priority Alarms channel with a Complete, Snooze and Dismiss action."
-            value={isAlarm}
-            onChange={onAlarm}
-          />
-          {isAlarm ? (
-            <Text variant="labelSmall" tone="muted">
-              Exact delivery needs the system “Alarms & reminders” permission; without it Android
-              may deliver a few minutes late.
-            </Text>
-          ) : null}
-        </View>
-      ) : null}
-    </FormSection>
+    </ReminderOffsetSection>
   );
 }

@@ -1,5 +1,6 @@
+import { MAX_RECURRENCE_INTERVAL } from '@/core';
+
 import type { DueDate, Priority, RepeatRule } from './entities';
-import { MAX_REPEAT_INTERVAL } from './repeat';
 import { isValidReminderOffset } from './reminder';
 
 export const TITLE_MAX_LENGTH = 120;
@@ -69,12 +70,14 @@ export function validateDraft(draft: TaskDraft): DraftErrors {
   if (draft.repeat !== null) {
     if (draft.due === null) {
       errors.repeat = 'Set a due date to repeat this task';
+    } else if (draft.repeat.unit === 'year') {
+      errors.repeat = 'Tasks cannot repeat yearly';
     } else if (
       !Number.isInteger(draft.repeat.interval) ||
       draft.repeat.interval < 1 ||
-      draft.repeat.interval > MAX_REPEAT_INTERVAL
+      draft.repeat.interval > MAX_RECURRENCE_INTERVAL
     ) {
-      errors.repeat = `Repeat interval must be between 1 and ${MAX_REPEAT_INTERVAL}`;
+      errors.repeat = `Repeat interval must be between 1 and ${MAX_RECURRENCE_INTERVAL}`;
     }
   }
 
