@@ -8,15 +8,12 @@ export const spacing = {
 } as const;
 
 export const radius = {
-  sm: 8,
   md: 12,
   lg: 16,
-  xl: 28,
   full: 999,
 } as const;
 
 export const typography = {
-  displaySmall: { fontSize: 36, lineHeight: 44, fontWeight: '600' },
   headlineSmall: { fontSize: 24, lineHeight: 32, fontWeight: '600' },
   titleLarge: { fontSize: 22, lineHeight: 28, fontWeight: '600' },
   titleMedium: { fontSize: 16, lineHeight: 24, fontWeight: '600' },
@@ -28,5 +25,8 @@ export const typography = {
 
 export type TypographyVariant = keyof typeof typography;
 
-export const TABLET_BREAKPOINT = 768;
+/** Android `sw600dp`: smallest screen dimension that counts as a tablet. */
+export const TABLET_MIN_DIMENSION = 600;
+export const CONTENT_MAX_WIDTH = 720;
+export const DRAWER_WIDTH = 288;
 export const MIN_TOUCH_TARGET = 48;

@@ -6,6 +6,8 @@ import { Button } from './Button';
 import { Icon, type IconName } from './Icon';
 import { Text } from './Text';
 
+const BADGE_SIZE = 72;
+
 export interface EmptyStateProps {
   icon: IconName;
   title: string;
@@ -19,6 +21,8 @@ export function EmptyState({ icon, title, message, actionLabel, onAction }: Empt
 
   return (
     <View
+      accessible
+      accessibilityLabel={`${title}. ${message}`}
       style={{
         alignItems: 'center',
         gap: spacing.md,
@@ -28,9 +32,9 @@ export function EmptyState({ icon, title, message, actionLabel, onAction }: Empt
     >
       <View
         style={{
-          width: 72,
-          height: 72,
-          borderRadius: 36,
+          width: BADGE_SIZE,
+          height: BADGE_SIZE,
+          borderRadius: BADGE_SIZE / 2,
           alignItems: 'center',
           justifyContent: 'center',
           backgroundColor: colors.primaryContainer,
@@ -38,7 +42,7 @@ export function EmptyState({ icon, title, message, actionLabel, onAction }: Empt
       >
         <Icon name={icon} size={36} color={colors.onPrimaryContainer} />
       </View>
-      <Text variant="titleMedium" style={{ textAlign: 'center' }}>
+      <Text variant="titleMedium" accessibilityRole="header" style={{ textAlign: 'center' }}>
         {title}
       </Text>
       <Text tone="muted" style={{ textAlign: 'center' }}>

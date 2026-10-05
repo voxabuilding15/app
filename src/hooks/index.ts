@@ -1,3 +1,3 @@
 export { useHaptics } from './useHaptics';
-export type { HapticsApi } from './useHaptics';
 export { useIsTablet } from './useIsTablet';
+export { useNotificationPermission } from './useNotificationPermission';

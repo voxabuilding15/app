@@ -1,7 +1,7 @@
-import { View } from 'react-native';
 import type { ReactNode } from 'react';
+import { View } from 'react-native';
 
-import { MIN_TOUCH_TARGET, useTheme } from '@/theme';
+import { MIN_TOUCH_TARGET, spacing, useTheme } from '@/theme';
 
 import { Icon, type IconName } from './Icon';
 import { PressableScale } from './PressableScale';
@@ -24,8 +24,8 @@ export function ListItem({ title, subtitle, icon, trailing, onPress }: ListItemP
         minHeight: MIN_TOUCH_TARGET + 8,
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 16,
-        paddingVertical: 8,
+        gap: spacing.lg,
+        paddingVertical: spacing.sm,
       }}
     >
       {icon ? <Icon name={icon} color={colors.primary} /> : null}
@@ -42,13 +42,18 @@ export function ListItem({ title, subtitle, icon, trailing, onPress }: ListItemP
   );
 
   if (!onPress) {
-    return content;
+    return (
+      <View accessible accessibilityLabel={subtitle ? `${title}. ${subtitle}` : title}>
+        {content}
+      </View>
+    );
   }
 
   return (
     <PressableScale
       accessibilityRole="button"
       accessibilityLabel={title}
+      accessibilityHint={subtitle}
       pressedScale={0.99}
       onPress={onPress}
     >

@@ -1,17 +1,15 @@
 import * as Notifications from 'expo-notifications';
 
-export const NOTIFICATION_CATEGORIES = {
+const NOTIFICATION_CATEGORIES = {
   reminder: 'reminder',
   alarm: 'alarm',
 } as const;
 
-export const NOTIFICATION_ACTIONS = {
+const NOTIFICATION_ACTIONS = {
   complete: 'complete',
   snooze: 'snooze',
   dismiss: 'dismiss',
 } as const;
-
-export type NotificationActionId = (typeof NOTIFICATION_ACTIONS)[keyof typeof NOTIFICATION_ACTIONS];
 
 export async function registerNotificationCategories(): Promise<void> {
   await Promise.all([

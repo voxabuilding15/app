@@ -1,13 +1,11 @@
-import { EmptyState, Screen } from '@/components';
+import { EmptyFeatureScreen } from '../shared/EmptyFeatureScreen';
 
 export function FinanceScreen() {
   return (
-    <Screen>
-      <EmptyState
-        icon="account-balance-wallet"
-        title="No transactions yet"
-        message="Record income and expenses to see your balance, budget and spending by category."
-      />
-    </Screen>
+    <EmptyFeatureScreen
+      icon="account-balance-wallet"
+      title="No transactions yet"
+      message="Record income and expenses to see your balance, budget and spending by category."
+    />
   );
 }

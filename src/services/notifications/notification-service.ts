@@ -1,28 +1,9 @@
 import * as Notifications from 'expo-notifications';
 
+import type { NotificationService, PermissionState, ScheduleAtInput } from '@/core';
+
 import { registerNotificationCategories } from './categories';
-import { NOTIFICATION_CHANNELS, registerNotificationChannels } from './channels';
-import type { NotificationChannelId } from './channels';
-
-export type PermissionState = 'granted' | 'denied' | 'undetermined';
-
-export interface ScheduleAtInput {
-  title: string;
-  body: string;
-  date: Date;
-  channelId?: NotificationChannelId;
-  categoryId?: string;
-  data?: Record<string, string>;
-}
-
-export interface NotificationService {
-  initialize(): Promise<void>;
-  getPermissionState(): Promise<PermissionState>;
-  requestPermission(): Promise<PermissionState>;
-  scheduleAt(input: ScheduleAtInput): Promise<string>;
-  cancel(identifier: string): Promise<void>;
-  cancelAll(): Promise<void>;
-}
+import { registerNotificationChannels } from './channels';
 
 function toPermissionState(response: Notifications.NotificationPermissionsStatus): PermissionState {
   if (response.granted) {
@@ -31,26 +12,30 @@ function toPermissionState(response: Notifications.NotificationPermissionsStatus
   return response.canAskAgain ? 'undetermined' : 'denied';
 }
 
+async function setup(): Promise<void> {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowBanner: true,
+      shouldShowList: true,
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+    }),
+  });
+  await registerNotificationChannels();
+  await registerNotificationCategories();
+}
+
 class ExpoNotificationService implements NotificationService {
-  private initialized = false;
+  private setupPromise: Promise<void> | null = null;
 
-  async initialize(): Promise<void> {
-    if (this.initialized) {
-      return;
+  initialize(): Promise<void> {
+    if (this.setupPromise === null) {
+      this.setupPromise = setup().catch((error: unknown) => {
+        this.setupPromise = null;
+        throw error;
+      });
     }
-    this.initialized = true;
-
-    Notifications.setNotificationHandler({
-      handleNotification: async () => ({
-        shouldShowBanner: true,
-        shouldShowList: true,
-        shouldPlaySound: true,
-        shouldSetBadge: false,
-      }),
-    });
-
-    await registerNotificationChannels();
-    await registerNotificationCategories();
+    return this.setupPromise;
   }
 
   async getPermissionState(): Promise<PermissionState> {
@@ -58,6 +43,7 @@ class ExpoNotificationService implements NotificationService {
   }
 
   async requestPermission(): Promise<PermissionState> {
+    await this.initialize();
     const current = await Notifications.getPermissionsAsync();
     if (current.granted) {
       return 'granted';
@@ -76,7 +62,7 @@ class ExpoNotificationService implements NotificationService {
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.DATE,
         date: input.date,
-        channelId: input.channelId ?? NOTIFICATION_CHANNELS.default,
+        channelId: input.channelId ?? 'default',
       },
     });
   }

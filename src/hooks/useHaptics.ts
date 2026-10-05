@@ -1,7 +1,7 @@
 import * as Haptics from 'expo-haptics';
 import { useMemo } from 'react';
 
-export interface HapticsApi {
+interface HapticsApi {
   light(): void;
   success(): void;
   warning(): void;

@@ -1,13 +1,12 @@
 import { ActivityIndicator, View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { useHaptics } from '@/hooks';
-import { MIN_TOUCH_TARGET, radius, useTheme } from '@/theme';
+import { MIN_TOUCH_TARGET, radius, useTheme, type ColorScheme } from '@/theme';
 
 import { Icon, type IconName } from './Icon';
 import { PressableScale } from './PressableScale';
 import { Text } from './Text';
 
-export type ButtonVariant = 'filled' | 'tonal' | 'outlined' | 'text';
+type ButtonVariant = 'filled' | 'tonal' | 'outlined' | 'text';
 
 export interface ButtonProps {
   label: string;
@@ -19,6 +18,29 @@ export interface ButtonProps {
   fullWidth?: boolean;
   style?: StyleProp<ViewStyle>;
   accessibilityHint?: string;
+}
+
+interface Palette {
+  background: string;
+  foreground: string;
+  border: string;
+}
+
+function paletteFor(variant: ButtonVariant, colors: ColorScheme): Palette {
+  switch (variant) {
+    case 'tonal':
+      return {
+        background: colors.secondaryContainer,
+        foreground: colors.onSecondaryContainer,
+        border: 'transparent',
+      };
+    case 'outlined':
+      return { background: 'transparent', foreground: colors.primary, border: colors.outline };
+    case 'text':
+      return { background: 'transparent', foreground: colors.primary, border: 'transparent' };
+    default:
+      return { background: colors.primary, foreground: colors.onPrimary, border: 'transparent' };
+  }
 }
 
 export function Button({
@@ -33,19 +55,8 @@ export function Button({
   accessibilityHint,
 }: ButtonProps) {
   const { colors } = useTheme();
-  const haptics = useHaptics();
   const inactive = disabled || loading;
-
-  const palette = {
-    filled: { bg: colors.primary, fg: colors.onPrimary, border: 'transparent' },
-    tonal: {
-      bg: colors.secondaryContainer,
-      fg: colors.onSecondaryContainer,
-      border: 'transparent',
-    },
-    outlined: { bg: 'transparent', fg: colors.primary, border: colors.outline },
-    text: { bg: 'transparent', fg: colors.primary, border: 'transparent' },
-  }[variant];
+  const palette = paletteFor(variant, colors);
 
   return (
     <PressableScale
@@ -54,29 +65,27 @@ export function Button({
       accessibilityHint={accessibilityHint}
       accessibilityState={{ disabled: inactive, busy: loading }}
       disabled={inactive}
-      onPress={() => {
-        haptics.light();
-        onPress();
-      }}
-      style={[fullWidth ? { alignSelf: 'stretch' } : { alignSelf: 'flex-start' }, style]}
+      haptic="light"
+      onPress={onPress}
+      style={[{ alignSelf: fullWidth ? 'stretch' : 'flex-start' }, style]}
     >
       <View
         className="flex-row items-center justify-center gap-2 px-6"
         style={{
           minHeight: MIN_TOUCH_TARGET,
           borderRadius: radius.full,
-          backgroundColor: palette.bg,
+          backgroundColor: palette.background,
           borderWidth: variant === 'outlined' ? 1 : 0,
           borderColor: palette.border,
           opacity: inactive ? 0.5 : 1,
         }}
       >
         {loading ? (
-          <ActivityIndicator size="small" color={palette.fg} />
+          <ActivityIndicator size="small" color={palette.foreground} />
         ) : icon ? (
-          <Icon name={icon} size={20} color={palette.fg} />
+          <Icon name={icon} size={20} color={palette.foreground} />
         ) : null}
-        <Text variant="labelLarge" style={{ color: palette.fg }}>
+        <Text variant="labelLarge" style={{ color: palette.foreground }}>
           {label}
         </Text>
       </View>

@@ -1,22 +1,11 @@
-import type { SQLiteDatabase } from 'expo-sqlite';
 import { createContext, useContext, type PropsWithChildren } from 'react';
 
-import { getDatabase } from '@/database';
-import { notificationService, type NotificationService } from '@/services/notifications';
-import { kvStorage, type KeyValueStorage } from '@/services/storage';
+import type { Database, KeyValueStorage, NotificationService } from '../ports';
 
 export interface Container {
-  db: SQLiteDatabase;
+  db: Database;
   storage: KeyValueStorage;
   notifications: NotificationService;
-}
-
-export function createContainer(): Container {
-  return {
-    db: getDatabase(),
-    storage: kvStorage,
-    notifications: notificationService,
-  };
 }
 
 const ContainerContext = createContext<Container | null>(null);

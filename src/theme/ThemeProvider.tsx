@@ -5,7 +5,7 @@ import { useColorScheme } from 'react-native';
 import { darkColors, lightColors, type ColorScheme } from './colors';
 import { useThemeStore, type ThemePreference } from './store';
 
-export interface Theme {
+interface Theme {
   colors: ColorScheme;
   isDark: boolean;
   preference: ThemePreference;

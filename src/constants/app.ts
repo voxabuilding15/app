@@ -5,5 +5,4 @@ export const STORAGE_ID = 'focusflow-storage';
 
 export const STORAGE_KEYS = {
   themePreference: 'theme-preference',
-  notificationsEnabled: 'notifications-enabled',
 } as const;

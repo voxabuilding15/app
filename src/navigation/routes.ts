@@ -6,6 +6,10 @@ export interface NavItem {
   icon: IconName;
 }
 
+export const TABS_ROUTE = '(tabs)';
+
+export const HOME_ITEM: NavItem = { name: TABS_ROUTE, title: 'Home', icon: 'home' };
+
 export const TAB_ITEMS: readonly NavItem[] = [
   { name: 'index', title: 'Dashboard', icon: 'dashboard' },
   { name: 'tasks', title: 'Tasks', icon: 'check-circle' },

@@ -2,19 +2,25 @@ import { Tabs } from 'expo-router';
 import { DrawerToggleButton } from 'expo-router/drawer';
 
 import { Icon } from '@/components';
+import { useIsTablet } from '@/hooks';
 import { TAB_ITEMS } from '@/navigation';
 import { useTheme } from '@/theme';
 
 export default function TabsLayout() {
   const { colors } = useTheme();
+  const isTablet = useIsTablet();
 
   return (
     <Tabs
       screenOptions={{
+        freezeOnBlur: true,
         headerStyle: { backgroundColor: colors.background },
         headerTitleStyle: { color: colors.onSurface },
         headerShadowVisible: false,
-        headerLeft: () => <DrawerToggleButton tintColor={colors.onSurface} />,
+        // The drawer is permanently visible on tablets, so the toggle is only needed on phones.
+        headerLeft: isTablet
+          ? () => null
+          : () => <DrawerToggleButton tintColor={colors.onSurface} />,
         tabBarActiveTintColor: colors.onSecondaryContainer,
         tabBarInactiveTintColor: colors.onSurfaceVariant,
         tabBarStyle: {

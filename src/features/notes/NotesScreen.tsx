@@ -1,13 +1,11 @@
-import { EmptyState, Screen } from '@/components';
+import { EmptyFeatureScreen } from '../shared/EmptyFeatureScreen';
 
 export function NotesScreen() {
   return (
-    <Screen>
-      <EmptyState
-        icon="sticky-note-2"
-        title="No notes yet"
-        message="Notes, checklists and folders will be kept here, offline on your device."
-      />
-    </Screen>
+    <EmptyFeatureScreen
+      icon="sticky-note-2"
+      title="No notes yet"
+      message="Notes, checklists and folders will be kept here, offline on your device."
+    />
   );
 }

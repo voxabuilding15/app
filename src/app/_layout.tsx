@@ -1,21 +1,23 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useFonts } from 'expo-font';
+import { Drawer } from 'expo-router/drawer';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { Drawer } from 'expo-router/drawer';
 import { useEffect } from 'react';
 
 import '../global.css';
 
 import { APP_NAME } from '@/constants/app';
-import { DRAWER_ITEMS, DrawerContent } from '@/navigation';
+import { useIsTablet } from '@/hooks';
+import { DRAWER_ITEMS, DrawerContent, TABS_ROUTE } from '@/navigation';
 import { AppProviders } from '@/providers';
-import { useTheme } from '@/theme';
+import { DRAWER_WIDTH, useTheme } from '@/theme';
 
 void SplashScreen.preventAutoHideAsync();
 
 function RootNavigator() {
   const { colors, isDark } = useTheme();
+  const isTablet = useIsTablet();
 
   return (
     <>
@@ -23,17 +25,27 @@ function RootNavigator() {
       <Drawer
         drawerContent={(props) => <DrawerContent {...props} />}
         screenOptions={{
+          freezeOnBlur: true,
           headerStyle: { backgroundColor: colors.background },
           headerTitleStyle: { color: colors.onSurface },
           headerTintColor: colors.onSurface,
           headerShadowVisible: false,
-          drawerType: 'front',
+          drawerType: isTablet ? 'permanent' : 'front',
+          drawerStyle: { width: DRAWER_WIDTH, backgroundColor: colors.surface },
+          swipeEdgeWidth: 32,
           sceneStyle: { backgroundColor: colors.background },
         }}
       >
-        <Drawer.Screen name="(tabs)" options={{ title: APP_NAME, headerShown: false }} />
+        <Drawer.Screen name={TABS_ROUTE} options={{ title: APP_NAME, headerShown: false }} />
         {DRAWER_ITEMS.map((item) => (
-          <Drawer.Screen key={item.name} name={item.name} options={{ title: item.title }} />
+          <Drawer.Screen
+            key={item.name}
+            name={item.name}
+            options={{
+              title: item.title,
+              headerLeft: isTablet ? () => null : undefined,
+            }}
+          />
         ))}
       </Drawer>
     </>

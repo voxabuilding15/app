@@ -1,6 +1,8 @@
 import * as Notifications from 'expo-notifications';
 
-export const NOTIFICATION_CHANNELS = {
+import type { NotificationChannelId } from '@/core';
+
+const NOTIFICATION_CHANNELS = {
   default: 'default',
   tasks: 'tasks',
   habits: 'habits',
@@ -8,10 +10,7 @@ export const NOTIFICATION_CHANNELS = {
   pomodoro: 'pomodoro',
   summary: 'summary',
   alarms: 'alarms',
-} as const;
-
-export type NotificationChannelId =
-  (typeof NOTIFICATION_CHANNELS)[keyof typeof NOTIFICATION_CHANNELS];
+} as const satisfies Record<NotificationChannelId, NotificationChannelId>;
 
 interface ChannelDefinition {
   id: NotificationChannelId;

@@ -1,4 +1,4 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import type { ComponentProps } from 'react';
 import type { ColorValue } from 'react-native';
 
@@ -14,5 +14,13 @@ export interface IconProps {
 
 export function Icon({ name, size = 24, color }: IconProps) {
   const { colors } = useTheme();
-  return <MaterialIcons name={name} size={size} color={color ?? colors.onSurfaceVariant} />;
+  return (
+    <MaterialIcons
+      name={name}
+      size={size}
+      color={color ?? colors.onSurfaceVariant}
+      accessible={false}
+      importantForAccessibility="no"
+    />
+  );
 }
