@@ -4,6 +4,7 @@ export { CategoryManager } from './CategoryManager';
 export { CategorySection } from './CategorySection';
 export { Checkbox } from './Checkbox';
 export { Chip } from './Chip';
+export { ChipTabs } from './ChipTabs';
 export { Divider } from './Divider';
 export { EmptyState } from './EmptyState';
 export { FAB } from './FAB';

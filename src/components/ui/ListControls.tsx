@@ -12,10 +12,13 @@ interface ScopeOption<S extends string> {
 }
 
 interface ListControlsProps<S extends string> {
-  scopes: readonly ScopeOption<S>[];
-  scope: S;
-  onScope: (scope: S) => void;
+  /** Scope tabs; omit all three for lists with a single scope. */
+  scopes?: readonly ScopeOption<S>[];
+  scope?: S;
+  onScope?: (scope: S) => void;
   searchOpen: boolean;
+  /** Adds a chip that opens and closes the search box, for screens without a toolbar button. */
+  onToggleSearch?: () => void;
   searchText: string;
   onSearchText: (text: string) => void;
   searchLabel: string;
@@ -36,6 +39,7 @@ export function ListControls<S extends string>({
   scope,
   onScope,
   searchOpen,
+  onToggleSearch,
   searchText,
   onSearchText,
   searchLabel,
@@ -50,7 +54,9 @@ export function ListControls<S extends string>({
 }: ListControlsProps<S>) {
   return (
     <View style={{ gap: spacing.md, paddingHorizontal: spacing.lg, paddingTop: spacing.sm }}>
-      <SegmentedControl options={scopes} value={scope} onChange={onScope} />
+      {scopes !== undefined && scope !== undefined && onScope !== undefined ? (
+        <SegmentedControl options={scopes} value={scope} onChange={onScope} />
+      ) : null}
       {searchOpen ? (
         <Input
           label={searchLabel}
@@ -69,6 +75,14 @@ export function ListControls<S extends string>({
         contentContainerStyle={{ gap: spacing.sm, paddingVertical: spacing.xs }}
         keyboardShouldPersistTaps="handled"
       >
+        {onToggleSearch !== undefined ? (
+          <Chip
+            icon={searchOpen ? 'close' : 'search'}
+            label={searchOpen ? 'Close search' : 'Search'}
+            selected={searchOpen}
+            onPress={onToggleSearch}
+          />
+        ) : null}
         <Chip
           icon="filter-list"
           label={activeFilterCount > 0 ? `Filter (${activeFilterCount})` : 'Filter'}

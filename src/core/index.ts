@@ -5,6 +5,7 @@ export {
   MINUTE_MS,
   addDays,
   addDaysToKey,
+  atHour,
   addMonthsToKey,
   combineDayAndTime,
   dateKeyToNoon,
@@ -21,12 +22,14 @@ export {
 } from './dates';
 export type { DateKey } from './dates';
 export { createId } from './ids';
+export { MAX_MINOR, formatMoney, minorDigits, parseMoney, toAmountText } from './money';
 export { ensureNotificationPermission } from './notifications';
 export { reminderInstant } from './reminders';
 export {
   MAX_RECURRENCE_INTERVAL,
   addMonthsClamped,
   nextOccurrenceKey,
+  occurrenceKeys,
   recurrencePresetOf,
   ruleForRecurrencePreset,
 } from './recurrence';

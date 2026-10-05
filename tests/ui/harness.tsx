@@ -5,11 +5,13 @@ import type { ReactElement } from 'react';
 import {
   ContainerProvider,
   type Container,
+  type KeyValueStorage,
   type NotificationResponse,
   type NotificationService,
 } from '@/core';
 import { SqliteCategoryRepository } from '@/database/category-repository';
 import { getCalendarModule } from '@/features/calendar/presentation/module';
+import { getFinanceModule } from '@/features/finance/presentation/module';
 import { getHabitsModule } from '@/features/habits/presentation/module';
 import { getTasksModule } from '@/features/tasks/presentation/module';
 import { ThemeProvider } from '@/theme';
@@ -27,6 +29,15 @@ export interface FakeNotifications extends NotificationService {
   /** Simulates the user tapping a notification or one of its action buttons. */
   emit: (response: NotificationResponse) => void;
   launchResponse: NotificationResponse | null;
+}
+
+function memoryStorage(): KeyValueStorage {
+  const values = new Map<string, string>();
+  return {
+    getString: (key) => values.get(key),
+    setString: (key, value) => void values.set(key, value),
+    remove: (key) => void values.delete(key),
+  };
 }
 
 function createFakeNotifications(): FakeNotifications {
@@ -71,7 +82,7 @@ export function createApp() {
     clock,
     db,
     categories: (kind) => new SqliteCategoryRepository(db, kind, clock.now),
-    storage: { getString: () => undefined, setString: () => undefined, remove: () => undefined },
+    storage: memoryStorage(),
     notifications,
   };
   const client = new QueryClient({
@@ -83,6 +94,7 @@ export function createApp() {
     tasks: getTasksModule(container),
     habits: getHabitsModule(container).habits,
     calendar: getCalendarModule(container).calendar,
+    finance: getFinanceModule(container),
     notifications,
   };
 }

@@ -122,7 +122,7 @@ describe('migration v4 (calendar)', () => {
     );
     upgrade();
 
-    assert.equal(getSchemaVersion(db), 4);
+    assert.equal(getSchemaVersion(db), migrations.at(-1)?.version);
     assert.equal(
       db.getFirstSync<{ category_id: string }>(`SELECT category_id FROM tasks`)?.category_id,
       'c1',
@@ -160,5 +160,191 @@ describe('migration v4 (calendar)', () => {
       db.getFirstSync<{ n: number }>('SELECT COUNT(*) AS n FROM event_exceptions')?.n,
       0,
     );
+  });
+});
+
+describe('migration v5 (finance)', () => {
+  const account = (db: ReturnType<typeof createTestDatabase>, id: string, name = id) =>
+    db.runSync(
+      `INSERT INTO accounts (id,name,type,color,created_at) VALUES (?,?,'bank','#111',1)`,
+      [id, name],
+    );
+  const tx = (
+    db: ReturnType<typeof createTestDatabase>,
+    type: string,
+    account_id: string,
+    to: string | null,
+    category: string | null = null,
+  ) =>
+    db.runSync(
+      `INSERT INTO transactions (id,type,amount_minor,account_id,to_account_id,category_id,occurred_at,created_at,updated_at)
+       VALUES (lower(hex(randomblob(4))),?,500,?,?,?,1,1,1)`,
+      [type, account_id, to, category],
+    );
+
+  it('upgrades a v4 database and keeps categories and their links', () => {
+    const { db, upgrade } = createDatabaseAtVersion(4);
+    db.runSync(`INSERT INTO categories VALUES ('c1','expense','Food','#111','folder',1)`);
+    upgrade();
+    assert.equal(getSchemaVersion(db), migrations.at(-1)?.version);
+    assert.equal(db.getAllSync('PRAGMA foreign_key_check').length, 0);
+    assert.equal(db.getFirstSync<{ n: number }>('SELECT COUNT(*) AS n FROM categories')?.n, 1);
+    assert.equal(db.getFirstSync<{ n: number }>('SELECT COUNT(*) AS n FROM accounts')?.n, 0);
+  });
+
+  it('moves transactions from the old schema into a default Cash account', () => {
+    const { db, upgrade } = createDatabaseAtVersion(4);
+    db.runSync(`INSERT INTO categories VALUES ('c1','expense','Food','#111','folder',1)`);
+    db.runSync(
+      `INSERT INTO transactions (id,type,amount_minor,category_id,note,occurred_at,created_at)
+       VALUES ('t1','expense',1250,'c1','Lunch',5000,4000)`,
+    );
+    db.runSync(`INSERT INTO budgets VALUES ('2026-03', 30000)`);
+    db.runSync(`INSERT INTO budgets VALUES ('2026-04', 0)`);
+    upgrade();
+
+    const moved = db.getFirstSync<Record<string, unknown>>(
+      `SELECT t.type, t.amount_minor, t.note, t.category_id, t.occurred_at, t.created_at, a.name, a.type AS account_type
+       FROM transactions t JOIN accounts a ON a.id = t.account_id`,
+    );
+    assert.deepEqual(moved, {
+      type: 'expense',
+      amount_minor: 1250,
+      note: 'Lunch',
+      category_id: 'c1',
+      occurred_at: 5000,
+      created_at: 4000,
+      name: 'Cash',
+      account_type: 'cash',
+    });
+
+    // The old per-month amounts become custom budgets; empty ones are dropped.
+    const budgets = db.getAllSync<Record<string, unknown>>(
+      'SELECT id, period, amount_minor, start_date, end_date FROM budgets',
+    );
+    assert.deepEqual(budgets, [
+      {
+        id: 'legacy-2026-03',
+        period: 'custom',
+        amount_minor: 30000,
+        start_date: '2026-03-01',
+        end_date: '2026-03-31',
+      },
+    ]);
+  });
+
+  it('validates accounts', () => {
+    const db = createTestDatabase();
+    account(db, 'a', 'Wallet');
+    assert.throws(() => account(db, 'b', 'wallet'), 'names are unique ignoring case');
+    assert.throws(() =>
+      db.runSync(
+        `INSERT INTO accounts (id,name,type,color,created_at) VALUES ('c','X','crypto','#111',1)`,
+      ),
+    );
+  });
+
+  it('validates transactions: amounts, transfers and category rules', () => {
+    const db = createTestDatabase();
+    account(db, 'a');
+    account(db, 'b');
+    db.runSync(`INSERT INTO categories VALUES ('c','expense','Food','#111','folder',1)`);
+
+    tx(db, 'expense', 'a', null, 'c');
+    tx(db, 'transfer', 'a', 'b');
+    assert.throws(() => tx(db, 'transfer', 'a', null), 'a transfer needs a destination');
+    assert.throws(() => tx(db, 'expense', 'a', 'b'), 'only transfers have a destination');
+    assert.throws(() => tx(db, 'transfer', 'a', 'a'), 'cannot transfer to the same account');
+    assert.throws(() => tx(db, 'transfer', 'a', 'b', 'c'), 'transfers have no category');
+    assert.throws(() =>
+      db.runSync(
+        `INSERT INTO transactions (id,type,amount_minor,account_id,occurred_at,created_at,updated_at)
+         VALUES ('z','expense',0,'a',1,1,1)`,
+      ),
+    );
+    assert.throws(() => tx(db, 'expense', 'missing', null), 'the account must exist');
+  });
+
+  it('protects accounts that have transactions, and unlinks deleted categories', () => {
+    const db = createTestDatabase();
+    account(db, 'a');
+    db.runSync(`INSERT INTO categories VALUES ('c','expense','Food','#111','folder',1)`);
+    tx(db, 'expense', 'a', null, 'c');
+
+    assert.throws(() => db.runSync(`DELETE FROM accounts WHERE id='a'`));
+    db.runSync(`DELETE FROM categories WHERE id='c'`);
+    assert.equal(
+      db.getFirstSync<{ category_id: string | null }>('SELECT category_id FROM transactions')
+        ?.category_id,
+      null,
+    );
+  });
+
+  it('posts a recurring occurrence only once and unlinks deleted rules', () => {
+    const db = createTestDatabase();
+    account(db, 'a');
+    db.runSync(
+      `INSERT INTO recurring_transactions (id,type,amount_minor,account_id,repeat_unit,start_date,next_date,created_at,updated_at)
+       VALUES ('r','expense',900,'a','month','2026-01-31','2026-01-31',1,1)`,
+    );
+    const post = () =>
+      db.runSync(
+        `INSERT INTO transactions (id,type,amount_minor,account_id,occurred_at,recurring_id,occurrence_date,created_at,updated_at)
+         VALUES (lower(hex(randomblob(4))),'expense',900,'a',1,'r','2026-01-31',1,1)`,
+      );
+    post();
+    assert.throws(post, 'the same occurrence cannot be posted twice');
+
+    db.runSync(`DELETE FROM recurring_transactions WHERE id='r'`);
+    assert.equal(
+      db.getFirstSync<{ recurring_id: string | null }>('SELECT recurring_id FROM transactions')
+        ?.recurring_id,
+      null,
+    );
+  });
+
+  it('validates recurring rules and budgets', () => {
+    const db = createTestDatabase();
+    account(db, 'a');
+    const rule = (unit: string, interval: number, end: string | null) =>
+      db.runSync(
+        `INSERT INTO recurring_transactions (id,type,amount_minor,account_id,repeat_unit,repeat_interval,start_date,end_date,created_at,updated_at)
+         VALUES (lower(hex(randomblob(4))),'expense',1,'a',?,?,'2026-02-01',?,1,1)`,
+        [unit, interval, end],
+      );
+    rule('week', 2, null);
+    assert.throws(() => rule('hour', 1, null));
+    assert.throws(() => rule('day', 0, null));
+    assert.throws(() => rule('day', 366, null));
+    assert.throws(() => rule('day', 1, '2026-01-01'));
+
+    const budget = (id: string, period: string, start: string | null, end: string | null) =>
+      db.runSync(
+        `INSERT INTO budgets (id,name,period,amount_minor,start_date,end_date,created_at,updated_at)
+         VALUES (?,?,?,1000,?,?,1,1)`,
+        [id, id, period, start, end],
+      );
+    budget('m', 'monthly', null, null);
+    budget('c', 'custom', '2026-01-01', '2026-01-10');
+    assert.throws(() => budget('c2', 'custom', null, null), 'custom budgets need dates');
+    assert.throws(() => budget('m2', 'monthly', '2026-01-01', '2026-01-02'));
+    assert.throws(() => budget('c3', 'custom', '2026-02-01', '2026-01-01'));
+    assert.throws(() => budget('M', 'monthly', null, null), 'budget names are unique');
+  });
+
+  it('cascades budget categories', () => {
+    const db = createTestDatabase();
+    db.runSync(`INSERT INTO categories VALUES ('c','expense','Food','#111','folder',1)`);
+    db.runSync(
+      `INSERT INTO budgets (id,name,period,amount_minor,created_at,updated_at) VALUES ('b','B','monthly',1,1,1)`,
+    );
+    db.runSync(`INSERT INTO budget_categories VALUES ('b','c')`);
+    assert.throws(() => db.runSync(`INSERT INTO budget_categories VALUES ('b','c')`));
+    db.runSync(`DELETE FROM categories WHERE id='c'`);
+    assert.equal(
+      db.getFirstSync<{ n: number }>('SELECT COUNT(*) AS n FROM budget_categories')?.n,
+      0,
+    );
+    assert.throws(() => db.runSync(`INSERT INTO budget_categories VALUES ('b','nope')`));
   });
 });

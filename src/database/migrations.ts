@@ -277,4 +277,118 @@ export const migrations: readonly Migration[] = [
       ) WITHOUT ROWID`,
     ],
   },
+  {
+    version: 5,
+    name: 'finance_feature',
+    rebuildsTables: true,
+    statements: [
+      // Money is INTEGER minor units. A balance is the account's opening balance plus everything
+      // that moved in or out of it; transfers appear on both accounts.
+      `CREATE TABLE accounts (
+        id TEXT PRIMARY KEY NOT NULL,
+        name TEXT NOT NULL,
+        type TEXT NOT NULL CHECK (type IN ('cash','bank','savings','credit_card')),
+        color TEXT NOT NULL,
+        initial_balance_minor INTEGER NOT NULL DEFAULT 0,
+        archived_at INTEGER,
+        created_at INTEGER NOT NULL
+      )`,
+      `CREATE UNIQUE INDEX idx_accounts_name ON accounts(name COLLATE NOCASE)`,
+      `CREATE INDEX idx_accounts_active ON accounts(created_at) WHERE archived_at IS NULL`,
+
+      // Rules that post a transaction on a schedule. `next_date` is the first occurrence that has
+      // not been posted yet (NULL once the series has ended), so deleting a posted transaction never
+      // makes it come back.
+      `CREATE TABLE recurring_transactions (
+        id TEXT PRIMARY KEY NOT NULL,
+        type TEXT NOT NULL CHECK (type IN ('income','expense','transfer')),
+        amount_minor INTEGER NOT NULL CHECK (amount_minor > 0),
+        account_id TEXT NOT NULL REFERENCES accounts(id) ON DELETE RESTRICT,
+        to_account_id TEXT REFERENCES accounts(id) ON DELETE RESTRICT,
+        category_id TEXT REFERENCES categories(id) ON DELETE SET NULL,
+        note TEXT NOT NULL DEFAULT '',
+        repeat_unit TEXT NOT NULL CHECK (repeat_unit IN ('day','week','month','year')),
+        repeat_interval INTEGER NOT NULL DEFAULT 1 CHECK (repeat_interval BETWEEN 1 AND 365),
+        repeat_weekdays INTEGER NOT NULL DEFAULT 0 CHECK (repeat_weekdays BETWEEN 0 AND 127),
+        start_date TEXT NOT NULL,
+        end_date TEXT,
+        next_date TEXT,
+        paused INTEGER NOT NULL DEFAULT 0 CHECK (paused IN (0,1)),
+        created_at INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL,
+        CHECK ((type = 'transfer') = (to_account_id IS NOT NULL)),
+        CHECK (to_account_id IS NULL OR to_account_id <> account_id),
+        CHECK (end_date IS NULL OR end_date >= start_date)
+      )`,
+      `CREATE INDEX idx_recurring_due ON recurring_transactions(next_date) WHERE paused = 0 AND next_date IS NOT NULL`,
+      `CREATE INDEX idx_recurring_account ON recurring_transactions(account_id)`,
+      `CREATE INDEX idx_recurring_to_account ON recurring_transactions(to_account_id) WHERE to_account_id IS NOT NULL`,
+      `CREATE INDEX idx_recurring_category ON recurring_transactions(category_id)`,
+
+      // Transactions written before accounts existed (none are created by earlier app versions,
+      // but a database may hold some) move into a default Cash account instead of being dropped.
+      `INSERT INTO accounts (id, name, type, color, initial_balance_minor, archived_at, created_at)
+         SELECT 'legacy-cash', 'Cash', 'cash', '#16A34A', 0, NULL, CAST(strftime('%s','now') AS INTEGER) * 1000
+         WHERE EXISTS (SELECT 1 FROM transactions)`,
+      `CREATE TABLE transactions_new (
+        id TEXT PRIMARY KEY NOT NULL,
+        type TEXT NOT NULL CHECK (type IN ('income','expense','transfer')),
+        amount_minor INTEGER NOT NULL CHECK (amount_minor > 0),
+        account_id TEXT NOT NULL REFERENCES accounts(id) ON DELETE RESTRICT,
+        to_account_id TEXT REFERENCES accounts(id) ON DELETE RESTRICT,
+        category_id TEXT REFERENCES categories(id) ON DELETE SET NULL,
+        note TEXT NOT NULL DEFAULT '',
+        occurred_at INTEGER NOT NULL,
+        recurring_id TEXT REFERENCES recurring_transactions(id) ON DELETE SET NULL,
+        occurrence_date TEXT,
+        created_at INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL,
+        CHECK ((type = 'transfer') = (to_account_id IS NOT NULL)),
+        CHECK (to_account_id IS NULL OR to_account_id <> account_id),
+        CHECK (type <> 'transfer' OR category_id IS NULL)
+      )`,
+      `INSERT INTO transactions_new (id, type, amount_minor, account_id, category_id, note, occurred_at, created_at, updated_at)
+         SELECT id, type, amount_minor, 'legacy-cash', category_id, note, occurred_at, created_at, created_at
+         FROM transactions`,
+      `DROP TABLE transactions`,
+      `ALTER TABLE transactions_new RENAME TO transactions`,
+      `CREATE INDEX idx_transactions_occurred ON transactions(occurred_at)`,
+      `CREATE INDEX idx_transactions_account ON transactions(account_id, occurred_at)`,
+      `CREATE INDEX idx_transactions_to_account ON transactions(to_account_id) WHERE to_account_id IS NOT NULL`,
+      `CREATE INDEX idx_transactions_category ON transactions(category_id, occurred_at)`,
+      `CREATE INDEX idx_transactions_type_date ON transactions(type, occurred_at)`,
+      `CREATE UNIQUE INDEX idx_transactions_occurrence ON transactions(recurring_id, occurrence_date) WHERE recurring_id IS NOT NULL`,
+
+      // Budgets: weekly (Monday to Sunday) and monthly ones repeat on their own; custom budgets
+      // cover an explicit date range. The old one-amount-per-month table becomes custom budgets.
+      `CREATE TABLE budgets_new (
+        id TEXT PRIMARY KEY NOT NULL,
+        name TEXT NOT NULL,
+        period TEXT NOT NULL CHECK (period IN ('weekly','monthly','custom')),
+        amount_minor INTEGER NOT NULL CHECK (amount_minor > 0),
+        start_date TEXT,
+        end_date TEXT,
+        created_at INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL,
+        CHECK ((period = 'custom') = (start_date IS NOT NULL AND end_date IS NOT NULL)),
+        CHECK (start_date IS NULL OR end_date >= start_date)
+      )`,
+      `INSERT INTO budgets_new (id, name, period, amount_minor, start_date, end_date, created_at, updated_at)
+         SELECT 'legacy-' || month, 'Budget ' || month, 'custom', amount_minor,
+                month || '-01', date(month || '-01', '+1 month', '-1 day'),
+                CAST(strftime('%s','now') AS INTEGER) * 1000, CAST(strftime('%s','now') AS INTEGER) * 1000
+         FROM budgets WHERE amount_minor > 0`,
+      `DROP TABLE budgets`,
+      `ALTER TABLE budgets_new RENAME TO budgets`,
+      `CREATE UNIQUE INDEX idx_budgets_name ON budgets(name COLLATE NOCASE)`,
+
+      // A budget limits spending in the listed categories; with none listed it covers all spending.
+      `CREATE TABLE budget_categories (
+        budget_id TEXT NOT NULL REFERENCES budgets(id) ON DELETE CASCADE,
+        category_id TEXT NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
+        PRIMARY KEY (budget_id, category_id)
+      ) WITHOUT ROWID`,
+      `CREATE INDEX idx_budget_categories_category ON budget_categories(category_id)`,
+    ],
+  },
 ];

@@ -9,6 +9,7 @@ import '../global.css';
 
 import { APP_NAME } from '@/constants/app';
 import { EventNotificationBridge } from '@/features/calendar';
+import { FinanceBridge } from '@/features/finance';
 import { HabitNotificationBridge } from '@/features/habits';
 import { TaskNotificationBridge } from '@/features/tasks';
 import { useIsTablet } from '@/hooks';
@@ -27,6 +28,7 @@ function RootNavigator() {
       <StatusBar style={isDark ? 'light' : 'dark'} />
       <TaskNotificationBridge />
       <HabitNotificationBridge />
+      <FinanceBridge />
       <EventNotificationBridge />
       <Drawer
         drawerContent={(props) => <DrawerContent {...props} />}

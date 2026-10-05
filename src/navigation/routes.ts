@@ -17,7 +17,7 @@ export const TAB_ITEMS: readonly NavItem[] = [
   { name: 'tasks', title: 'Tasks', icon: 'check-circle', ownHeader: true },
   { name: 'calendar', title: 'Calendar', icon: 'calendar-month', ownHeader: true },
   { name: 'habits', title: 'Habits', icon: 'local-fire-department', ownHeader: true },
-  { name: 'finance', title: 'Finance', icon: 'account-balance-wallet' },
+  { name: 'finance', title: 'Finance', icon: 'account-balance-wallet', ownHeader: true },
 ];
 
 export const DRAWER_ITEMS: readonly NavItem[] = [

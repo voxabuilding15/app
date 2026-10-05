@@ -13,6 +13,8 @@ export interface ColorScheme {
   outline: string;
   outlineVariant: string;
   error: string;
+  errorContainer: string;
+  onErrorContainer: string;
   success: string;
   warning: string;
 }
@@ -32,6 +34,8 @@ export const lightColors: ColorScheme = {
   outline: '#79747E',
   outlineVariant: '#CAC4D0',
   error: '#B3261E',
+  errorContainer: '#F9DEDC',
+  onErrorContainer: '#410E0B',
   success: '#2E7D32',
   warning: '#8A5100',
 };
@@ -51,6 +55,8 @@ export const darkColors: ColorScheme = {
   outline: '#938F99',
   outlineVariant: '#49454F',
   error: '#F2B8B5',
+  errorContainer: '#8C1D18',
+  onErrorContainer: '#F9DEDC',
   success: '#81C784',
   warning: '#FFB74D',
 };

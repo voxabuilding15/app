@@ -106,3 +106,33 @@ export function nextOccurrenceKey(rule: RecurrenceRule, key: DateKey): DateKey {
         : nextSelectedWeekday(rule, key);
   }
 }
+
+/**
+ * The days a repeating item falls on, in order, starting with `startKey` itself. Months and years
+ * are counted from the start day so a 31st never drifts to the 28th. The sequence is endless;
+ * callers stop reading when they pass the range or limit they care about.
+ */
+export function* occurrenceKeys(rule: RecurrenceRule, startKey: DateKey): Generator<DateKey> {
+  if (rule.unit === 'week' && rule.weekdays !== 0) {
+    let day = startKey;
+    for (;;) {
+      yield day;
+      day = nextOccurrenceKey(rule, day);
+    }
+  }
+  for (let index = 0; ; index += 1) {
+    switch (rule.unit) {
+      case 'day':
+        yield addDaysToKey(startKey, index * rule.interval);
+        break;
+      case 'week':
+        yield addDaysToKey(startKey, index * 7 * rule.interval);
+        break;
+      case 'month':
+        yield addMonthsClamped(startKey, index * rule.interval);
+        break;
+      default:
+        yield addMonthsClamped(startKey, index * 12 * rule.interval);
+    }
+  }
+}

@@ -1,48 +1,18 @@
 import {
   addDaysToKey,
-  addMonthsClamped,
   combineDayAndTime,
   dateKeyToNoon,
   daysBetweenKeys,
-  nextOccurrenceKey,
+  occurrenceKeys,
   startOfDay,
   toDateKey,
   type DateKey,
 } from '@/core';
 
-import type { EventEntry, EventOccurrence, EventRecurrence } from './entities';
+import type { EventEntry, EventOccurrence } from './entities';
 
 /** Hard stop for a single expansion, far beyond any sensible visible range. */
 const MAX_ITERATIONS = 20_000;
-
-/**
- * The days a recurring event falls on, in order, starting with its own start day. Months and years
- * are counted from the start day so a 31st never drifts to the 28th.
- */
-function* occurrenceDays(rule: EventRecurrence, startDay: DateKey): Generator<DateKey> {
-  if (rule.unit === 'week' && rule.weekdays !== 0) {
-    let day = startDay;
-    for (;;) {
-      yield day;
-      day = nextOccurrenceKey(rule, day);
-    }
-  }
-  for (let index = 0; ; index += 1) {
-    switch (rule.unit) {
-      case 'day':
-        yield addDaysToKey(startDay, index * rule.interval);
-        break;
-      case 'week':
-        yield addDaysToKey(startDay, index * 7 * rule.interval);
-        break;
-      case 'month':
-        yield addMonthsClamped(startDay, index * rule.interval);
-        break;
-      default:
-        yield addMonthsClamped(startDay, index * 12 * rule.interval);
-    }
-  }
-}
 
 function occurrenceOn({ event }: EventEntry, day: DateKey): Pick<EventOccurrence, 'start' | 'end'> {
   if (event.allDay) {
@@ -78,7 +48,7 @@ export function expandEvent(entry: EventEntry, from: number, to: number): EventO
   const skipped = new Set(exceptions);
   let index = 0;
 
-  for (const day of occurrenceDays(event.recurrence, toDateKey(event.start))) {
+  for (const day of occurrenceKeys(event.recurrence, toDateKey(event.start))) {
     if (index >= MAX_ITERATIONS || (count !== null && index >= count)) {
       break;
     }

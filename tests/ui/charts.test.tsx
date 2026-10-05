@@ -1,6 +1,15 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 
-import { BarChart, Heatmap, ProgressRing, StatTile, fitHeatmap } from '@/components';
+import {
+  BarChart,
+  ChartLegend,
+  DonutChart,
+  GroupedBarChart,
+  Heatmap,
+  ProgressRing,
+  StatTile,
+  fitHeatmap,
+} from '@/components';
 import { createEvaluator } from '@/features/habits/domain/progress';
 import { buildHeatmapModel } from '@/features/habits/presentation/heatmap-model';
 import { ThemeProvider } from '@/theme';
@@ -153,5 +162,120 @@ describe('habit heatmap model', () => {
     expect(previousWeek[5]?.label).toMatch(/skipped$/); // Sat 3 Oct
     expect(previousWeek[6]?.label).toMatch(/1 of 2$/); // Sun 4 Oct
     expect(model.columnLabels.filter(Boolean).length).toBeGreaterThanOrEqual(2);
+  });
+});
+
+describe('GroupedBarChart', () => {
+  const series = [
+    { name: 'Income', color: '#2E7D32' },
+    { name: 'Expenses', color: '#B3261E' },
+  ];
+
+  it('describes every group and names each series in a legend', async () => {
+    await render(
+      wrap(
+        <GroupedBarChart
+          label="Last 2 months"
+          series={series}
+          data={[
+            { label: 'Sep', values: [100, 40] },
+            { label: 'Oct', values: [80, 90], description: 'October: 80 in, 90 out' },
+          ]}
+        />,
+      ),
+    );
+    expect(
+      screen.getByLabelText('Last 2 months. Sep: 100, 40, October: 80 in, 90 out'),
+    ).toBeTruthy();
+    // The legend is hidden from screen readers (the label above already says it), so look for hidden text.
+    expect(screen.getByText('Income', { includeHiddenElements: true })).toBeTruthy();
+    expect(screen.getByText('Expenses', { includeHiddenElements: true })).toBeTruthy();
+    expect(screen.getByText('Sep')).toBeTruthy();
+  });
+
+  it('hides the legend for a single series unless asked', async () => {
+    await render(
+      wrap(
+        <GroupedBarChart
+          label="Net"
+          series={[{ name: 'Net', color: '#2E7D32', negativeColor: '#B3261E' }]}
+          data={[
+            { label: 'A', values: [50] },
+            { label: 'B', values: [-30] },
+          ]}
+        />,
+      ),
+    );
+    expect(screen.queryByText('Net', { includeHiddenElements: true })).toBeNull();
+    expect(screen.getByLabelText('Net. A: 50, B: -30')).toBeTruthy();
+  });
+
+  it('draws gains above the axis and losses below it', async () => {
+    await render(
+      wrap(
+        <GroupedBarChart
+          label="Signed"
+          height={118}
+          series={[{ name: 'Net', color: '#00ff00', negativeColor: '#ff0000' }]}
+          data={[
+            { label: 'Up', values: [100] },
+            { label: 'Down', values: [-100] },
+          ]}
+        />,
+      ),
+    );
+    const tree = JSON.stringify(screen.toJSON());
+    expect(tree).toContain('#00ff00');
+    expect(tree).toContain('#ff0000');
+    // A 100 gain and a 100 loss share the 100px plot evenly: 50px each, with the axis in the middle.
+    expect(tree).toContain('"height":50');
+  });
+
+  it('copes with no data and with all-zero data', async () => {
+    await render(wrap(<GroupedBarChart label="Empty" series={series} data={[]} />));
+    expect(screen.getByLabelText('Empty. ')).toBeTruthy();
+    await render(
+      wrap(
+        <GroupedBarChart label="Zeros" series={series} data={[{ label: 'X', values: [0, 0] }]} />,
+      ),
+    );
+    expect(screen.getByLabelText('Zeros. X: 0, 0')).toBeTruthy();
+  });
+});
+
+describe('DonutChart', () => {
+  it('describes the slices for assistive technology and draws one arc per non-empty slice', async () => {
+    await render(
+      wrap(
+        <DonutChart
+          label="Spending: Food 60%, Rent 40%"
+          slices={[
+            { key: 'a', value: 60, color: '#EA580C' },
+            { key: 'b', value: 40, color: '#2563EB' },
+            { key: 'c', value: 0, color: '#16A34A' },
+          ]}
+        >
+          <></>
+        </DonutChart>,
+      ),
+    );
+    const chart = screen.getByLabelText('Spending: Food 60%, Rent 40%');
+    expect(chart.props.accessibilityRole).toBe('image');
+    // The track plus two arcs: the empty slice draws nothing.
+    const tree = JSON.stringify(screen.toJSON());
+    expect(tree.match(/RNSVGCircle/g)).toHaveLength(3);
+    expect(tree.match(/strokeDasharray/g)).toHaveLength(4); // prop and propList entry, per arc
+  });
+
+  it('renders just the track when there is nothing to show', async () => {
+    await render(wrap(<DonutChart label="Nothing" slices={[]} />));
+    expect(screen.getByLabelText('Nothing')).toBeTruthy();
+  });
+});
+
+describe('ChartLegend', () => {
+  it('lists each item', async () => {
+    await render(wrap(<ChartLegend items={[{ label: 'One', color: '#111111' }]} />));
+    expect(screen.getByText('One', { includeHiddenElements: true })).toBeTruthy();
   });
 });

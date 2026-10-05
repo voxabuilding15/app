@@ -29,7 +29,7 @@ src/
   database/    SQLite client, versioned migrations (PRAGMA user_version)
   services/    adapters implementing core ports (MMKV storage, expo-notifications)
   theme/       Material 3 tokens, light/dark/system provider
-  components/  design system: ui/ primitives and charts/ (ProgressRing, BarChart, Heatmap, StatTile)
+  components/  design system: ui/ primitives and charts/ (ProgressRing, BarChart, GroupedBarChart, DonutChart, Heatmap, StatTile)
   hooks/       shared hooks
   features/*   one folder per feature, each with domain/ (entities, use cases, ports),
                data/ (SQLite and notification adapters) and presentation/ (view models, screens, components)
@@ -45,5 +45,6 @@ Features talk to infrastructure only through `core` ports; the composition root 
 
 - Components and screens: `PascalCase.tsx`. Hooks: `useThing.ts`. Other modules: `kebab-case.ts`.
 - Every folder exposes a barrel `index.ts`; import across layers through it.
-- Money is stored as integer minor units; timestamps as epoch ms; calendar dates as `YYYY-MM-DD`.
+- Money is stored as integer minor units and converted to and from text only by `core/money.ts`; timestamps are epoch ms; calendar dates are `YYYY-MM-DD`.
+- The Finance currency is one app-wide setting; once accounts exist it can only change to a currency with the same number of decimals, so amounts are never silently reinterpreted.
 - Dependencies are added in the phase that first uses them (no unused native modules ship).
