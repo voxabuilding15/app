@@ -27,6 +27,11 @@ export async function registerNotificationCategories(): Promise<void> {
     ]),
     Notifications.setNotificationCategoryAsync(NOTIFICATION_CATEGORIES.alarm, [
       {
+        identifier: NOTIFICATION_ACTIONS.complete,
+        buttonTitle: 'Complete',
+        options: { opensAppToForeground: false },
+      },
+      {
         identifier: NOTIFICATION_ACTIONS.snooze,
         buttonTitle: 'Snooze',
         options: { opensAppToForeground: false },

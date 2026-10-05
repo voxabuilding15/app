@@ -30,3 +30,15 @@ export const TABLET_MIN_DIMENSION = 600;
 export const CONTENT_MAX_WIDTH = 720;
 export const DRAWER_WIDTH = 288;
 export const MIN_TOUCH_TARGET = 48;
+
+/** Palette for user-defined categories and labels; used for dots and swatches, never for text. */
+export const ACCENT_COLORS = [
+  '#7B2FF7',
+  '#2563EB',
+  '#0891B2',
+  '#16A34A',
+  '#CA8A04',
+  '#EA580C',
+  '#DC2626',
+  '#DB2777',
+] as const;

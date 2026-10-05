@@ -1,6 +1,12 @@
 import * as Notifications from 'expo-notifications';
 
-import type { NotificationService, PermissionState, ScheduleAtInput } from '@/core';
+import type {
+  NotificationActionId,
+  NotificationResponse,
+  NotificationService,
+  PermissionState,
+  ScheduleAtInput,
+} from '@/core';
 
 import { registerNotificationCategories } from './categories';
 import { registerNotificationChannels } from './channels';
@@ -10,6 +16,13 @@ function toPermissionState(response: Notifications.NotificationPermissionsStatus
     return 'granted';
   }
   return response.canAskAgain ? 'undetermined' : 'denied';
+}
+
+const KNOWN_ACTIONS: readonly NotificationActionId[] = ['complete', 'snooze', 'dismiss'];
+
+function toResponse(response: Notifications.NotificationResponse): NotificationResponse {
+  const actionId = KNOWN_ACTIONS.find((known) => known === response.actionIdentifier) ?? 'default';
+  return { actionId, data: response.notification.request.content.data ?? {} };
 }
 
 async function setup(): Promise<void> {
@@ -73,6 +86,22 @@ class ExpoNotificationService implements NotificationService {
 
   cancelAll(): Promise<void> {
     return Notifications.cancelAllScheduledNotificationsAsync();
+  }
+
+  onResponse(listener: (response: NotificationResponse) => void): () => void {
+    const subscription = Notifications.addNotificationResponseReceivedListener((response) =>
+      listener(toResponse(response)),
+    );
+    return () => subscription.remove();
+  }
+
+  consumeInitialResponse(): NotificationResponse | null {
+    const response = Notifications.getLastNotificationResponse();
+    if (response === null) {
+      return null;
+    }
+    Notifications.clearLastNotificationResponse();
+    return toResponse(response);
   }
 }
 

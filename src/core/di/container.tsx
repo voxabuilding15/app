@@ -1,8 +1,9 @@
 import { createContext, useContext, type PropsWithChildren } from 'react';
 
-import type { Database, KeyValueStorage, NotificationService } from '../ports';
+import type { Clock, Database, KeyValueStorage, NotificationService } from '../ports';
 
 export interface Container {
+  clock: Clock;
   db: Database;
   storage: KeyValueStorage;
   notifications: NotificationService;

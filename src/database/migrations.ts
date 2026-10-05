@@ -146,4 +146,33 @@ export const migrations: readonly Migration[] = [
       `CREATE INDEX idx_alarms_enabled ON alarms(time) WHERE enabled = 1`,
     ],
   },
+  {
+    version: 2,
+    name: 'tasks_feature',
+    statements: [
+      // Due date: `due_at` is the instant; `due_has_time` = 0 means "all day" (time part ignored).
+      `ALTER TABLE tasks ADD COLUMN due_has_time INTEGER NOT NULL DEFAULT 0 CHECK (due_has_time IN (0,1))`,
+      // Reminder offset in minutes before the due moment (NULL = no reminder); `reminder_at` is the derived instant.
+      `ALTER TABLE tasks ADD COLUMN reminder_offset_minutes INTEGER CHECK (reminder_offset_minutes >= 0)`,
+      `ALTER TABLE tasks ADD COLUMN notification_id TEXT`,
+      // Structured repeat rule (replaces the unused free-text `repeat_rule`).
+      `ALTER TABLE tasks ADD COLUMN repeat_unit TEXT CHECK (repeat_unit IN ('day','week','month'))`,
+      `ALTER TABLE tasks ADD COLUMN repeat_interval INTEGER NOT NULL DEFAULT 1 CHECK (repeat_interval BETWEEN 1 AND 365)`,
+      `ALTER TABLE tasks ADD COLUMN repeat_weekdays INTEGER NOT NULL DEFAULT 0 CHECK (repeat_weekdays BETWEEN 0 AND 127)`,
+      `ALTER TABLE tasks DROP COLUMN repeat_rule`,
+      // Soft delete powers undo; rows are hard-deleted once the undo window closes.
+      `ALTER TABLE tasks ADD COLUMN deleted_at INTEGER`,
+
+      `DROP INDEX idx_tasks_open_due`,
+      `DROP INDEX idx_tasks_reminder`,
+      `DROP INDEX idx_tasks_completed`,
+      `CREATE INDEX idx_tasks_active_due ON tasks(due_at) WHERE deleted_at IS NULL AND archived_at IS NULL`,
+      `CREATE INDEX idx_tasks_completed_at ON tasks(completed_at) WHERE completed_at IS NOT NULL AND archived_at IS NULL AND deleted_at IS NULL`,
+      `CREATE INDEX idx_tasks_archived_at ON tasks(archived_at) WHERE archived_at IS NOT NULL AND deleted_at IS NULL`,
+      `CREATE INDEX idx_tasks_deleted_at ON tasks(deleted_at) WHERE deleted_at IS NOT NULL`,
+
+      `CREATE UNIQUE INDEX idx_categories_kind_name ON categories(kind, name COLLATE NOCASE)`,
+      `CREATE UNIQUE INDEX idx_labels_name_nocase ON labels(name COLLATE NOCASE)`,
+    ],
+  },
 ];

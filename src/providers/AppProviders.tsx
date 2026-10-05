@@ -7,6 +7,7 @@ import { ContainerProvider, type Container } from '@/core';
 import { ThemeProvider } from '@/theme';
 
 import { createContainer } from './createContainer';
+import { QueryProvider } from './QueryProvider';
 
 export function AppProviders({ children }: PropsWithChildren) {
   const [container] = useState<Container>(createContainer);
@@ -22,7 +23,9 @@ export function AppProviders({ children }: PropsWithChildren) {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <ContainerProvider container={container}>
-          <ThemeProvider>{children}</ThemeProvider>
+          <QueryProvider>
+            <ThemeProvider>{children}</ThemeProvider>
+          </QueryProvider>
         </ContainerProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

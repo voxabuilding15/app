@@ -4,7 +4,7 @@ import { DrawerToggleButton } from 'expo-router/drawer';
 import { Icon } from '@/components';
 import { useIsTablet } from '@/hooks';
 import { TAB_ITEMS } from '@/navigation';
-import { useTheme } from '@/theme';
+import { tabBarStyleFor, useTheme } from '@/theme';
 
 export default function TabsLayout() {
   const { colors } = useTheme();
@@ -23,10 +23,8 @@ export default function TabsLayout() {
           : () => <DrawerToggleButton tintColor={colors.onSurface} />,
         tabBarActiveTintColor: colors.onSecondaryContainer,
         tabBarInactiveTintColor: colors.onSurfaceVariant,
-        tabBarStyle: {
-          backgroundColor: colors.surfaceContainer,
-          borderTopColor: colors.outlineVariant,
-        },
+        tabBarStyle: tabBarStyleFor(colors),
+        tabBarHideOnKeyboard: true,
         sceneStyle: { backgroundColor: colors.background },
       }}
     >
@@ -36,6 +34,7 @@ export default function TabsLayout() {
           name={item.name}
           options={{
             title: item.title,
+            headerShown: item.ownHeader !== true,
             tabBarIcon: ({ color, size }) => <Icon name={item.icon} size={size} color={color} />,
           }}
         />

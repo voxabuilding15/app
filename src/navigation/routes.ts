@@ -4,6 +4,8 @@ export interface NavItem {
   name: string;
   title: string;
   icon: IconName;
+  /** The route renders its own header (e.g. a nested stack), so the tab header is hidden. */
+  ownHeader?: boolean;
 }
 
 export const TABS_ROUTE = '(tabs)';
@@ -12,7 +14,7 @@ export const HOME_ITEM: NavItem = { name: TABS_ROUTE, title: 'Home', icon: 'home
 
 export const TAB_ITEMS: readonly NavItem[] = [
   { name: 'index', title: 'Dashboard', icon: 'dashboard' },
-  { name: 'tasks', title: 'Tasks', icon: 'check-circle' },
+  { name: 'tasks', title: 'Tasks', icon: 'check-circle', ownHeader: true },
   { name: 'calendar', title: 'Calendar', icon: 'calendar-month' },
   { name: 'habits', title: 'Habits', icon: 'local-fire-department' },
   { name: 'finance', title: 'Finance', icon: 'account-balance-wallet' },

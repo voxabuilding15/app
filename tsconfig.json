@@ -17,5 +17,17 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "android",
+    "ios",
+    "dist",
+    "tests",
+    "scripts",
+    "babel.config.js",
+    "metro.config.js",
+    "eslint.config.js",
+    "tailwind.config.js"
   ]
 }

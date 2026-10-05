@@ -6,6 +6,8 @@ import { CONTENT_MAX_WIDTH, spacing, useTheme } from '@/theme';
 export interface ScreenProps extends PropsWithChildren {
   scroll?: boolean;
   contentStyle?: StyleProp<ViewStyle>;
+  /** Overrides the default readable content width, e.g. for two-column tablet layouts. */
+  maxWidth?: number;
 }
 
 /** Content is centered and width-capped so it stays readable on tablets and landscape. */
@@ -13,18 +15,23 @@ const CONTENT: ViewStyle = {
   gap: spacing.lg,
   padding: spacing.lg,
   width: '100%',
-  maxWidth: CONTENT_MAX_WIDTH,
   alignSelf: 'center',
 };
 
-export function Screen({ scroll = true, contentStyle, children }: ScreenProps) {
+export function Screen({
+  scroll = true,
+  contentStyle,
+  maxWidth = CONTENT_MAX_WIDTH,
+  children,
+}: ScreenProps) {
   const { colors } = useTheme();
   const background = { flex: 1, backgroundColor: colors.background } as const;
+  const content = [CONTENT, { maxWidth }, contentStyle];
 
   if (!scroll) {
     return (
       <View style={background}>
-        <View style={[CONTENT, { flex: 1 }, contentStyle]}>{children}</View>
+        <View style={[content, { flex: 1 }]}>{children}</View>
       </View>
     );
   }
@@ -32,7 +39,7 @@ export function Screen({ scroll = true, contentStyle, children }: ScreenProps) {
   return (
     <ScrollView
       style={background}
-      contentContainerStyle={[CONTENT, contentStyle]}
+      contentContainerStyle={content}
       keyboardShouldPersistTaps="handled"
     >
       {children}

@@ -9,10 +9,13 @@ React Native + Expo (SDK 57) + TypeScript + Expo Router. No backend, no AI; all 
 | ------------------------ | ----------------------------------------- |
 | `npm start`              | Start Metro (use a development build)     |
 | `npm run android`        | Build and run the dev client on Android   |
-| `npm run typecheck`      | `tsc --noEmit`                            |
+| `npm run typecheck`      | `tsc --noEmit` for the app and for tests  |
 | `npm run lint`           | ESLint, zero warnings allowed             |
 | `npm run doctor`         | `expo-doctor`                             |
 | `npm run export:android` | Bundle the Android JS (Hermes) for CI     |
+| `npm test`               | Domain + SQLite tests (Node), run in 3 time zones |
+| `npm run test:ui`        | Screen tests (jest-expo) against real SQLite      |
+| `npm run test:all`       | Both test suites                                  |
 
 MMKV and SQLite are native modules, so Expo Go is not supported; use a development build.
 
@@ -28,7 +31,8 @@ src/
   theme/       Material 3 tokens, light/dark/system provider
   components/  design-system primitives (ui/)
   hooks/       shared hooks
-  features/*   one folder per feature (screens, components; domain/data layers added per phase)
+  features/*   one folder per feature, each with domain/ (entities, use cases, ports),
+               data/ (SQLite and notification adapters) and presentation/ (view models, screens, components)
   navigation/  drawer content and route metadata
   providers/   composition root: binds adapters to ports, wraps the app
   app/         Expo Router route files (thin wrappers around feature screens)

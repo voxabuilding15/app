@@ -23,6 +23,14 @@ module.exports = defineConfig([
     files: ['**/*.ts', '**/*.tsx'],
     rules: { '@typescript-eslint/no-explicit-any': 'error' },
   },
+  {
+    // jest.mock factories are hoisted above imports, so they must use require().
+    files: ['tests/**'],
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+      'react/display-name': 'off',
+    },
+  },
   layer(
     ['src/core/**'],
     ['features', 'components', 'navigation', 'providers', 'services', 'database', 'theme', 'hooks'],

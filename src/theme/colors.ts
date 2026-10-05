@@ -14,6 +14,7 @@ export interface ColorScheme {
   outlineVariant: string;
   error: string;
   success: string;
+  warning: string;
 }
 
 export const lightColors: ColorScheme = {
@@ -32,6 +33,7 @@ export const lightColors: ColorScheme = {
   outlineVariant: '#CAC4D0',
   error: '#B3261E',
   success: '#2E7D32',
+  warning: '#8A5100',
 };
 
 export const darkColors: ColorScheme = {
@@ -50,4 +52,5 @@ export const darkColors: ColorScheme = {
   outlineVariant: '#49454F',
   error: '#F2B8B5',
   success: '#81C784',
+  warning: '#FFB74D',
 };
