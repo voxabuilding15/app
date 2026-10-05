@@ -1,4 +1,4 @@
-import type { Category, Label, Task, TaskDetail, TaskRecord, TaskStats } from './entities';
+import type { Task, TaskDetail, TaskRecord, TaskStats } from './entities';
 import type { TaskFilter, TaskSort } from './filters';
 
 export interface ListContext {
@@ -30,15 +30,6 @@ export interface TaskRepository {
   purge(ids: readonly string[]): Promise<void>;
   /** Permanently removes every soft-deleted task, e.g. leftovers from a previous session. */
   purgeAllDeleted(): Promise<void>;
-}
-
-export interface TaxonomyRepository {
-  listCategories(): Promise<Category[]>;
-  listLabels(): Promise<Label[]>;
-  saveCategory(category: Category): Promise<void>;
-  saveLabel(label: Label): Promise<void>;
-  deleteCategory(id: string): Promise<void>;
-  deleteLabel(id: string): Promise<void>;
 }
 
 export interface ScheduledReminder {

@@ -1,6 +1,6 @@
 import { act, fireEvent, screen, waitFor } from '@testing-library/react-native';
 
-import { startOfDay } from '@/features/tasks/domain/dates';
+import { startOfDay } from '@/core';
 import { emptyDraft, type TaskDraft } from '@/features/tasks/domain/validation';
 import { TaskListScreen } from '@/features/tasks/presentation/screens/TaskListScreen';
 

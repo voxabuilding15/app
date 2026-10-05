@@ -5,7 +5,6 @@ import { isValidReminderOffset } from './reminder';
 export const TITLE_MAX_LENGTH = 120;
 export const NOTES_MAX_LENGTH = 5_000;
 const MAX_SUBTASKS = 50;
-export const NAME_MAX_LENGTH = 30;
 
 export interface SubtaskDraft {
   /** Present when editing an existing subtask so its identity is preserved. */
@@ -90,13 +89,4 @@ export function validateDraft(draft: TaskDraft): DraftErrors {
 
 export function hasErrors(errors: DraftErrors): boolean {
   return Object.keys(errors).length > 0;
-}
-
-/** Validates a category or label name. Returns an error message or null. */
-export function validateName(name: string): string | null {
-  const trimmed = name.trim();
-  if (trimmed.length === 0) {
-    return 'Enter a name';
-  }
-  return trimmed.length > NAME_MAX_LENGTH ? `Use ${NAME_MAX_LENGTH} characters or fewer` : null;
 }

@@ -1,15 +1,13 @@
 import { View } from 'react-native';
 
-import { Button, Chip, Text } from '@/components';
+import { Button, Chip, FormSection, Text, WRAP_ROW } from '@/components';
 import { useNow } from '@/hooks';
 import { spacing } from '@/theme';
 
-import { addDays, startOfDay } from '../../domain/dates';
+import { addDays, startOfDay } from '@/core';
 import type { DueDate } from '../../domain/entities';
 import { formatDate, formatTime } from '../format';
 import type { QuickDate } from '../view-models/useTaskFormViewModel';
-
-import { FormSection, WRAP_ROW } from './FormSection';
 
 interface DueSectionProps {
   due: DueDate | null;

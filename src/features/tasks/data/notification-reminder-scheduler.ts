@@ -1,4 +1,4 @@
-import type { NotificationService } from '@/core';
+import { ensureNotificationPermission, type NotificationService } from '@/core';
 
 import type { ReminderScheduler, ScheduledReminder, ScheduleOutcome } from '../domain/ports';
 
@@ -7,13 +7,7 @@ export class NotificationReminderScheduler implements ReminderScheduler {
   constructor(private readonly notifications: NotificationService) {}
 
   async schedule(reminder: ScheduledReminder): Promise<ScheduleOutcome> {
-    await this.notifications.initialize();
-
-    let permission = await this.notifications.getPermissionState();
-    if (permission === 'undetermined') {
-      permission = await this.notifications.requestPermission();
-    }
-    if (permission !== 'granted') {
+    if (!(await ensureNotificationPermission(this.notifications))) {
       return { status: 'blocked' };
     }
 

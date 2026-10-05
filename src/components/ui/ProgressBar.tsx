@@ -7,9 +7,11 @@ export interface ProgressBarProps {
   progress: number;
   label: string;
   height?: number;
+  /** Fill color; defaults to the theme's primary color. */
+  color?: string;
 }
 
-export function ProgressBar({ progress, label, height = 8 }: ProgressBarProps) {
+export function ProgressBar({ progress, label, height = 8, color }: ProgressBarProps) {
   const { colors } = useTheme();
   const clamped = Math.min(1, Math.max(0, progress));
 
@@ -30,7 +32,7 @@ export function ProgressBar({ progress, label, height = 8 }: ProgressBarProps) {
           width: `${clamped * 100}%`,
           height: '100%',
           borderRadius: radius.full,
-          backgroundColor: colors.primary,
+          backgroundColor: color ?? colors.primary,
         }}
       />
     </View>

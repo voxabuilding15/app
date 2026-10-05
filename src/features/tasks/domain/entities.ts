@@ -1,3 +1,5 @@
+import type { Category } from '@/core';
+
 export type Priority = 'low' | 'medium' | 'high';
 
 export type RepeatUnit = 'day' | 'week' | 'month';
@@ -18,11 +20,7 @@ export interface DueDate {
   hasTime: boolean;
 }
 
-export interface Category {
-  id: string;
-  name: string;
-  color: string;
-}
+export type { Category };
 
 export interface Label {
   id: string;

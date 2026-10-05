@@ -1,8 +1,10 @@
-import { useNavigation, useRouter } from 'expo-router';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useRouter } from 'expo-router';
+import { useCallback, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
 
-import { addDays, combineDayAndTime, startOfDay } from '../../domain/dates';
+import { addDays, combineDayAndTime, startOfDay } from '@/core';
+import { pickDate, pickTime, showRemindersBlockedAlert } from '@/components';
+import { useDiscardGuard } from '@/hooks';
 import type { DueDate, Priority, RepeatRule, TaskDetail } from '../../domain/entities';
 import { isValidReminderOffset } from '../../domain/reminder';
 import { MAX_REPEAT_INTERVAL, ruleForPreset, type RepeatPreset } from '../../domain/repeat';
@@ -14,7 +16,6 @@ import {
   type TaskDraft,
 } from '../../domain/validation';
 import { useTasksModule } from '../module';
-import { pickDate, pickTime } from '../platform-pickers';
 import { useInvalidateTasks, useTaskDetail, useTaxonomy } from '../queries';
 
 const DEFAULT_TIME_HOUR = 9;
@@ -83,7 +84,6 @@ export function useTaskLoader(taskId: string | null): TaskLoadState {
 /** Editing state for one task. `taskId` null creates a new task; `initial` seeds the draft. */
 export function useTaskFormViewModel(taskId: string | null, initial: TaskDraft) {
   const router = useRouter();
-  const navigation = useNavigation();
   const { tasks: useCases, taxonomy: taxonomyCases } = useTasksModule();
   const invalidate = useInvalidateTasks();
   const taxonomy = useTaxonomy();
@@ -93,29 +93,10 @@ export function useTaskFormViewModel(taskId: string | null, initial: TaskDraft) 
   const [errors, setErrors] = useState<DraftErrors>({});
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
-  const leaving = useRef(false);
 
   const isDirty = useMemo(() => JSON.stringify(draft) !== baseline, [draft, baseline]);
 
-  useEffect(() => {
-    return navigation.addListener('beforeRemove', (event) => {
-      if (!isDirty || saving || leaving.current) {
-        return;
-      }
-      event.preventDefault();
-      Alert.alert('Discard changes?', 'Your changes to this task have not been saved.', [
-        { text: 'Keep editing', style: 'cancel' },
-        {
-          text: 'Discard',
-          style: 'destructive',
-          onPress: () => {
-            leaving.current = true;
-            navigation.dispatch(event.data.action);
-          },
-        },
-      ]);
-    });
-  }, [navigation, isDirty, saving]);
+  const allowLeaving = useDiscardGuard(isDirty, saving);
 
   const update = useCallback((changes: Partial<TaskDraft>, clears: readonly DraftField[] = []) => {
     setDraft((current) => ({ ...current, ...changes }));
@@ -310,9 +291,9 @@ export function useTaskFormViewModel(taskId: string | null, initial: TaskDraft) 
   );
 
   const finish = useCallback(() => {
-    leaving.current = true;
+    allowLeaving();
     router.back();
-  }, [router]);
+  }, [allowLeaving, router]);
 
   const save = useCallback(async () => {
     if (saving) {
@@ -328,10 +309,7 @@ export function useTaskFormViewModel(taskId: string | null, initial: TaskDraft) 
       }
       await invalidate();
       if (result.reminder === 'blocked') {
-        Alert.alert(
-          'Reminder will not fire',
-          'The task was saved, but notifications are turned off. Allow them in Settings to receive reminders.',
-        );
+        showRemindersBlockedAlert();
       } else if (result.reminder === 'past') {
         Alert.alert(
           'Reminder time has passed',

@@ -3,8 +3,7 @@ import type { Priority } from './entities';
 export type TaskScope = 'active' | 'completed' | 'archived';
 export type DueFilter = 'any' | 'today' | 'overdue' | 'upcoming' | 'none';
 
-/** Sentinel for "tasks without a category" in `TaskFilter.categoryId`. */
-export const NO_CATEGORY = '__none__';
+export { NO_CATEGORY } from '@/core';
 
 export interface TaskFilter {
   scope: TaskScope;
@@ -17,7 +16,7 @@ export interface TaskFilter {
 }
 
 export type SortField = 'due' | 'priority' | 'created' | 'title' | 'completed';
-export type SortDirection = 'asc' | 'desc';
+type SortDirection = 'asc' | 'desc';
 
 export interface TaskSort {
   field: SortField;

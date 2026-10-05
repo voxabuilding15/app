@@ -3,20 +3,33 @@ import { useCallback, useState } from 'react';
 import { ActivityIndicator, FlatList, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { EmptyState, FAB, Snackbar } from '@/components';
+import {
+  EmptyState,
+  FAB,
+  IconButton,
+  ListControls,
+  ScreenToolbar,
+  Snackbar,
+  SortSheet,
+} from '@/components';
 import { useNow } from '@/hooks';
 import { spacing, useTheme } from '@/theme';
 
 import type { Task } from '../../domain/entities';
+import type { TaskScope } from '../../domain/filters';
 import { FilterSheet } from '../components/FilterSheet';
-import { ListControls } from '../components/ListControls';
-import { ListToolbar } from '../components/ListToolbar';
 import { ProgressSummary } from '../components/ProgressSummary';
 import { SelectionBar } from '../components/SelectionBar';
-import { SortSheet } from '../components/SortSheet';
 import { TaskRow } from '../components/TaskRow';
+import { SORT_FIELDS, sortLabel } from '../options';
 import { useTaxonomy } from '../queries';
 import { useTaskListViewModel, type TaskListViewModel } from '../view-models/useTaskListViewModel';
+
+const SCOPES = [
+  { value: 'active', label: 'Active' },
+  { value: 'completed', label: 'Done' },
+  { value: 'archived', label: 'Archived' },
+] as const satisfies readonly { value: TaskScope; label: string }[];
 
 const TWO_COLUMN_MIN_WIDTH = 900;
 const LIST_MAX_WIDTH = 1100;
@@ -179,23 +192,30 @@ export function TaskListScreen() {
           onDelete={() => void vm.removeSelected()}
         />
       ) : (
-        <ListToolbar
-          searchOpen={vm.searchOpen}
-          onToggleSearch={vm.toggleSearch}
-          onSelect={() => startSelecting()}
-          onManage={openManage}
-        />
+        <ScreenToolbar title="Tasks">
+          <IconButton
+            icon={vm.searchOpen ? 'close' : 'search'}
+            label={vm.searchOpen ? 'Close search' : 'Search tasks'}
+            onPress={vm.toggleSearch}
+          />
+          <IconButton icon="checklist" label="Select tasks" onPress={() => startSelecting()} />
+          <IconButton icon="label" label="Manage categories and labels" onPress={openManage} />
+        </ScreenToolbar>
       )}
       <ListControls
-        filter={vm.filter}
-        sort={vm.sort}
+        scopes={SCOPES}
+        scope={vm.filter.scope}
+        onScope={vm.setScope}
         searchOpen={vm.searchOpen}
         searchText={vm.searchText}
+        onSearchText={vm.setSearchText}
+        searchLabel="Search tasks"
+        searchPlaceholder="Title, notes or subtasks"
         activeFilterCount={vm.activeFilterCount}
         isFiltering={vm.isFiltering}
-        onScope={vm.setScope}
-        onSearchText={vm.setSearchText}
         onOpenFilter={() => setFilterOpen(true)}
+        sortLabel={sortLabel(vm.sort.field)}
+        sortAscending={vm.sort.direction === 'asc'}
         onOpenSort={() => setSortOpen(true)}
         onClear={vm.clearFilters}
       />
@@ -260,7 +280,8 @@ export function TaskListScreen() {
       />
       <SortSheet
         visible={sortOpen}
-        scope={vm.filter.scope}
+        title="Sort tasks"
+        fields={SORT_FIELDS[vm.filter.scope].map((value) => ({ value, label: sortLabel(value) }))}
         sort={vm.sort}
         onChange={vm.changeSort}
         onClose={() => setSortOpen(false)}

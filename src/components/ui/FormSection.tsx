@@ -1,8 +1,10 @@
 import type { PropsWithChildren } from 'react';
 import { View } from 'react-native';
 
-import { Card, Text } from '@/components';
 import { spacing } from '@/theme';
+
+import { Card } from './Card';
+import { Text } from './Text';
 
 interface FormSectionProps extends PropsWithChildren {
   title: string;
@@ -27,10 +29,3 @@ export function FormSection({ title, error, children }: FormSectionProps) {
     </Card>
   );
 }
-
-export const WRAP_ROW = {
-  flexDirection: 'row',
-  flexWrap: 'wrap',
-  alignItems: 'center',
-  gap: spacing.sm,
-} as const;

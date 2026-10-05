@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BackHandler } from 'react-native';
 
+import { useDebouncedValue } from '@/hooks';
+
 import type { Task } from '../../domain/entities';
 import {
   DEFAULT_FILTER,
@@ -30,7 +32,7 @@ export function useTaskListViewModel() {
   const { tasks: useCases } = useTasksModule();
   const invalidate = useInvalidateTasks();
 
-  const [filter, setFilter] = useState<TaskFilter>(DEFAULT_FILTER);
+  const [filterState, setFilter] = useState<TaskFilter>(DEFAULT_FILTER);
   const [sort, setSort] = useState<TaskSort>(defaultSortFor('active'));
   const [searchText, setSearchText] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
@@ -42,24 +44,12 @@ export function useTaskListViewModel() {
   /** Ids soft-deleted in the current undo window; purged when the window closes. */
   const pendingDelete = useRef<readonly string[]>([]);
 
+  const search = useDebouncedValue(searchText.trim(), SEARCH_DEBOUNCE_MS);
+  const filter = useMemo(() => ({ ...filterState, search }), [filterState, search]);
+
   const list = useTaskList(filter, sort, limit);
   const stats = useTaskStats();
   const tasks = useMemo<readonly Task[]>(() => list.data ?? [], [list.data]);
-
-  useEffect(() => {
-    const timer = setTimeout(
-      () => {
-        setFilter((current) =>
-          current.search === searchText.trim()
-            ? current
-            : { ...current, search: searchText.trim() },
-        );
-        setLimit(PAGE_SIZE);
-      },
-      searchText.trim() === '' ? 0 : SEARCH_DEBOUNCE_MS,
-    );
-    return () => clearTimeout(timer);
-  }, [searchText]);
 
   const finalizeDelete = useCallback(async () => {
     const ids = pendingDelete.current;
@@ -76,6 +66,11 @@ export function useTaskListViewModel() {
     },
     [finalizeDelete],
   );
+
+  const changeSearch = useCallback((text: string) => {
+    setSearchText(text);
+    setLimit(PAGE_SIZE);
+  }, []);
 
   const clearSelection = useCallback(() => {
     setSelection(new Set());
@@ -251,7 +246,7 @@ export function useTaskListViewModel() {
     notice,
     selecting,
     selection,
-    setSearchText,
+    setSearchText: changeSearch,
     toggleSearch,
     setScope,
     updateFilter,

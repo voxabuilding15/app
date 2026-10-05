@@ -190,6 +190,33 @@ describe('TaskFormScreen (edit)', () => {
     expect((await app.tasks.tasks.get(id))?.subtasks).toHaveLength(0);
   });
 
+  it('archives from the header and leaves the screen', async () => {
+    const { app, id } = await seeded();
+    await renderWithApp(<TaskFormScreen taskId={id} />, app);
+    await fireEvent.press(await screen.findByLabelText('Archive task'));
+    await waitFor(() => expect(router.back).toHaveBeenCalled());
+    expect((await app.tasks.tasks.get(id))?.archivedAt).not.toBeNull();
+  });
+
+  it('deletes only after confirmation', async () => {
+    const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
+    const { app, id } = await seeded();
+    await renderWithApp(<TaskFormScreen taskId={id} />, app);
+
+    await fireEvent.press(await screen.findByLabelText('Delete task'));
+    expect(alert).toHaveBeenCalledWith(
+      'Delete this task?',
+      expect.stringContaining('permanently'),
+      expect.any(Array),
+    );
+    expect(await app.tasks.tasks.get(id)).not.toBeNull();
+
+    const buttons = alert.mock.calls[0]?.[2] ?? [];
+    await act(async () => buttons.find((b) => b.style === 'destructive')?.onPress?.());
+    await waitFor(() => expect(router.back).toHaveBeenCalled());
+    expect(await app.tasks.tasks.get(id)).toBeNull();
+  });
+
   it('explains when the task no longer exists', async () => {
     await renderWithApp(<TaskFormScreen taskId="missing" />);
     expect(await screen.findByText('Task not found')).toBeTruthy();

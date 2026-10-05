@@ -1,6 +1,8 @@
 export interface Migration {
   version: number;
   name: string;
+  /** Rebuilds tables SQLite cannot ALTER: runs with foreign keys off and verifies them afterwards. */
+  rebuildsTables?: boolean;
   statements: readonly string[];
 }
 
@@ -173,6 +175,52 @@ export const migrations: readonly Migration[] = [
 
       `CREATE UNIQUE INDEX idx_categories_kind_name ON categories(kind, name COLLATE NOCASE)`,
       `CREATE UNIQUE INDEX idx_labels_name_nocase ON labels(name COLLATE NOCASE)`,
+    ],
+  },
+  {
+    version: 3,
+    name: 'habits_feature',
+    rebuildsTables: true,
+    statements: [
+      // `categories.kind` gains 'habit'. A CHECK cannot be altered, so the table is rebuilt.
+      `CREATE TABLE categories_new (
+        id TEXT PRIMARY KEY NOT NULL,
+        kind TEXT NOT NULL CHECK (kind IN ('task','habit','expense','income','note')),
+        name TEXT NOT NULL,
+        color TEXT NOT NULL,
+        icon TEXT NOT NULL,
+        created_at INTEGER NOT NULL
+      )`,
+      `INSERT INTO categories_new (id, kind, name, color, icon, created_at)
+         SELECT id, kind, name, color, icon, created_at FROM categories`,
+      `DROP TABLE categories`,
+      `ALTER TABLE categories_new RENAME TO categories`,
+      `CREATE INDEX idx_categories_kind ON categories(kind)`,
+      `CREATE UNIQUE INDEX idx_categories_kind_name ON categories(kind, name COLLATE NOCASE)`,
+
+      `ALTER TABLE habits ADD COLUMN notes TEXT NOT NULL DEFAULT ''`,
+      `ALTER TABLE habits ADD COLUMN category_id TEXT REFERENCES categories(id) ON DELETE SET NULL`,
+      // Weekday bitmask (Sunday = bit 0) of the days a daily-period habit is scheduled; 127 = every day.
+      `ALTER TABLE habits ADD COLUMN weekdays INTEGER NOT NULL DEFAULT 127 CHECK (weekdays BETWEEN 1 AND 127)`,
+      // 'YYYY-MM-DD' local day the habit starts counting from (NULL falls back to created_at).
+      `ALTER TABLE habits ADD COLUMN start_date TEXT`,
+      // JSON array of scheduled notification ids, so reminders can be cancelled and rescheduled.
+      `ALTER TABLE habits ADD COLUMN notification_ids TEXT NOT NULL DEFAULT '[]'`,
+      `CREATE INDEX idx_habits_category ON habits(category_id)`,
+
+      // 'skipped' days are excused: they neither extend nor break a streak.
+      `ALTER TABLE habit_logs ADD COLUMN status TEXT NOT NULL DEFAULT 'done' CHECK (status IN ('done','skipped'))`,
+
+      // A pause covers days from start_date up to (not including) end_date; NULL end = still paused.
+      `CREATE TABLE habit_pauses (
+        id TEXT PRIMARY KEY NOT NULL,
+        habit_id TEXT NOT NULL REFERENCES habits(id) ON DELETE CASCADE,
+        start_date TEXT NOT NULL,
+        end_date TEXT,
+        CHECK (end_date IS NULL OR end_date > start_date)
+      )`,
+      `CREATE INDEX idx_habit_pauses_habit ON habit_pauses(habit_id, start_date)`,
+      `CREATE UNIQUE INDEX idx_habit_pauses_open ON habit_pauses(habit_id) WHERE end_date IS NULL`,
     ],
   },
 ];

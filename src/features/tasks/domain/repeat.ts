@@ -1,4 +1,4 @@
-import { addDays, startOfDay } from './dates';
+import { addDays, hasWeekday, startOfDay } from '@/core';
 import type { DueDate, RepeatRule } from './entities';
 
 export type RepeatPreset = 'none' | 'daily' | 'weekly' | 'monthly' | 'custom';
@@ -13,15 +13,6 @@ export const REPEAT_PRESETS: readonly RepeatPreset[] = [
 
 export const MAX_REPEAT_INTERVAL = 365;
 const SAFETY_LIMIT = 2_000;
-
-/** Bitmask for a weekday where Sunday = 0 ... Saturday = 6. */
-export function weekdayBit(day: number): number {
-  return 1 << day;
-}
-
-export function hasWeekday(mask: number, day: number): boolean {
-  return (mask & weekdayBit(day)) !== 0;
-}
 
 export function presetOf(rule: RepeatRule | null): RepeatPreset {
   if (rule === null) {

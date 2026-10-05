@@ -1,10 +1,13 @@
 import { createContext, useContext, type PropsWithChildren } from 'react';
 
 import type { Clock, Database, KeyValueStorage, NotificationService } from '../ports';
+import type { CategoryKind, CategoryRepository } from '../taxonomy';
 
 export interface Container {
   clock: Clock;
   db: Database;
+  /** Persistence for the categories of one feature. */
+  categories: (kind: CategoryKind) => CategoryRepository;
   storage: KeyValueStorage;
   notifications: NotificationService;
 }

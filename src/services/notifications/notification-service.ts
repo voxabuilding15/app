@@ -6,6 +6,7 @@ import type {
   NotificationService,
   PermissionState,
   ScheduleAtInput,
+  ScheduleRecurringInput,
 } from '@/core';
 
 import { registerNotificationCategories } from './categories';
@@ -18,7 +19,7 @@ function toPermissionState(response: Notifications.NotificationPermissionsStatus
   return response.canAskAgain ? 'undetermined' : 'denied';
 }
 
-const KNOWN_ACTIONS: readonly NotificationActionId[] = ['complete', 'snooze', 'dismiss'];
+const KNOWN_ACTIONS: readonly NotificationActionId[] = ['complete', 'snooze', 'skip', 'dismiss'];
 
 function toResponse(response: Notifications.NotificationResponse): NotificationResponse {
   const actionId = KNOWN_ACTIONS.find((known) => known === response.actionIdentifier) ?? 'default';
@@ -77,6 +78,33 @@ class ExpoNotificationService implements NotificationService {
         date: input.date,
         channelId: input.channelId ?? 'default',
       },
+    });
+  }
+
+  scheduleRecurring(input: ScheduleRecurringInput): Promise<string> {
+    const channelId = input.channelId ?? 'default';
+    return Notifications.scheduleNotificationAsync({
+      content: {
+        title: input.title,
+        body: input.body,
+        data: input.data,
+        categoryIdentifier: input.categoryId,
+      },
+      trigger:
+        input.weekday === null
+          ? {
+              type: Notifications.SchedulableTriggerInputTypes.DAILY,
+              hour: input.hour,
+              minute: input.minute,
+              channelId,
+            }
+          : {
+              type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
+              weekday: input.weekday,
+              hour: input.hour,
+              minute: input.minute,
+              channelId,
+            },
     });
   }
 

@@ -1,5 +1,9 @@
 import { act, screen } from '@testing-library/react-native';
 
+import { emptyHabitDraft } from '@/features/habits/domain/validation';
+import { HabitDetailScreen } from '@/features/habits/presentation/screens/HabitDetailScreen';
+import { HabitFormScreen } from '@/features/habits/presentation/screens/HabitFormScreen';
+import { HabitListScreen } from '@/features/habits/presentation/screens/HabitListScreen';
 import { emptyDraft } from '@/features/tasks/domain/validation';
 import { TaskFormScreen } from '@/features/tasks/presentation/screens/TaskFormScreen';
 import { TaskListScreen } from '@/features/tasks/presentation/screens/TaskListScreen';
@@ -57,5 +61,37 @@ describe('tablet layout (1100 x 800)', () => {
       await app.client.invalidateQueries({ queryKey: ['tasks'] });
     });
     expect(await screen.findByText('Late arrival')).toBeTruthy();
+  });
+
+  it('lays the habit list out in two columns', async () => {
+    const app = createApp();
+    for (const name of ['Read', 'Run', 'Write']) {
+      await app.habits.save({ ...emptyHabitDraft('self-improvement', '#7B2FF7'), name }, null);
+    }
+    await renderWithApp(<HabitListScreen />, app);
+    expect(await screen.findByText('Write')).toBeTruthy();
+    expect(countNodes(screen.toJSON(), (node) => styleOf(node).maxWidth === '50%')).toBe(3);
+  });
+
+  it('shows the habit form and detail side by side without losing sections', async () => {
+    const app = createApp();
+    const saved = await app.habits.save(
+      { ...emptyHabitDraft('self-improvement', '#7B2FF7'), name: 'Read', notes: 'Fiction' },
+      null,
+    );
+    if (!saved.ok) {
+      throw new Error('seed failed');
+    }
+
+    const form = await renderWithApp(<HabitFormScreen habitId={null} />, app);
+    for (const section of ['Details', 'Look', 'Category', 'Frequency and goal', 'Reminder']) {
+      expect(await screen.findByText(section)).toBeTruthy();
+    }
+    form.unmount();
+
+    await renderWithApp(<HabitDetailScreen habitId={saved.id} />, app);
+    for (const section of ['Logged today', 'Notes', 'History', 'Last 7 days']) {
+      expect(await screen.findByText(section)).toBeTruthy();
+    }
   });
 });

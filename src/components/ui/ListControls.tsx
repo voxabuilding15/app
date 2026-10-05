@@ -1,53 +1,62 @@
 import { ScrollView, View } from 'react-native';
 
-import { Chip, Input, SegmentedControl } from '@/components';
 import { spacing } from '@/theme';
 
-import type { TaskFilter, TaskScope, TaskSort } from '../../domain/filters';
-import { sortLabel } from '../options';
+import { Chip } from './Chip';
+import { Input } from './Input';
+import { SegmentedControl } from './SegmentedControl';
 
-const SCOPE_OPTIONS = [
-  { value: 'active', label: 'Active' },
-  { value: 'completed', label: 'Done' },
-  { value: 'archived', label: 'Archived' },
-] as const satisfies readonly { value: TaskScope; label: string }[];
+interface ScopeOption<S extends string> {
+  value: S;
+  label: string;
+}
 
-interface ListControlsProps {
-  filter: TaskFilter;
-  sort: TaskSort;
+interface ListControlsProps<S extends string> {
+  scopes: readonly ScopeOption<S>[];
+  scope: S;
+  onScope: (scope: S) => void;
   searchOpen: boolean;
   searchText: string;
+  onSearchText: (text: string) => void;
+  searchLabel: string;
+  searchPlaceholder: string;
   activeFilterCount: number;
   isFiltering: boolean;
-  onScope: (scope: TaskScope) => void;
-  onSearchText: (text: string) => void;
   onOpenFilter: () => void;
+  /** Name of the field being sorted, e.g. "Due date". */
+  sortLabel: string;
+  sortAscending: boolean;
   onOpenSort: () => void;
   onClear: () => void;
 }
 
-export function ListControls({
-  filter,
-  sort,
+/** Scope tabs, optional search box and a chip row for filter, sort and clear. */
+export function ListControls<S extends string>({
+  scopes,
+  scope,
+  onScope,
   searchOpen,
   searchText,
+  onSearchText,
+  searchLabel,
+  searchPlaceholder,
   activeFilterCount,
   isFiltering,
-  onScope,
-  onSearchText,
   onOpenFilter,
+  sortLabel,
+  sortAscending,
   onOpenSort,
   onClear,
-}: ListControlsProps) {
+}: ListControlsProps<S>) {
   return (
     <View style={{ gap: spacing.md, paddingHorizontal: spacing.lg, paddingTop: spacing.sm }}>
-      <SegmentedControl options={SCOPE_OPTIONS} value={filter.scope} onChange={onScope} />
+      <SegmentedControl options={scopes} value={scope} onChange={onScope} />
       {searchOpen ? (
         <Input
-          label="Search tasks"
+          label={searchLabel}
           value={searchText}
           onChangeText={onSearchText}
-          placeholder="Title, notes or subtasks"
+          placeholder={searchPlaceholder}
           autoFocus
           returnKeyType="search"
           autoCapitalize="none"
@@ -67,9 +76,9 @@ export function ListControls({
           onPress={onOpenFilter}
         />
         <Chip
-          icon={sort.direction === 'asc' ? 'arrow-upward' : 'arrow-downward'}
-          label={sortLabel(sort.field)}
-          accessibilityLabel={`Sort by ${sortLabel(sort.field)}, ${sort.direction === 'asc' ? 'ascending' : 'descending'}`}
+          icon={sortAscending ? 'arrow-upward' : 'arrow-downward'}
+          label={sortLabel}
+          accessibilityLabel={`Sort by ${sortLabel}, ${sortAscending ? 'ascending' : 'descending'}`}
           onPress={onOpenSort}
         />
         {isFiltering ? <Chip icon="clear" label="Clear" onPress={onClear} /> : null}

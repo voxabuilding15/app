@@ -1,6 +1,6 @@
 import type { Database } from '@/core';
 
-import { addDays, startOfDay } from '../domain/dates';
+import { addDays, startOfDay } from '@/core';
 import type { Label, TaskDetail, TaskRecord, TaskStats } from '../domain/entities';
 import type { TaskFilter, TaskSort } from '../domain/filters';
 import type { ListContext, TaskRepository } from '../domain/ports';

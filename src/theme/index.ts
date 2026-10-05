@@ -1,5 +1,6 @@
 export type { ColorScheme } from './colors';
 export { ThemeProvider, useTheme } from './ThemeProvider';
+export { withAlpha } from './color-utils';
 export { tabBarStyleFor } from './navigation';
 export type { ThemePreference } from './store';
 export {

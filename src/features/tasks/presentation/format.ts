@@ -1,18 +1,12 @@
-import { startOfDay, addDays } from '../domain/dates';
+import { addDays, hasWeekday, startOfDay } from '@/core';
 import type { DueDate, Priority, RepeatRule, Task } from '../domain/entities';
-import { hasWeekday } from '../domain/repeat';
+import { WEEKDAY_DISPLAY_ORDER, WEEKDAY_LABELS } from '@/components';
 
 export const PRIORITY_LABEL: Record<Priority, string> = {
   low: 'Low',
   medium: 'Medium',
   high: 'High',
 };
-
-const WEEKDAY_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const;
-export const WEEKDAY_LABELS = WEEKDAY_SHORT;
-
-/** Mon-first ordering for display; values are JS weekday numbers (Sunday = 0). */
-export const WEEKDAY_DISPLAY_ORDER = [1, 2, 3, 4, 5, 6, 0] as const;
 
 export function formatTime(at: number): string {
   return new Date(at).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
@@ -55,7 +49,7 @@ export function describeRepeat(rule: RepeatRule): string {
   const { unit, interval, weekdays } = rule;
   if (unit === 'week' && weekdays !== 0) {
     const days = WEEKDAY_DISPLAY_ORDER.filter((day) => hasWeekday(weekdays, day))
-      .map((day) => WEEKDAY_SHORT[day])
+      .map((day) => WEEKDAY_LABELS[day])
       .join(', ');
     return interval === 1 ? `Weekly on ${days}` : `Every ${interval} weeks on ${days}`;
   }

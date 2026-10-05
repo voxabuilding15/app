@@ -1,42 +1,8 @@
 import { View } from 'react-native';
 
-import { Chip } from '@/components';
+import { Chip, FormSection, WRAP_ROW } from '@/components';
 
-import type { Category, Label } from '../../domain/entities';
-
-import { FormSection, WRAP_ROW } from './FormSection';
-
-interface CategorySectionProps {
-  categories: readonly Category[];
-  selectedId: string | null;
-  onSelect: (id: string | null) => void;
-  onCreate: () => void;
-}
-
-export function CategorySection({
-  categories,
-  selectedId,
-  onSelect,
-  onCreate,
-}: CategorySectionProps) {
-  return (
-    <FormSection title="Category">
-      <View style={WRAP_ROW}>
-        <Chip label="None" selected={selectedId === null} onPress={() => onSelect(null)} />
-        {categories.map((category) => (
-          <Chip
-            key={category.id}
-            label={category.name}
-            dotColor={category.color}
-            selected={selectedId === category.id}
-            onPress={() => onSelect(category.id)}
-          />
-        ))}
-        <Chip icon="add" label="New" accessibilityLabel="Create a category" onPress={onCreate} />
-      </View>
-    </FormSection>
-  );
-}
+import type { Label } from '../../domain/entities';
 
 interface LabelSectionProps {
   labels: readonly Label[];

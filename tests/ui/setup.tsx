@@ -82,6 +82,10 @@ jest.mock('expo-router', () => {
       dispatch: jest.fn(),
     }),
     useLocalSearchParams: () => ({}),
-    Stack: { Screen: () => React.createElement(React.Fragment) },
+    // Renders the header buttons screens put in navigator options so tests can press them.
+    Stack: {
+      Screen: ({ options }: { options?: { headerRight?: () => React.ReactNode } }) =>
+        React.createElement(React.Fragment, null, options?.headerRight?.()),
+    },
   };
 });

@@ -2,18 +2,16 @@ import { Stack } from 'expo-router';
 import { ActivityIndicator, View } from 'react-native';
 
 import {
-  Card,
   EmptyState,
   FAB,
-  IconButton,
+  NameColorSheet,
+  NamedItemList,
   Screen,
   SegmentedControl,
   Snackbar,
-  Text,
 } from '@/components';
-import { ACCENT_COLORS, spacing, useTheme } from '@/theme';
+import { ACCENT_COLORS, useTheme } from '@/theme';
 
-import { NameColorSheet } from '../components/NameColorSheet';
 import { useManageViewModel, type ManageKind } from '../view-models/useManageViewModel';
 
 const KIND_OPTIONS = [
@@ -56,31 +54,7 @@ export function ManageScreen() {
               onAction={() => vm.startEditing(null)}
             />
           ) : (
-            <Card style={{ paddingVertical: spacing.sm }}>
-              {vm.items.map((item) => (
-                <View
-                  key={item.id}
-                  style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md }}
-                >
-                  <View
-                    style={{ width: 14, height: 14, borderRadius: 7, backgroundColor: item.color }}
-                  />
-                  <Text variant="bodyLarge" style={{ flex: 1 }} numberOfLines={1}>
-                    {item.name}
-                  </Text>
-                  <IconButton
-                    icon="edit"
-                    label={`Edit ${item.name}`}
-                    onPress={() => vm.startEditing(item)}
-                  />
-                  <IconButton
-                    icon="delete"
-                    label={`Delete ${item.name}`}
-                    onPress={() => vm.remove(item)}
-                  />
-                </View>
-              ))}
-            </Card>
+            <NamedItemList items={vm.items} onEdit={vm.startEditing} onDelete={vm.remove} />
           )}
         </Screen>
         <FAB icon="add" label={`Add ${noun}`} onPress={() => vm.startEditing(null)} />
@@ -89,7 +63,7 @@ export function ManageScreen() {
 
       {vm.editing ? (
         <NameColorSheet
-          title={`${vm.editing.item ? 'Edit' : 'New'} ${vm.editing.kind}`}
+          title={`${vm.editing.item ? 'Edit' : 'New'} ${noun}`}
           initialName={vm.editing.item?.name ?? ''}
           initialColor={vm.editing.item?.color ?? ACCENT_COLORS[0]}
           onSave={vm.save}

@@ -8,6 +8,8 @@ import {
   type NotificationResponse,
   type NotificationService,
 } from '@/core';
+import { SqliteCategoryRepository } from '@/database/category-repository';
+import { getHabitsModule } from '@/features/habits/presentation/module';
 import { getTasksModule } from '@/features/tasks/presentation/module';
 import { ThemeProvider } from '@/theme';
 
@@ -42,6 +44,10 @@ function createFakeNotifications(): FakeNotifications {
       scheduled.push(input.title);
       return `n-${scheduled.length}`;
     },
+    scheduleRecurring: async (input) => {
+      scheduled.push(input.title);
+      return `r-${scheduled.length}`;
+    },
     cancel: async (id) => void cancelled.push(id),
     cancelAll: async () => undefined,
     onResponse: (listener) => {
@@ -58,16 +64,25 @@ function createFakeNotifications(): FakeNotifications {
 
 export function createApp() {
   const notifications = createFakeNotifications();
+  const db = createTestDatabase();
+  const clock = { now: () => Date.now() };
   const container: Container = {
-    clock: { now: () => Date.now() },
-    db: createTestDatabase(),
+    clock,
+    db,
+    categories: (kind) => new SqliteCategoryRepository(db, kind, clock.now),
     storage: { getString: () => undefined, setString: () => undefined, remove: () => undefined },
     notifications,
   };
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false, staleTime: Infinity, gcTime: 0 } },
   });
-  return { container, client, tasks: getTasksModule(container), notifications };
+  return {
+    container,
+    client,
+    tasks: getTasksModule(container),
+    habits: getHabitsModule(container).habits,
+    notifications,
+  };
 }
 
 export type TestApp = ReturnType<typeof createApp>;

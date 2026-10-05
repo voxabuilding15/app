@@ -25,11 +25,11 @@ Clean Architecture, enforced by ESLint `no-restricted-imports` (see `eslint.conf
 
 ```
 src/
-  core/        ports (Database, KeyValueStorage, NotificationService) + DI context   <- innermost, imports nothing
+  core/        ports, DI context, dates, shared category rules, notification helpers  <- innermost, imports nothing
   database/    SQLite client, versioned migrations (PRAGMA user_version)
   services/    adapters implementing core ports (MMKV storage, expo-notifications)
   theme/       Material 3 tokens, light/dark/system provider
-  components/  design-system primitives (ui/)
+  components/  design system: ui/ primitives and charts/ (ProgressRing, BarChart, Heatmap, StatTile)
   hooks/       shared hooks
   features/*   one folder per feature, each with domain/ (entities, use cases, ports),
                data/ (SQLite and notification adapters) and presentation/ (view models, screens, components)

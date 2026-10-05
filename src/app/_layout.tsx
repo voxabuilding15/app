@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 import '../global.css';
 
 import { APP_NAME } from '@/constants/app';
+import { HabitNotificationBridge } from '@/features/habits';
 import { TaskNotificationBridge } from '@/features/tasks';
 import { useIsTablet } from '@/hooks';
 import { DRAWER_ITEMS, DrawerContent, TABS_ROUTE } from '@/navigation';
@@ -24,6 +25,7 @@ function RootNavigator() {
     <>
       <StatusBar style={isDark ? 'light' : 'dark'} />
       <TaskNotificationBridge />
+      <HabitNotificationBridge />
       <Drawer
         drawerContent={(props) => <DrawerContent {...props} />}
         screenOptions={{

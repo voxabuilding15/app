@@ -8,4 +8,5 @@ export type {
   NotificationService,
   PermissionState,
   ScheduleAtInput,
+  ScheduleRecurringInput,
 } from './notification-service';

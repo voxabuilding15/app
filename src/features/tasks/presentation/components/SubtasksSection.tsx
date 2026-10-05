@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import { View } from 'react-native';
 
-import { Checkbox, IconButton, Input } from '@/components';
+import { Checkbox, FormSection, IconButton, Input } from '@/components';
 import { spacing } from '@/theme';
 
 import type { SubtaskDraft } from '../../domain/validation';
-
-import { FormSection } from './FormSection';
 
 interface SubtasksSectionProps {
   subtasks: readonly SubtaskDraft[];

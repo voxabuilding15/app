@@ -1,6 +1,6 @@
 import { View } from 'react-native';
 
-import { Button, Chip, Sheet, Text } from '@/components';
+import { Button, Chip, ChipGroup, Sheet } from '@/components';
 import { spacing } from '@/theme';
 
 import type { Category, Label, Priority } from '../../domain/entities';
@@ -15,19 +15,6 @@ interface FilterSheetProps {
   onChange: (changes: Partial<Omit<TaskFilter, 'scope' | 'search'>>) => void;
   onReset: () => void;
   onClose: () => void;
-}
-
-const WRAP = { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm } as const;
-
-function Group({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <View style={{ gap: spacing.sm }}>
-      <Text variant="labelLarge" tone="muted" accessibilityRole="header">
-        {title}
-      </Text>
-      <View style={WRAP}>{children}</View>
-    </View>
-  );
 }
 
 function toggle<T>(list: readonly T[], value: T): T[] {
@@ -45,7 +32,7 @@ export function FilterSheet({
 }: FilterSheetProps) {
   return (
     <Sheet visible={visible} title="Filter tasks" onClose={onClose}>
-      <Group title="Priority">
+      <ChipGroup title="Priority">
         {PRIORITY_OPTIONS.map((option) => (
           <Chip
             key={option.value}
@@ -56,8 +43,8 @@ export function FilterSheet({
             }
           />
         ))}
-      </Group>
-      <Group title="Due">
+      </ChipGroup>
+      <ChipGroup title="Due">
         {DUE_OPTIONS.map((option) => (
           <Chip
             key={option.value}
@@ -66,8 +53,8 @@ export function FilterSheet({
             onPress={() => onChange({ due: option.value })}
           />
         ))}
-      </Group>
-      <Group title="Category">
+      </ChipGroup>
+      <ChipGroup title="Category">
         <Chip
           label="Any"
           selected={filter.categoryId === null}
@@ -87,9 +74,9 @@ export function FilterSheet({
             onPress={() => onChange({ categoryId: category.id })}
           />
         ))}
-      </Group>
+      </ChipGroup>
       {labels.length > 0 ? (
-        <Group title="Labels (any of)">
+        <ChipGroup title="Labels (any of)">
           {labels.map((label) => (
             <Chip
               key={label.id}
@@ -99,7 +86,7 @@ export function FilterSheet({
               onPress={() => onChange({ labelIds: toggle(filter.labelIds, label.id) })}
             />
           ))}
-        </Group>
+        </ChipGroup>
       ) : null}
       <View style={{ flexDirection: 'row', gap: spacing.md, justifyContent: 'flex-end' }}>
         <Button label="Reset" variant="outlined" onPress={onReset} />

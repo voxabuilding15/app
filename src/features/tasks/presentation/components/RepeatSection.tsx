@@ -1,20 +1,12 @@
 import { useState } from 'react';
 import { View } from 'react-native';
 
-import { Chip, Input, Text } from '@/components';
+import { Chip, FormSection, Input, Text, WRAP_ROW, WeekdayChips } from '@/components';
 import { spacing } from '@/theme';
 
 import type { RepeatRule, RepeatUnit } from '../../domain/entities';
-import {
-  REPEAT_PRESETS,
-  hasWeekday,
-  presetOf,
-  weekdayBit,
-  type RepeatPreset,
-} from '../../domain/repeat';
-import { WEEKDAY_DISPLAY_ORDER, WEEKDAY_LABELS, describeRepeat } from '../format';
-
-import { FormSection, WRAP_ROW } from './FormSection';
+import { REPEAT_PRESETS, presetOf, type RepeatPreset } from '../../domain/repeat';
+import { describeRepeat } from '../format';
 
 const PRESET_LABEL: Record<RepeatPreset, string> = {
   none: 'Never',
@@ -81,16 +73,7 @@ function CustomRepeat({
           <Text variant="labelSmall" tone="muted">
             On these days (leave empty to repeat on the due date’s weekday)
           </Text>
-          <View style={WRAP_ROW}>
-            {WEEKDAY_DISPLAY_ORDER.map((day) => (
-              <Chip
-                key={day}
-                label={WEEKDAY_LABELS[day] ?? ''}
-                selected={hasWeekday(rule.weekdays, day)}
-                onPress={() => onChange({ weekdays: rule.weekdays ^ weekdayBit(day) })}
-              />
-            ))}
-          </View>
+          <WeekdayChips mask={rule.weekdays} onChange={(weekdays) => onChange({ weekdays })} />
         </View>
       ) : null}
     </View>

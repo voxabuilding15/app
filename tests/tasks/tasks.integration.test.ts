@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import { beforeEach, describe, it } from 'node:test';
 
 import { SqliteTaskRepository } from '@/features/tasks/data/sqlite-task-repository';
-import { SqliteTaxonomyRepository } from '@/features/tasks/data/sqlite-taxonomy-repository';
+import { SqliteCategoryRepository } from '@/database/category-repository';
+import { SqliteLabelRepository } from '@/features/tasks/data/sqlite-label-repository';
 import {
   NO_CATEGORY,
   DEFAULT_FILTER,
@@ -57,11 +58,13 @@ beforeEach(() => {
   const clock = { now: () => now };
   tasks = createTaskUseCases({
     tasks: new SqliteTaskRepository(db),
-    taxonomy: new SqliteTaxonomyRepository(db, clock.now),
     reminders: scheduler,
     clock,
   });
-  taxonomy = createTaxonomyUseCases({ taxonomy: new SqliteTaxonomyRepository(db, clock.now) });
+  taxonomy = createTaxonomyUseCases({
+    categories: new SqliteCategoryRepository(db, 'task', clock.now),
+    labels: new SqliteLabelRepository(db),
+  });
 });
 
 const draft = (overrides: Partial<TaskDraft> = {}): TaskDraft => ({

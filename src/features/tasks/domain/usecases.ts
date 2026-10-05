@@ -1,37 +1,27 @@
-import { createId, type Clock } from '@/core';
+import {
+  MINUTE_MS,
+  createCategoryUseCases,
+  createId,
+  type CategoryRepository,
+  type Clock,
+} from '@/core';
 
-import { MINUTE_MS } from './dates';
-import type { Category, Label, Task, TaskDetail, TaskRecord, TaskStats } from './entities';
+import type { Task, TaskDetail, TaskRecord, TaskStats } from './entities';
 import type { TaskFilter, TaskSort } from './filters';
-import type { ReminderScheduler, TaskRepository, TaxonomyRepository } from './ports';
+import type { ReminderScheduler, TaskRepository } from './ports';
 import { computeReminderAt } from './reminder';
 import { nextDueAfter } from './repeat';
-import {
-  hasErrors,
-  validateDraft,
-  validateName,
-  type DraftErrors,
-  type TaskDraft,
-} from './validation';
+import { hasErrors, validateDraft, type DraftErrors, type TaskDraft } from './validation';
 
 export type ReminderStatus = 'none' | 'scheduled' | 'blocked' | 'past';
 
 export type SaveTaskResult =
   { ok: true; id: string; reminder: ReminderStatus } | { ok: false; errors: DraftErrors };
 
-export type SaveNameResult = { ok: true; id: string } | { ok: false; error: string };
-
-export interface NamedInput {
-  id: string | null;
-  name: string;
-  color: string;
-}
-
 const DEFAULT_SNOOZE_MINUTES = 10;
 
 interface TaskUseCaseDeps {
   tasks: TaskRepository;
-  taxonomy: TaxonomyRepository;
   reminders: ReminderScheduler;
   clock: Clock;
 }
@@ -66,7 +56,7 @@ function toRecord(task: TaskDetail): TaskRecord {
   };
 }
 
-export function createTaskUseCases({ tasks, taxonomy, reminders, clock }: TaskUseCaseDeps) {
+export function createTaskUseCases({ tasks, reminders, clock }: TaskUseCaseDeps) {
   /** Brings the OS notification in line with the task's current state. */
   async function syncReminder(task: TaskDetail): Promise<ReminderStatus> {
     if (task.notificationId !== null) {
@@ -282,46 +272,21 @@ export function createTaskUseCases({ tasks, taxonomy, reminders, clock }: TaskUs
 export type TaskUseCases = ReturnType<typeof createTaskUseCases>;
 
 interface TaxonomyDeps {
-  taxonomy: TaxonomyRepository;
+  categories: CategoryRepository;
+  labels: CategoryRepository;
 }
 
-type Named = Category | Label;
-
-async function saveNamed(
-  input: NamedInput,
-  existing: readonly Named[],
-  persist: (item: Named) => Promise<void>,
-): Promise<SaveNameResult> {
-  const error = validateName(input.name);
-  if (error !== null) {
-    return { ok: false, error };
-  }
-  const name = input.name.trim();
-  const duplicate = existing.some(
-    (item) => item.id !== input.id && item.name.toLowerCase() === name.toLowerCase(),
-  );
-  if (duplicate) {
-    return { ok: false, error: 'This name is already in use' };
-  }
-  const id = input.id ?? createId();
-  await persist({ id, name, color: input.color });
-  return { ok: true, id };
-}
-
-export function createTaxonomyUseCases({ taxonomy }: TaxonomyDeps) {
+/** Task categories and labels share the generic named-and-colored use cases from core. */
+export function createTaxonomyUseCases({ categories, labels }: TaxonomyDeps) {
+  const categoryCases = createCategoryUseCases(categories);
+  const labelCases = createCategoryUseCases(labels);
   return {
-    categories: () => taxonomy.listCategories(),
-    labels: () => taxonomy.listLabels(),
-    async saveCategory(input: NamedInput): Promise<SaveNameResult> {
-      return saveNamed(input, await taxonomy.listCategories(), (item) =>
-        taxonomy.saveCategory(item),
-      );
-    },
-    async saveLabel(input: NamedInput): Promise<SaveNameResult> {
-      return saveNamed(input, await taxonomy.listLabels(), (item) => taxonomy.saveLabel(item));
-    },
-    deleteCategory: (id: string) => taxonomy.deleteCategory(id),
-    deleteLabel: (id: string) => taxonomy.deleteLabel(id),
+    categories: categoryCases.list,
+    labels: labelCases.list,
+    saveCategory: categoryCases.save,
+    saveLabel: labelCases.save,
+    deleteCategory: categoryCases.delete,
+    deleteLabel: labelCases.delete,
   };
 }
 

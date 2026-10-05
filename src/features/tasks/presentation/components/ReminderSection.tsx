@@ -1,12 +1,10 @@
 import { View } from 'react-native';
 
-import { Chip, SwitchRow, Text } from '@/components';
+import { Chip, FormSection, SwitchRow, Text, WRAP_ROW } from '@/components';
 
 import type { DueDate } from '../../domain/entities';
 import { reminderOffsetsFor } from '../../domain/reminder';
 import { describeReminderOffset } from '../format';
-
-import { FormSection, WRAP_ROW } from './FormSection';
 
 interface ReminderSectionProps {
   due: DueDate;

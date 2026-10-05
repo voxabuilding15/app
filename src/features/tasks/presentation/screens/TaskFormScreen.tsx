@@ -4,9 +4,12 @@ import { ActivityIndicator, View, useWindowDimensions } from 'react-native';
 
 import {
   Button,
+  CategorySection,
   EmptyState,
+  FormSection,
   IconButton,
   Input,
+  NameColorSheet,
   Screen,
   SegmentedControl,
   Text,
@@ -17,12 +20,10 @@ import { ACCENT_COLORS, spacing, useTheme } from '@/theme';
 import type { Priority } from '../../domain/entities';
 import { NOTES_MAX_LENGTH, TITLE_MAX_LENGTH } from '../../domain/validation';
 import { DueSection } from '../components/DueSection';
-import { FormSection } from '../components/FormSection';
-import { NameColorSheet } from '../components/NameColorSheet';
 import { ReminderSection } from '../components/ReminderSection';
 import { RepeatSection } from '../components/RepeatSection';
 import { SubtasksSection } from '../components/SubtasksSection';
-import { CategorySection, LabelSection } from '../components/TaxonomySections';
+import { LabelSection } from '../components/TaxonomySections';
 import { PRIORITY_LABEL } from '../format';
 import type { TaskDraft } from '../../domain/validation';
 import {

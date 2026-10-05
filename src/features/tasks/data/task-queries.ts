@@ -1,4 +1,4 @@
-import { startOfDay, addDays } from '../domain/dates';
+import { startOfDay, addDays } from '@/core';
 import type { Priority } from '../domain/entities';
 import { NO_CATEGORY, type TaskFilter, type TaskSort } from '../domain/filters';
 

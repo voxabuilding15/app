@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import { computeReminderAt } from '@/features/tasks/domain/reminder';
-import { nextDueAfter, presetOf, ruleForPreset, weekdayBit } from '@/features/tasks/domain/repeat';
+import { weekdayBit } from '@/core';
+import { nextDueAfter, presetOf, ruleForPreset } from '@/features/tasks/domain/repeat';
 import { emptyDraft, hasErrors, validateDraft } from '@/features/tasks/domain/validation';
 import type { RepeatRule } from '@/features/tasks/domain/entities';
 
