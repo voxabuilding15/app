@@ -34,6 +34,12 @@ const PERIODS = [
   { value: 'month', label: msg('Month') },
 ] as const satisfies readonly { value: StatsPeriod; label: string }[];
 
+const FOCUS_PER = {
+  day: msg('Focus minutes per day'),
+  week: msg('Focus minutes per week'),
+  month: msg('Focus minutes per month'),
+} as const;
+
 const HEAT_GAP = 3;
 const HEAT_ROW_LABEL_SPACE = 16 + HEAT_GAP;
 const HEAT_WEEKS = 26;
@@ -160,13 +166,13 @@ export function StatsPanel({ vm }: { vm: StatsViewModel }) {
       <Section title={t('Focus time')}>
         <SegmentedControl options={PERIODS} value={vm.period} onChange={vm.setPeriod} />
         <BarChart
-          label={t('Focus minutes per {period}', { period: vm.period })}
+          label={t(FOCUS_PER[vm.period])}
           goal={vm.goalMinutes > 0 ? vm.goalMinutes : undefined}
           data={series.map((point, index) => ({
             label: formatBucketLabel(vm.period, point.from),
             value: Math.round(point.focusSeconds / 60),
             highlight: index === series.length - 1,
-            description: `${formatBucketDescription(vm.period, point.from, point.to)}: ${formatFocusTime(point.focusSeconds)}, ${point.completed} ${point.completed === 1 ? 'session' : 'sessions'}`,
+            description: `${formatBucketDescription(vm.period, point.from, point.to)}: ${formatFocusTime(point.focusSeconds)}, ${tn(point.completed, '{count} session', '{count} sessions')}`,
           }))}
         />
       </Section>

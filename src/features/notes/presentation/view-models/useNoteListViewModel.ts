@@ -20,7 +20,7 @@ const PAGE_SIZE = 60;
 const SEARCH_DEBOUNCE_MS = 250;
 
 export function useNoteListViewModel() {
-  const { t } = useTranslator();
+  const { t, tn } = useTranslator();
   const { notes: useCases } = useNotesModule();
   const invalidate = useInvalidateNotes();
   const { notice, show, dismiss } = useNotice();
@@ -174,12 +174,12 @@ export function useNoteListViewModel() {
             void run(async () => {
               const count = await useCases.emptyTrash();
               show({
-                message: count === 1 ? t('1 note deleted') : t('{count} notes deleted', { count }),
+                message: tn(count, '{count} note deleted', '{count} notes deleted'),
               });
             }, t("Couldn't empty the trash")),
         },
       ]),
-    [run, useCases, show, t],
+    [run, useCases, show, t, tn],
   );
 
   return {

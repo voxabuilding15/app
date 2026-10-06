@@ -8,15 +8,21 @@ import { ALL_WEEKDAYS } from '../domain/schedule';
 import { msg } from '@/i18n/msg';
 import { currentTranslator } from '@/i18n/translate';
 
-const PERIOD_NOUN: Record<HabitPeriod, string> = { daily: 'day', weekly: 'week', monthly: 'month' };
 const PERIOD_PHRASE: Record<HabitPeriod, string> = {
-  daily: 'today',
-  weekly: msg('this week'),
-  monthly: msg('this month'),
+  daily: msg('{done} of {goal} today'),
+  weekly: msg('{done} of {goal} this week'),
+  monthly: msg('{done} of {goal} this month'),
 };
 
-export function periodNoun(period: HabitPeriod, count = 1): string {
-  return count === 1 ? PERIOD_NOUN[period] : `${PERIOD_NOUN[period]}s`;
+const GOAL_PER: Record<HabitPeriod, string> = {
+  daily: msg('Goal per day'),
+  weekly: msg('Goal per week'),
+  monthly: msg('Goal per month'),
+};
+
+/** The label of the goal field: "Goal per day", "Goal per week" or "Goal per month". */
+export function goalPerLabel(period: HabitPeriod): string {
+  return currentTranslator().t(GOAL_PER[period]);
 }
 
 /** "Every day", "Mon, Wed, Fri", "Weekly" or "Monthly". */
@@ -36,13 +42,25 @@ export function describeFrequency(habit: Pick<Habit, 'period' | 'weekdays'>): st
     .join(', ');
 }
 
-/** "3 times per week" or "Once per day". */
+/** "3 times a week" or "Once a day". */
 export function describeGoal(habit: Pick<Habit, 'period' | 'goalCount'>): string {
-  const { t } = currentTranslator();
-  const unit = PERIOD_NOUN[habit.period];
-  return habit.goalCount === 1
-    ? t('Once per {unit}', { unit })
-    : t('{goalCount} times per {unit}', { goalCount: habit.goalCount, unit });
+  const { t, tn } = currentTranslator();
+  const { goalCount } = habit;
+  if (goalCount === 1) {
+    return t(
+      { daily: msg('Once a day'), weekly: msg('Once a week'), monthly: msg('Once a month') }[
+        habit.period
+      ],
+    );
+  }
+  switch (habit.period) {
+    case 'daily':
+      return tn(goalCount, '{count} time a day', '{count} times a day');
+    case 'weekly':
+      return tn(goalCount, '{count} time a week', '{count} times a week');
+    default:
+      return tn(goalCount, '{count} time a month', '{count} times a month');
+  }
 }
 
 /** "2 of 3 today". */
@@ -50,11 +68,19 @@ export function describeProgress(
   progress: Pick<UnitProgress, 'done' | 'goal'>,
   period: HabitPeriod,
 ) {
-  return `${progress.done} of ${progress.goal} ${PERIOD_PHRASE[period]}`;
+  return currentTranslator().t(PERIOD_PHRASE[period], { done: progress.done, goal: progress.goal });
 }
 
 export function describeStreak(streak: number, period: HabitPeriod): string {
-  return `${streak} ${periodNoun(period, streak)}`;
+  const { tn } = currentTranslator();
+  switch (period) {
+    case 'daily':
+      return tn(streak, '{count} day', '{count} days');
+    case 'weekly':
+      return tn(streak, '{count} week', '{count} weeks');
+    default:
+      return tn(streak, '{count} month', '{count} months');
+  }
 }
 
 const STATE_LABEL: Record<UnitState, string> = {

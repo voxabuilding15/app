@@ -18,7 +18,7 @@ import { useTranslator } from '@/i18n';
 import { FREQUENCY_PRESETS, presetOf, type FrequencyPreset } from '../../domain/schedule';
 import type { HabitDraft, HabitDraftErrors } from '../../domain/validation';
 import { MAX_GOAL } from '../../domain/validation';
-import { periodNoun, formatReminderTime } from '../format';
+import { formatReminderTime, goalPerLabel } from '../format';
 import { HABIT_ICONS } from '../icons';
 
 import { HabitIconBubble } from './HabitIconBubble';
@@ -104,11 +104,9 @@ export function FrequencySection({
           gap: spacing.md,
         }}
       >
-        <Text style={{ flex: 1 }}>
-          {t('Goal per {periodNoun}', { periodNoun: periodNoun(draft.period) })}
-        </Text>
+        <Text style={{ flex: 1 }}>{goalPerLabel(draft.period)}</Text>
         <NumberStepper
-          label={t('Goal per {periodNoun}', { periodNoun: periodNoun(draft.period) })}
+          label={goalPerLabel(draft.period)}
           value={draft.goalCount}
           min={1}
           max={MAX_GOAL}
@@ -118,9 +116,9 @@ export function FrequencySection({
       <Text variant="labelSmall" tone="muted">
         {draft.period === 'daily'
           ? t('Complete the goal on each scheduled day to keep your streak.')
-          : t('Reach the goal within each {periodNoun} to keep your streak.', {
-              periodNoun: periodNoun(draft.period),
-            })}
+          : draft.period === 'weekly'
+            ? t('Reach the goal within each week to keep your streak.')
+            : t('Reach the goal within each month to keep your streak.')}
       </Text>
     </FormSection>
   );

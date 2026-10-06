@@ -40,7 +40,7 @@ function AccountRowComponent({
   onArchive,
   onDelete,
 }: AccountRowProps) {
-  const { t } = useTranslator();
+  const { t, tn } = useTranslator();
   const { colors } = useTheme();
   const archived = account.archivedAt !== null;
 
@@ -78,7 +78,7 @@ function AccountRowComponent({
       title={account.name}
       subtitle={[
         ACCOUNT_TYPE_LABEL[account.type],
-        `${count} ${count === 1 ? 'transaction' : 'transactions'}`,
+        tn(count, '{count} transaction', '{count} transactions'),
         archived ? t('Archived') : null,
       ]
         .filter(Boolean)

@@ -15,7 +15,7 @@ interface SessionRowProps {
 
 /** One history entry: what ran, how long, how it ended, and what it was about. */
 export function SessionRow({ session, onOpen, onDelete }: SessionRowProps) {
-  const { t } = useTranslator();
+  const { t, tn } = useTranslator();
   const { colors } = useTheme();
   const focus = session.kind === 'focus';
   const summary = `${KIND_LABEL[session.kind]}, ${formatFocusTime(session.durationSeconds)}, ${OUTCOME_LABEL[session.outcome].toLowerCase()}`;
@@ -39,9 +39,7 @@ export function SessionRow({ session, onOpen, onDelete }: SessionRowProps) {
       </View>
       <Text variant="bodyMedium" tone="muted">
         {formatStartTime(session.startedAt)} · {OUTCOME_LABEL[session.outcome]}
-        {session.pauses > 0
-          ? ` · ${session.pauses} ${session.pauses === 1 ? 'pause' : 'pauses'}`
-          : ''}
+        {session.pauses > 0 ? ` · ${tn(session.pauses, '{count} pause', '{count} pauses')}` : ''}
       </Text>
       {session.note !== '' ? (
         <Text variant="bodyMedium" numberOfLines={2}>

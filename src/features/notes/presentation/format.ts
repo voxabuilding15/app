@@ -75,7 +75,7 @@ export function displayTitle(title: string): string {
 
 /** Accessible one-sentence summary of a note for screen readers. */
 export function describeNote(note: NoteSummary, now: number): string {
-  const { t } = currentTranslator();
+  const { t, tn } = currentTranslator();
   const parts = [
     displayTitle(note.title),
     note.locked ? 'locked' : note.preview || null,
@@ -92,7 +92,7 @@ export function describeNote(note: NoteSummary, now: number): string {
         })
       : null,
     note.attachmentCount > 0
-      ? `${note.attachmentCount} ${note.attachmentCount === 1 ? 'attachment' : 'attachments'}`
+      ? tn(note.attachmentCount, '{count} attachment', '{count} attachments')
       : null,
     note.reminderAt === null
       ? null

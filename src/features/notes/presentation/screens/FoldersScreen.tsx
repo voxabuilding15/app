@@ -21,7 +21,7 @@ function FolderRow({
   onAddInside: () => void;
   onDelete: () => void;
 }) {
-  const { t } = useTranslator();
+  const { t, tn } = useTranslator();
   const { colors } = useTheme();
   return (
     <View
@@ -36,14 +36,14 @@ function FolderRow({
       <Icon name="folder" color={colors.primary} />
       <View
         accessible
-        accessibilityLabel={`${folder.name}, ${folder.noteCount} ${folder.noteCount === 1 ? 'note' : 'notes'}`}
+        accessibilityLabel={`${folder.name}, ${tn(folder.noteCount, '{count} note', '{count} notes')}`}
         style={{ flex: 1 }}
       >
         <Text variant="bodyLarge" numberOfLines={1}>
           {folder.name}
         </Text>
         <Text variant="labelSmall" tone="muted">
-          {`${folder.noteCount} ${folder.noteCount === 1 ? 'note' : 'notes'}`}
+          {tn(folder.noteCount, '{count} note', '{count} notes')}
         </Text>
       </View>
       <IconButton

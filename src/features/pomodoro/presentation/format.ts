@@ -61,15 +61,17 @@ export function formatClockFace(ms: number): string {
 
 /** Spoken form of a countdown: "24 minutes 5 seconds". */
 export function speakClock(ms: number): string {
+  const { tn } = currentTranslator();
   const total = Math.max(0, Math.ceil(ms / 1000));
   const minutes = Math.floor(total / 60);
   const seconds = total % 60;
-  const part = (value: number, unit: string) => `${value} ${unit}${value === 1 ? '' : 's'}`;
+  const spokenMinutes = tn(minutes, '{count} minute', '{count} minutes');
+  const spokenSeconds = tn(seconds, '{count} second', '{count} seconds');
   return minutes === 0
-    ? part(seconds, 'second')
+    ? spokenSeconds
     : seconds === 0
-      ? part(minutes, 'minute')
-      : `${part(minutes, 'minute')} ${part(seconds, 'second')}`;
+      ? spokenMinutes
+      : `${spokenMinutes} ${spokenSeconds}`;
 }
 
 export function formatStartTime(at: number): string {

@@ -15,18 +15,12 @@ import {
 } from '../../domain/filters';
 import { useTasksModule } from '../module';
 import { useInvalidateTasks, useTaskList, useTaskStats } from '../queries';
-import { currentTranslator } from '@/i18n/translate';
 
 const PAGE_SIZE = 100;
 const SEARCH_DEBOUNCE_MS = 250;
 
-function plural(count: number): string {
-  const { t } = currentTranslator();
-  return count === 1 ? t('Task') : t('{count} tasks', { count });
-}
-
 export function useTaskListViewModel() {
-  const { t } = useTranslator();
+  const { t, tn } = useTranslator();
   const { tasks: useCases } = useTasksModule();
   const invalidate = useInvalidateTasks();
 
@@ -157,18 +151,18 @@ export function useTaskListViewModel() {
     (ids: readonly string[]) =>
       run(async () => {
         await useCases.archive(ids);
-        setNotice({ message: t('{plural} archived', { plural: plural(ids.length) }) });
+        setNotice({ message: tn(ids.length, 'Task archived', '{count} tasks archived') });
       }, t("Couldn't archive")),
-    [run, useCases, t],
+    [run, useCases, t, tn],
   );
 
   const restore = useCallback(
     (ids: readonly string[]) =>
       run(async () => {
         await useCases.restore(ids);
-        setNotice({ message: t('{plural} restored', { plural: plural(ids.length) }) });
+        setNotice({ message: tn(ids.length, 'Task restored', '{count} tasks restored') });
       }, t("Couldn't restore")),
-    [run, useCases, t],
+    [run, useCases, t, tn],
   );
 
   const undoDelete = useCallback(async () => {
@@ -185,12 +179,12 @@ export function useTaskListViewModel() {
         await useCases.remove(ids);
         pendingDelete.current = ids;
         setNotice({
-          message: t('{plural} deleted', { plural: plural(ids.length) }),
+          message: tn(ids.length, 'Task deleted', '{count} tasks deleted'),
           actionLabel: t('Undo'),
           onAction: () => void undoDelete(),
         });
       }, t("Couldn't delete")),
-    [run, useCases, finalizeDelete, undoDelete, t],
+    [run, useCases, finalizeDelete, undoDelete, t, tn],
   );
 
   const toggleSelected = useCallback((id: string) => {

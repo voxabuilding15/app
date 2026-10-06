@@ -31,13 +31,11 @@ function DayCellComponent({
   compact,
   onSelect,
 }: DayCellProps) {
-  const { t } = useTranslator();
+  const { t, tn } = useTranslator();
   const { colors } = useTheme();
   const number = Number(day.slice(8));
   const label = `${formatDayLong(day)}${isToday ? t(', today') : ''}, ${
-    items.length === 0
-      ? t('nothing planned')
-      : `${items.length} ${items.length === 1 ? 'item' : 'items'}`
+    items.length === 0 ? t('nothing planned') : tn(items.length, '{count} item', '{count} items')
   }`;
 
   return (
