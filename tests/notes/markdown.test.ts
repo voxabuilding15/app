@@ -51,7 +51,11 @@ describe('parseInline', () => {
     assert.deepEqual(runs('****'), [['****']]);
     assert.deepEqual(runs('snake_case_name'), [['snake_case_name']]);
     assert.deepEqual(runs('2 * 3 * 4'), [['2 * 3 * 4']]);
-    assert.deepEqual(runs('a * b*c'), [['a * b*c']], 'an opener followed by a space is not an opener');
+    assert.deepEqual(
+      runs('a * b*c'),
+      [['a * b*c']],
+      'an opener followed by a space is not an opener',
+    );
   });
 
   it('does not style inside code spans', () => {
