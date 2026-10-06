@@ -66,7 +66,8 @@
     "test:ui": "jest",
     "test:all": "npm test && npm run test:ui",
     "knip": "knip",
-    "perf": "node scripts/performance-report.mjs"
+    "perf": "node scripts/performance-report.mjs",
+    "verify:release": "node scripts/verify-release.mjs"
   },
   "private": true
 }
