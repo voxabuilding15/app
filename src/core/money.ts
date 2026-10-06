@@ -1,3 +1,4 @@
+import { appLocale } from '@/i18n/formatting';
 /**
  * Money is stored as integer minor units (cents). These helpers convert to and from text for a
  * currency, so amounts never pass through floating point arithmetic.
@@ -9,10 +10,12 @@ export const MAX_MINOR = 1_000_000_000_000;
 const formatters = new Map<string, Intl.NumberFormat>();
 
 function formatterFor(currency: string): Intl.NumberFormat {
-  let formatter = formatters.get(currency);
+  const locale = appLocale();
+  const key = `${locale}|${currency}`;
+  let formatter = formatters.get(key);
   if (formatter === undefined) {
-    formatter = new Intl.NumberFormat(undefined, { style: 'currency', currency });
-    formatters.set(currency, formatter);
+    formatter = new Intl.NumberFormat(locale, { style: 'currency', currency });
+    formatters.set(key, formatter);
   }
   return formatter;
 }
@@ -22,7 +25,7 @@ export function minorDigits(currency: string): number {
   return formatterFor(currency).resolvedOptions().maximumFractionDigits ?? 2;
 }
 
-/** "$1,234.50" for 123450 in USD, in the device's number format. */
+/** "$1,234.50" for 123450 in USD, in the number format of the language being shown. */
 export function formatMoney(minor: number, currency: string): string {
   return formatterFor(currency).format(minor / 10 ** minorDigits(currency));
 }

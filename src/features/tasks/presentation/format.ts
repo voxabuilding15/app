@@ -3,6 +3,7 @@ import type { DueDate, Priority, Task } from '../domain/entities';
 import { describeRecurrence } from '@/components';
 import { msg } from '@/i18n/msg';
 import { currentTranslator } from '@/i18n/translate';
+import { appLocale } from '@/i18n/formatting';
 
 export const PRIORITY_LABEL: Record<Priority, string> = {
   low: msg('Low'),
@@ -11,7 +12,7 @@ export const PRIORITY_LABEL: Record<Priority, string> = {
 };
 
 export function formatTime(at: number): string {
-  return new Date(at).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+  return new Date(at).toLocaleTimeString(appLocale(), { hour: 'numeric', minute: '2-digit' });
 }
 
 export function formatDate(at: number, now: number, withYear = false): string {
@@ -28,7 +29,7 @@ export function formatDate(at: number, now: number, withYear = false): string {
     return t('Yesterday');
   }
   const sameYear = new Date(at).getFullYear() === new Date(now).getFullYear();
-  return new Date(at).toLocaleDateString(undefined, {
+  return new Date(at).toLocaleDateString(appLocale(), {
     weekday: 'short',
     day: 'numeric',
     month: 'short',

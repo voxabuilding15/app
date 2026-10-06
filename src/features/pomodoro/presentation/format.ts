@@ -5,6 +5,7 @@ import type { SessionOutcome, TimerKind } from '../domain/timer';
 import type { AmbientSound } from '../domain/settings';
 import { msg } from '@/i18n/msg';
 import { currentTranslator } from '@/i18n/translate';
+import { appLocale } from '@/i18n/formatting';
 
 export const KIND_LABEL: Record<TimerKind, string> = {
   focus: msg('Focus'),
@@ -72,7 +73,7 @@ export function speakClock(ms: number): string {
 }
 
 export function formatStartTime(at: number): string {
-  return new Date(at).toLocaleString(undefined, {
+  return new Date(at).toLocaleString(appLocale(), {
     weekday: 'short',
     day: 'numeric',
     month: 'short',
@@ -82,7 +83,7 @@ export function formatStartTime(at: number): string {
 }
 
 export function formatDayLabel(key: DateKey): string {
-  return new Date(dateKeyToNoon(key)).toLocaleDateString(undefined, {
+  return new Date(dateKeyToNoon(key)).toLocaleDateString(appLocale(), {
     weekday: 'short',
     day: 'numeric',
     month: 'short',
@@ -90,7 +91,7 @@ export function formatDayLabel(key: DateKey): string {
 }
 
 export function shortMonth(key: DateKey): string {
-  return new Date(dateKeyToNoon(key)).toLocaleDateString(undefined, { month: 'short' });
+  return new Date(dateKeyToNoon(key)).toLocaleDateString(appLocale(), { month: 'short' });
 }
 
 /** Short axis label for a statistics bucket. */
@@ -98,11 +99,11 @@ export function formatBucketLabel(period: 'day' | 'week' | 'month', from: DateKe
   const date = new Date(dateKeyToNoon(from));
   switch (period) {
     case 'day':
-      return date.toLocaleDateString(undefined, { weekday: 'narrow' });
+      return date.toLocaleDateString(appLocale(), { weekday: 'narrow' });
     case 'week':
       return String(date.getDate());
     default:
-      return date.toLocaleDateString(undefined, { month: 'narrow' });
+      return date.toLocaleDateString(appLocale(), { month: 'narrow' });
   }
 }
 
@@ -121,7 +122,7 @@ export function formatBucketDescription(
       dayLabel2: formatDayLabel(to),
     });
   }
-  return new Date(dateKeyToNoon(from)).toLocaleDateString(undefined, {
+  return new Date(dateKeyToNoon(from)).toLocaleDateString(appLocale(), {
     month: 'long',
     year: 'numeric',
   });

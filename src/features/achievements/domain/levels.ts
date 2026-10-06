@@ -1,4 +1,6 @@
-import { msg } from '@/i18n/msg'; /** XP needed to reach `level`: 100, 300, 600, 1000 ... (50 × (level − 1) × level). */
+import { msg } from '@/i18n/msg';
+
+/** XP needed to reach `level`: 100, 300, 600, 1000 ... (50 × (level − 1) × level). */
 export function xpForLevel(level: number): number {
   return 50 * (level - 1) * level;
 }

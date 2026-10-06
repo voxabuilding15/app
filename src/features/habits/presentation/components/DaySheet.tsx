@@ -39,7 +39,7 @@ export function DaySheet({
           ? t('This day is skipped, so it does not affect your streak.')
           : count === 0
             ? t('Nothing logged on this day.')
-            : t('{count} logged on this day.', { count: count })}
+            : t('{count} logged on this day.', { count })}
       </Text>
       <View
         style={{

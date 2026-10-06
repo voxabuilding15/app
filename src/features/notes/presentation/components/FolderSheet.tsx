@@ -48,7 +48,7 @@ export function FolderSheet({ folder, parentId, tree, onClose }: FolderSheetProp
             <Chip
               icon="folder"
               label={where}
-              accessibilityLabel={t('Inside {where}. Change', { where: where })}
+              accessibilityLabel={t('Inside {where}. Change', { where })}
               onPress={() => setPicking(true)}
             />
           </View>

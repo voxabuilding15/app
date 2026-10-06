@@ -174,8 +174,7 @@ export function useNoteListViewModel() {
             void run(async () => {
               const count = await useCases.emptyTrash();
               show({
-                message:
-                  count === 1 ? t('1 note deleted') : t('{count} notes deleted', { count: count }),
+                message: count === 1 ? t('1 note deleted') : t('{count} notes deleted', { count }),
               });
             }, t("Couldn't empty the trash")),
         },

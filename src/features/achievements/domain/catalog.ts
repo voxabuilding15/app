@@ -1,7 +1,5 @@
 import type { CounterId, Lifetime } from './entities';
-import { useTranslator } from '@/i18n';
 import { msg } from '@/i18n/msg';
-import { currentTranslator } from '@/i18n/translate';
 
 export type Tier = 'bronze' | 'silver' | 'gold' | 'platinum';
 
@@ -125,20 +123,17 @@ const FIRST_STEP_XP = 20;
 const COUNTER_IDS: readonly CounterId[] = FIRST_STEPS.map((step) => step.counter);
 
 export const BADGES: readonly AchievementDef[] = [
-  ...FIRST_STEPS.map((step): AchievementDef => {
-    const { t } = currentTranslator();
-    return {
-      id: step.id,
-      group: 'badge',
-      title: step.title,
-      description: t('Your very first one'),
-      count: 1,
-      icon: step.icon,
-      xp: FIRST_STEP_XP,
-      counter: step.counter,
-      target: 1,
-    };
-  }),
+  ...FIRST_STEPS.map((step): AchievementDef => ({
+    id: step.id,
+    group: 'badge',
+    title: step.title,
+    description: msg('Your very first one'),
+    count: 1,
+    icon: step.icon,
+    xp: FIRST_STEP_XP,
+    counter: step.counter,
+    target: 1,
+  })),
   {
     id: 'all-rounder',
     group: 'badge',
@@ -159,19 +154,16 @@ export const BADGES: readonly AchievementDef[] = [
     xp: 50,
     test: (lifetime) => lifetime.longestFocusMinutes >= 90,
   },
-  ...[5, 10, 25].map((level): AchievementDef => {
-    const { t } = currentTranslator();
-    return {
-      id: `level-${level}`,
-      group: 'badge',
-      title: t('Level {count}'),
-      description: t('Reach level {count}'),
-      count: level,
-      icon: 'military-tech',
-      xp: level * 10,
-      test: (_lifetime, context) => context.level >= level,
-    };
-  }),
+  ...[5, 10, 25].map((level): AchievementDef => ({
+    id: `level-${level}`,
+    group: 'badge',
+    title: msg('Level {count}'),
+    description: msg('Reach level {count}'),
+    count: level,
+    icon: 'military-tech',
+    xp: level * 10,
+    test: (_lifetime, context) => context.level >= level,
+  })),
 ];
 
 export const MILESTONES: readonly AchievementDef[] = MILESTONE_LINES.flatMap((line) =>
@@ -193,19 +185,16 @@ export const MILESTONES: readonly AchievementDef[] = MILESTONE_LINES.flatMap((li
 );
 
 export const STREAK_BADGES: readonly AchievementDef[] = STREAK_REWARDS.map(
-  (reward): AchievementDef => {
-    const { t } = useTranslator();
-    return {
-      id: `streak-${reward.days}`,
-      group: 'streak',
-      title: t('{count}-day streak'),
-      description: t('Do something useful {count} days in a row'),
-      count: reward.days,
-      icon: 'bolt',
-      xp: reward.xp,
-      target: reward.days,
-    };
-  },
+  (reward): AchievementDef => ({
+    id: `streak-${reward.days}`,
+    group: 'streak',
+    title: msg('{count}-day streak'),
+    description: msg('Do something useful {count} days in a row'),
+    count: reward.days,
+    icon: 'bolt',
+    xp: reward.xp,
+    target: reward.days,
+  }),
 );
 
 export const ALL_ACHIEVEMENTS: readonly AchievementDef[] = [

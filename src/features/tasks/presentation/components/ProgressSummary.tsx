@@ -42,7 +42,7 @@ export function ProgressSummary({ stats, onShowOverdue }: ProgressSummaryProps) 
       </View>
       {overdue > 0 ? (
         <Button
-          label={t('{overdue} overdue', { overdue: overdue })}
+          label={t('{overdue} overdue', { overdue })}
           icon="error-outline"
           variant="tonal"
           onPress={onShowOverdue}

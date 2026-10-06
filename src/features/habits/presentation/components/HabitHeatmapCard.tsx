@@ -71,7 +71,7 @@ export function HabitHeatmapCard({
             gap={GAP}
             selectedKey={selectedDay}
             onPressCell={onSelectDay}
-            label={t('Completion history for the last {weeks} weeks', { weeks: weeks })}
+            label={t('Completion history for the last {weeks} weeks', { weeks })}
           />
         ) : null}
       </View>

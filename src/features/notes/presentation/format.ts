@@ -4,6 +4,7 @@ import { DAY_MINUTES, MINUTE_MS, startOfDay } from '@/core';
 import type { AttachmentKind, NoteSummary } from '../domain/entities';
 import { msg } from '@/i18n/msg';
 import { currentTranslator } from '@/i18n/translate';
+import { appLocale } from '@/i18n/formatting';
 
 export const ATTACHMENT_ICON: Record<AttachmentKind, IconName> = {
   image: 'image',
@@ -20,7 +21,7 @@ export const ATTACHMENT_LABEL: Record<AttachmentKind, string> = {
 };
 
 export function formatTime(at: number): string {
-  return new Date(at).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+  return new Date(at).toLocaleTimeString(appLocale(), { hour: 'numeric', minute: '2-digit' });
 }
 
 /** "Today", "Tomorrow", "Yesterday" or a short date. */
@@ -39,7 +40,7 @@ export function formatDay(at: number, now: number): string {
     return t('Yesterday');
   }
   const sameYear = new Date(at).getFullYear() === new Date(now).getFullYear();
-  return new Date(at).toLocaleDateString(undefined, {
+  return new Date(at).toLocaleDateString(appLocale(), {
     weekday: 'short',
     day: 'numeric',
     month: 'short',

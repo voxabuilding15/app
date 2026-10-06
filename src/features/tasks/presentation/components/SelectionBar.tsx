@@ -44,7 +44,7 @@ export function SelectionBar({
         accessibilityLiveRegion="polite"
         style={{ flex: 1, color: colors.onSecondaryContainer }}
       >
-        {t('{count} selected', { count: count })}
+        {t('{count} selected', { count })}
       </Text>
       <IconButton icon="select-all" label={t('Select all')} onPress={onSelectAll} />
       {scope === 'archived' ? (

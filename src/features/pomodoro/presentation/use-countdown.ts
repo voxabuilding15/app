@@ -18,9 +18,9 @@ export function useCountdown(state: TimerState) {
 
   const position =
     state.kind === 'focus'
-      ? t('Session {value} of {value2}', {
-          value: state.cycle + 1,
-          value2: settings.sessionsUntilLongBreak,
+      ? t('Session {current} of {total}', {
+          current: state.cycle + 1,
+          total: settings.sessionsUntilLongBreak,
         })
       : state.kind === 'long_break'
         ? t('You earned a long break')

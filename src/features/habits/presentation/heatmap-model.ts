@@ -17,15 +17,15 @@ function describeDay(day: HeatmapDay, habit: Pick<Habit, 'period' | 'goalCount'>
     case 'partial':
       return habit.period === 'daily'
         ? `${when}: ${day.count} of ${habit.goalCount}`
-        : t('{when}: {count} logged', { when: when, count: day.count });
+        : t('{when}: {count} logged', { when, count: day.count });
     case 'skipped':
-      return t('{when}: skipped', { when: when });
+      return t('{when}: skipped', { when });
     case 'paused':
-      return t('{when}: paused', { when: when });
+      return t('{when}: paused', { when });
     case 'off':
-      return t('{when}: not scheduled', { when: when });
+      return t('{when}: not scheduled', { when });
     default:
-      return t('{when}: nothing logged', { when: when });
+      return t('{when}: nothing logged', { when });
   }
 }
 

@@ -1,6 +1,6 @@
 import { addDaysToKey, dateKeyToNoon, hasWeekday, type DateKey } from '@/core';
 import { WEEKDAY_DISPLAY_ORDER } from '@/components';
-import { weekdayName } from '@/i18n/formatting';
+import { appLocale, weekdayName } from '@/i18n/formatting';
 
 import type { Habit, HabitPeriod } from '../domain/entities';
 import type { HabitSummary, UnitProgress, UnitState } from '../domain/progress';
@@ -41,8 +41,8 @@ export function describeGoal(habit: Pick<Habit, 'period' | 'goalCount'>): string
   const { t } = currentTranslator();
   const unit = PERIOD_NOUN[habit.period];
   return habit.goalCount === 1
-    ? t('Once per {unit}', { unit: unit })
-    : t('{goalCount} times per {unit}', { goalCount: habit.goalCount, unit: unit });
+    ? t('Once per {unit}', { unit })
+    : t('{goalCount} times per {unit}', { goalCount: habit.goalCount, unit });
 }
 
 /** "2 of 3 today". */
@@ -72,7 +72,7 @@ export function describeState(state: UnitState): string {
 /** Compact time such as "8:30 AM" from an HH:MM string, in the device's format. */
 export function formatReminderTime(time: string): string {
   const [hour, minute] = time.split(':').map(Number);
-  return new Date(2000, 0, 1, hour ?? 0, minute ?? 0).toLocaleTimeString(undefined, {
+  return new Date(2000, 0, 1, hour ?? 0, minute ?? 0).toLocaleTimeString(appLocale(), {
     hour: 'numeric',
     minute: '2-digit',
   });
@@ -80,7 +80,7 @@ export function formatReminderTime(time: string): string {
 
 /** "Mon 5 Oct" for a day key. */
 export function formatDay(key: DateKey): string {
-  return new Date(dateKeyToNoon(key)).toLocaleDateString(undefined, {
+  return new Date(dateKeyToNoon(key)).toLocaleDateString(appLocale(), {
     weekday: 'short',
     day: 'numeric',
     month: 'short',
@@ -97,7 +97,7 @@ export function formatRelativeDay(key: DateKey, today: DateKey): string {
 }
 
 export function shortMonth(key: DateKey): string {
-  return new Date(dateKeyToNoon(key)).toLocaleDateString(undefined, { month: 'short' });
+  return new Date(dateKeyToNoon(key)).toLocaleDateString(appLocale(), { month: 'short' });
 }
 
 /** Accessible one-sentence summary of a habit for screen readers. */

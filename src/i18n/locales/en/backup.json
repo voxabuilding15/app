@@ -9,6 +9,7 @@
   "{count} items were skipped because they clash with existing ones": "{count} items were skipped because they clash with existing ones",
   "{count} links to skipped items were cleaned up": "{count} links to skipped items were cleaned up",
   "{count} new items will be added": "{count} new items will be added",
+  "{providerName} backup is not available in this version of the app.": "{providerName} backup is not available in this version of the app.",
   "All data on this device will be replaced by the backup. A copy of your current data is saved first, so you can undo this.": "All data on this device will be replaced by the backup. A copy of your current data is saved first, so you can undo this.",
   "Automatic": "Automatic",
   "Automatic backups": "Automatic backups",
@@ -32,12 +33,10 @@
   "Couldn't read that file.": "Couldn't read that file.",
   "Couldn't share that backup.": "Couldn't share that backup.",
   "Create one above, or let automatic backups do it for you.": "Create one above, or let automatic backups do it for you.",
-  "Daily": "Daily",
-  "Delete {name}": "Delete {name}",
-  "Done": "Done",
   "Everything on this device will be replaced. A copy of your current data is saved first.": "Everything on this device will be replaced. A copy of your current data is saved first.",
   "Everything stays on this device unless you share the file yourself.": "Everything stays on this device unless you share the file yourself.",
   "Export and share": "Export and share",
+  "Google Drive": "Google Drive",
   "If the same item differs": "If the same item differs",
   "Include attachments": "Include attachments",
   "Keep the backup": "Keep the backup",
@@ -77,6 +76,5 @@
   "This backup was made by a newer version of the app. Update FocusFlow to restore it.": "This backup was made by a newer version of the app. Update FocusFlow to restore it.",
   "This file is not a FocusFlow backup.": "This file is not a FocusFlow backup.",
   "Until then, export a backup file and keep it in the cloud service of your choice.": "Until then, export a backup file and keep it in the cloud service of your choice.",
-  "Weekly": "Weekly",
   "Your current version is kept": "Your current version is kept"
 }

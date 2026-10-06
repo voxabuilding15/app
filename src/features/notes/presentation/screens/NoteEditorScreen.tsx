@@ -228,7 +228,7 @@ function NoteEditorBody({ noteId, initial, note }: NoteEditorBodyProps) {
           <Chip
             icon="folder"
             label={folderLabel}
-            accessibilityLabel={t('Folder {folderLabel}. Change', { folderLabel: folderLabel })}
+            accessibilityLabel={t('Folder {folderLabel}. Change', { folderLabel })}
             onPress={() => setPickingFolder(true)}
           />
         </View>

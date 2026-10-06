@@ -110,7 +110,7 @@ export function MovementSections({
       <FormSection title={t('Details')}>
         <SegmentedControl options={TYPE_OPTIONS} value={values.type} onChange={onType} />
         <Input
-          label={t('Amount ({currency})', { currency: currency })}
+          label={t('Amount ({currency})', { currency })}
           value={amountText}
           onChangeText={onAmountText}
           error={amountTextError ?? errors.amount}

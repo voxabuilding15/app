@@ -35,10 +35,10 @@ export function IncomeExpenseCard({ months, currency }: IncomeExpenseCardProps) 
         data={months.map((month) => ({
           label: formatMonth(month.month, 'short'),
           values: [month.incomeMinor, month.expenseMinor],
-          description: t('{month}: income {money}, expenses {money2}', {
+          description: t('{month}: income {income}, expenses {expenses}', {
             month: formatMonth(month.month, 'long'),
-            money: formatMoney(month.incomeMinor, currency),
-            money2: formatMoney(month.expenseMinor, currency),
+            income: formatMoney(month.incomeMinor, currency),
+            expenses: formatMoney(month.expenseMinor, currency),
           }),
         }))}
       />

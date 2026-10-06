@@ -39,7 +39,7 @@ export function ManageScreen() {
           ) : vm.isError ? (
             <EmptyState
               icon="error-outline"
-              title={t("Couldn't load {plural}", { plural: plural })}
+              title={t("Couldn't load {plural}", { plural })}
               message={t('Your data is safe on this device. Try again.')}
               actionLabel={t('Try again')}
               onAction={() => void vm.refetch()}
@@ -47,24 +47,20 @@ export function ManageScreen() {
           ) : vm.items.length === 0 ? (
             <EmptyState
               icon={vm.kind === 'category' ? 'folder' : 'label'}
-              title={t('No {plural} yet', { plural: plural })}
+              title={t('No {plural} yet', { plural })}
               message={
                 vm.kind === 'category'
                   ? t('Categories group tasks, like Work or Home.')
                   : t('Labels tag tasks across categories, like Errand or Waiting.')
               }
-              actionLabel={t('Add {noun}', { noun: noun })}
+              actionLabel={t('Add {noun}', { noun })}
               onAction={() => vm.startEditing(null)}
             />
           ) : (
             <NamedItemList items={vm.items} onEdit={vm.startEditing} onDelete={vm.remove} />
           )}
         </Screen>
-        <FAB
-          icon="add"
-          label={t('Add {noun}', { noun: noun })}
-          onPress={() => vm.startEditing(null)}
-        />
+        <FAB icon="add" label={t('Add {noun}', { noun })} onPress={() => vm.startEditing(null)} />
         {vm.failure ? <Snackbar message={vm.failure} onDismiss={vm.dismissFailure} /> : null}
       </View>
 

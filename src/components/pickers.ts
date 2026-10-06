@@ -1,4 +1,5 @@
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+import { appLocale } from '@/i18n/formatting';
 
 function open(mode: 'date' | 'time', initial: Date, is24Hour: boolean): Promise<Date | null> {
   return new Promise((resolve) => {
@@ -14,7 +15,7 @@ function open(mode: 'date' | 'time', initial: Date, is24Hour: boolean): Promise<
 
 /** True when the device locale formats times without AM/PM. */
 function uses24HourClock(): boolean {
-  return !/am|pm/i.test(new Date(2000, 0, 1, 13).toLocaleTimeString());
+  return !/am|pm/i.test(new Date(2000, 0, 1, 13).toLocaleTimeString(appLocale()));
 }
 
 /** Opens the system date picker; resolves to null if the user cancels. */

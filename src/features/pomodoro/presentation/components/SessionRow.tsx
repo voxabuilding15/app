@@ -65,7 +65,7 @@ export function SessionRow({ session, onOpen, onDelete }: SessionRowProps) {
       {focus ? (
         <PressableScale
           accessibilityRole="button"
-          accessibilityLabel={t('{summary}. Edit details', { summary: summary })}
+          accessibilityLabel={t('{summary}. Edit details', { summary })}
           pressedScale={0.99}
           onPress={() => onOpen(session)}
           style={{ flex: 1 }}
@@ -79,7 +79,7 @@ export function SessionRow({ session, onOpen, onDelete }: SessionRowProps) {
       )}
       <IconButton
         icon="delete-outline"
-        label={t('Delete {summary}', { summary: summary })}
+        label={t('Delete {summary}', { summary })}
         onPress={() => onDelete(session)}
       />
     </Card>

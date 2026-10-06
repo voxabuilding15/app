@@ -74,7 +74,7 @@ export function createSettingsUseCases({ storage, accounts }: SettingsDeps) {
           ok: false,
           error: t(
             '{current} and {code} use a different number of decimals, so existing amounts would change. Delete your accounts first to switch.',
-            { current: current, code: code },
+            { current, code },
           ),
         };
       }

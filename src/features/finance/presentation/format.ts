@@ -11,6 +11,7 @@ import type {
 } from '../domain/entities';
 import { msg } from '@/i18n/msg';
 import { currentTranslator } from '@/i18n/translate';
+import { appLocale } from '@/i18n/formatting';
 
 export const TRANSACTION_TYPE_LABEL: Record<TransactionType, string> = {
   expense: msg('Expense'),
@@ -45,7 +46,7 @@ export const BUDGET_PERIOD_LABEL: Record<BudgetPeriod, string> = {
 };
 
 export function formatTime(at: number): string {
-  return new Date(at).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+  return new Date(at).toLocaleTimeString(appLocale(), { hour: 'numeric', minute: '2-digit' });
 }
 
 /** "Today", "Yesterday" or a short date such as "Mon, 5 Oct" (with the year when it is not this one). */
@@ -60,7 +61,7 @@ export function formatDate(at: number, now: number): string {
     return t('Yesterday');
   }
   const sameYear = new Date(at).getFullYear() === new Date(now).getFullYear();
-  return new Date(at).toLocaleDateString(undefined, {
+  return new Date(at).toLocaleDateString(appLocale(), {
     weekday: 'short',
     day: 'numeric',
     month: 'short',
@@ -70,7 +71,7 @@ export function formatDate(at: number, now: number): string {
 
 /** "5 Oct 2026" for a day key. */
 export function formatDayKey(key: DateKey): string {
-  return new Date(dateKeyToNoon(key)).toLocaleDateString(undefined, {
+  return new Date(dateKeyToNoon(key)).toLocaleDateString(appLocale(), {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
@@ -81,7 +82,7 @@ export function formatDayKey(key: DateKey): string {
 export function formatMonth(month: string, style: 'short' | 'long'): string {
   const noon = dateKeyToNoon(`${month}-01`);
   return new Date(noon).toLocaleDateString(
-    undefined,
+    appLocale(),
     style === 'short' ? { month: 'short' } : { month: 'long', year: 'numeric' },
   );
 }
@@ -89,7 +90,10 @@ export function formatMonth(month: string, style: 'short' | 'long'): string {
 /** "5 Oct – 11 Oct" for the days a budget covers. */
 export function formatDayRange(from: DateKey, to: DateKey): string {
   const short = (key: DateKey) =>
-    new Date(dateKeyToNoon(key)).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+    new Date(dateKeyToNoon(key)).toLocaleDateString(appLocale(), {
+      day: 'numeric',
+      month: 'short',
+    });
   return from === to ? short(from) : `${short(from)} – ${short(to)}`;
 }
 
@@ -140,10 +144,10 @@ export function describeBudget(progress: BudgetProgress, currency: string): stri
       : t('{money} left', { money: formatMoney(remainingMinor, currency) });
   return [
     budget.name,
-    t('{lowerCase} budget', { lowerCase: BUDGET_PERIOD_LABEL[budget.period].toLowerCase() }),
-    t('{money} of {money2} spent', {
-      money: formatMoney(spentMinor, currency),
-      money2: formatMoney(budget.amountMinor, currency),
+    t('{period} budget', { period: t(BUDGET_PERIOD_LABEL[budget.period]).toLowerCase() }),
+    t('{spent} of {limit} spent', {
+      spent: formatMoney(spentMinor, currency),
+      limit: formatMoney(budget.amountMinor, currency),
     }),
     standing,
   ].join(', ');

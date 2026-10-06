@@ -16,7 +16,7 @@ export function TodayOverview({ due, done }: TodayOverviewProps) {
       ? t('Nothing scheduled today')
       : done === due
         ? t('All habits done today')
-        : t('{done} of {due} habits done today', { done: done, due: due });
+        : t('{done} of {due} habits done today', { done, due });
 
   return (
     <Card
@@ -30,7 +30,7 @@ export function TodayOverview({ due, done }: TodayOverviewProps) {
         label={
           due === 0
             ? t('No habits scheduled today')
-            : t('{done} of {due} habits done today', { done: done, due: due })
+            : t('{done} of {due} habits done today', { done, due })
         }
       >
         <Text variant="titleMedium">{due === 0 ? '–' : `${done}/${due}`}</Text>

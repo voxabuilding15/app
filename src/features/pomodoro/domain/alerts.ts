@@ -3,6 +3,7 @@ import type { PomodoroSettings } from './settings';
 import { nextPhase, startPhase, wantsAutoStart, type TimerKind, type TimerState } from './timer';
 import { msg } from '@/i18n/msg';
 import { currentTranslator } from '@/i18n/translate';
+import { appLocale } from '@/i18n/formatting';
 
 const PHASE_LABEL: Record<TimerKind, string> = {
   focus: msg('Focus'),
@@ -14,7 +15,7 @@ const PHASE_LABEL: Record<TimerKind, string> = {
 const MAX_BOUNDARIES = 4;
 
 function formatClock(at: number): string {
-  return new Date(at).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+  return new Date(at).toLocaleTimeString(appLocale(), { hour: 'numeric', minute: '2-digit' });
 }
 
 /** "24:05" for 1445 seconds. */
@@ -38,12 +39,12 @@ export function buildAlertPlan(state: TimerState, settings: PomodoroSettings): A
   const live =
     state.status === 'running'
       ? {
-          title: t('{value} in progress', { value: PHASE_LABEL[state.kind] }),
+          title: t('{phase} in progress', { phase: t(PHASE_LABEL[state.kind]) }),
           body: t('Ends at {clock}', { clock: formatClock(state.endsAt) }),
           paused: false,
         }
       : {
-          title: t('{value} paused', { value: PHASE_LABEL[state.kind] }),
+          title: t('{phase} paused', { phase: t(PHASE_LABEL[state.kind]) }),
           body: t('{countdown} left', { countdown: formatCountdown(state.remainingMs) }),
           paused: true,
         };
@@ -57,9 +58,9 @@ export function buildAlertPlan(state: TimerState, settings: PomodoroSettings): A
       const auto = wantsAutoStart(finished, settings);
       boundaries.push({
         at: current.endsAt,
-        title: t('{value} finished', { value: PHASE_LABEL[finished] }),
+        title: t('{phase} finished', { phase: t(PHASE_LABEL[finished]) }),
         body: auto
-          ? t('{value} has started', { value: PHASE_LABEL[next.kind] })
+          ? t('{phase} has started', { phase: t(PHASE_LABEL[next.kind]) })
           : next.kind === 'focus'
             ? t('Ready for the next focus session?')
             : t('Time for a {lowerCase}', { lowerCase: PHASE_LABEL[next.kind].toLowerCase() }),

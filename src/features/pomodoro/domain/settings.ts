@@ -74,7 +74,7 @@ export function validateSettings(settings: PomodoroSettings): SettingsErrors {
     const { min, max } = SETTING_RANGES[key];
     const value = settings[key];
     if (!Number.isInteger(value) || value < min || value > max) {
-      errors[key] = t('Choose a whole number from {min} to {max}', { min: min, max: max });
+      errors[key] = t('Choose a whole number from {min} to {max}', { min, max });
     }
   }
   return errors;

@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { Button, IconButton, Text } from '@/components';
 import { spacing } from '@/theme';
 import { useTranslator } from '@/i18n';
+import { msg } from '@/i18n/msg';
 
 import type { CalendarView } from '../../domain/views';
 
@@ -14,11 +15,18 @@ interface PeriodNavigatorProps {
   onToday: () => void;
 }
 
-const UNIT: Record<CalendarView, string> = {
-  month: 'month',
-  week: 'week',
-  day: 'day',
-  agenda: 'days',
+const PREVIOUS: Record<CalendarView, string> = {
+  month: msg('Previous month'),
+  week: msg('Previous week'),
+  day: msg('Previous day'),
+  agenda: msg('Previous days'),
+};
+
+const NEXT: Record<CalendarView, string> = {
+  month: msg('Next month'),
+  week: msg('Next week'),
+  day: msg('Next day'),
+  agenda: msg('Next days'),
 };
 
 /** Title of the period shown with previous, next and "Today" controls. */
@@ -39,11 +47,7 @@ export function PeriodNavigator({
         paddingHorizontal: spacing.sm,
       }}
     >
-      <IconButton
-        icon="chevron-left"
-        label={t('Previous {value}', { value: UNIT[view] })}
-        onPress={onPrevious}
-      />
+      <IconButton icon="chevron-left" label={t(PREVIOUS[view])} onPress={onPrevious} />
       <Text
         variant="titleMedium"
         accessibilityRole="header"
@@ -53,11 +57,7 @@ export function PeriodNavigator({
       >
         {title}
       </Text>
-      <IconButton
-        icon="chevron-right"
-        label={t('Next {value}', { value: UNIT[view] })}
-        onPress={onNext}
-      />
+      <IconButton icon="chevron-right" label={t(NEXT[view])} onPress={onNext} />
       <Button label={t('Today')} variant="tonal" onPress={onToday} />
     </View>
   );

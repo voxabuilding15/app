@@ -4,7 +4,6 @@ import { useColorScheme } from 'react-native';
 
 import { darkColors, lightColors, type ColorScheme } from './colors';
 import { useThemeStore, type ThemePreference } from './store';
-import { useTranslator } from '@/i18n';
 
 interface Theme {
   colors: ColorScheme;
@@ -40,10 +39,9 @@ export function ThemeProvider({ children }: PropsWithChildren) {
 }
 
 export function useTheme(): Theme {
-  const { t } = useTranslator();
   const theme = useContext(ThemeContext);
   if (theme === null) {
-    throw new Error(t('useTheme must be used inside ThemeProvider'));
+    throw new Error('useTheme must be used inside ThemeProvider');
   }
   return theme;
 }

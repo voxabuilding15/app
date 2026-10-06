@@ -21,17 +21,9 @@ import { useStatsViewModel } from '../view-models/useStatsViewModel';
 const WIDE_MIN_WIDTH = 900;
 const CONTENT_MAX_WIDTH = 1100;
 
-const MONTH_OPTIONS = STATS_MONTH_OPTIONS.map((value) => {
-  const { t } = useTranslator();
-  return {
-    value: String(value),
-    label: t('{value} months', { value: value }),
-  };
-});
-
 /** Income against expenses, spending by category, month on month and cashflow. */
 export function StatsSection() {
-  const { t } = useTranslator();
+  const { t, tn } = useTranslator();
   const { colors } = useTheme();
   const { width } = useWindowDimensions();
   const currency = useCurrency();
@@ -103,7 +95,10 @@ export function StatsSection() {
       }
     >
       <SegmentedControl
-        options={MONTH_OPTIONS}
+        options={STATS_MONTH_OPTIONS.map((value) => ({
+          value: String(value),
+          label: tn(value, '{count} month', '{count} months'),
+        }))}
         value={String(vm.months)}
         onChange={(value) => vm.setMonths(Number(value) as StatsMonths)}
       />

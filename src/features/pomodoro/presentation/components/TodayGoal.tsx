@@ -20,9 +20,9 @@ export function TodayGoal() {
   const text =
     fraction === null
       ? t('Today: {focusTime}', { focusTime: formatFocusTime(seconds) })
-      : t('Today: {focusTime} of {focusTime2}', {
+      : t('Today: {focusTime} of {goal}', {
           focusTime: formatFocusTime(seconds),
-          focusTime2: formatFocusTime(settings.dailyGoalMinutes * 60),
+          goal: formatFocusTime(settings.dailyGoalMinutes * 60),
         });
 
   return (

@@ -10,6 +10,7 @@ import type {
   PickedFile,
 } from './ports';
 import { currentTranslator } from '@/i18n/translate';
+import { appLocale } from '@/i18n/formatting';
 
 export const MAX_ATTACHMENTS_PER_NOTE = 20;
 export const MAX_ATTACHMENT_BYTES = 25 * 1024 * 1024;
@@ -153,7 +154,7 @@ export function createAttachmentUseCases({
       recording: { uri: string; durationMs: number },
     ): Promise<Attachment> {
       await ensureRoom(noteId);
-      const stamp = new Date(clock.now()).toLocaleString(undefined, {
+      const stamp = new Date(clock.now()).toLocaleString(appLocale(), {
         month: 'short',
         day: 'numeric',
         hour: 'numeric',
@@ -162,7 +163,7 @@ export function createAttachmentUseCases({
       return store(
         noteId,
         'audio',
-        t('Voice note {stamp}', { stamp: stamp }),
+        t('Voice note {stamp}', { stamp }),
         'audio/mp4',
         { copyFrom: recording.uri },
         Math.max(0, Math.round(recording.durationMs)),

@@ -90,7 +90,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 
 /** Goals, streak, deep focus, focus time per day, week and month, and the heatmap. */
 export function StatsPanel({ vm }: { vm: StatsViewModel }) {
-  const { t } = useTranslator();
+  const { t, tn } = useTranslator();
   const { colors } = useTheme();
   const [width, setWidth] = useState(0);
   const { overview } = vm;
@@ -140,11 +140,8 @@ export function StatsPanel({ vm }: { vm: StatsViewModel }) {
         <StatTile
           icon="local-fire-department"
           label={t('Current streak')}
-          value={`${overview.streak.current} ${overview.streak.current === 1 ? 'day' : 'days'}`}
-          caption={t('Best {longest} {value}', {
-            longest: overview.streak.longest,
-            value: overview.streak.longest === 1 ? 'day' : 'days',
-          })}
+          value={tn(overview.streak.current, '{count} day', '{count} days')}
+          caption={tn(overview.streak.longest, 'Best: {count} day', 'Best: {count} days')}
         />
         <StatTile
           icon="psychology"
@@ -189,7 +186,7 @@ export function StatsPanel({ vm }: { vm: StatsViewModel }) {
               gap={HEAT_GAP}
               selectedKey={vm.selected?.date ?? null}
               onPressCell={vm.selectDay}
-              label={t('Focus time over the last {weeks} weeks', { weeks: weeks })}
+              label={t('Focus time over the last {weeks} weeks', { weeks })}
             />
           ) : null}
         </View>

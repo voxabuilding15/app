@@ -197,7 +197,7 @@ export function TimelineGrid({
                 ))}
                 {days.length > 1 && allDay.length > HEADER_CHIPS ? (
                   <Text variant="labelSmall" tone="muted" style={{ fontSize: 10 }}>
-                    {t('+{value} more', { value: allDay.length - HEADER_CHIPS })}
+                    {t('+{count} more', { count: allDay.length - HEADER_CHIPS })}
                   </Text>
                 ) : null}
               </View>

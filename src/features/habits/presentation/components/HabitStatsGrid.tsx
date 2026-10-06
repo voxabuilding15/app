@@ -22,7 +22,7 @@ interface HabitStatsGridProps {
 }
 
 export function HabitStatsGrid({ stats, period, accent }: HabitStatsGridProps) {
-  const { t } = useTranslator();
+  const { t, tn } = useTranslator();
   return (
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md }}>
       <StatTile
@@ -42,10 +42,7 @@ export function HabitStatsGrid({ stats, period, accent }: HabitStatsGridProps) {
         accent={accent}
         label={t('Total completions')}
         value={String(stats.totalCompletions)}
-        caption={t('{activeDays} active {value}', {
-          activeDays: stats.activeDays,
-          value: stats.activeDays === 1 ? 'day' : 'days',
-        })}
+        caption={tn(stats.activeDays, '{count} active day', '{count} active days')}
       />
       <StatTile
         icon="percent"

@@ -47,12 +47,20 @@ function TotalRow({ label, current, previous, currency, higherIsBetter }: TotalR
   return (
     <View
       accessible
-      accessibilityLabel={t('{label}: {money} this month, {money2} last month{value}', {
-        label: label,
-        money: formatMoney(current, currency),
-        money2: formatMoney(previous, currency),
-        value: change === null ? '' : `, ${describePercent(change)}`,
-      })}
+      accessibilityLabel={
+        change === null
+          ? t('{label}: {current} this month, {previous} last month', {
+              label,
+              current: formatMoney(current, currency),
+              previous: formatMoney(previous, currency),
+            })
+          : t('{label}: {current} this month, {previous} last month, {change}', {
+              label,
+              current: formatMoney(current, currency),
+              previous: formatMoney(previous, currency),
+              change: describePercent(change),
+            })
+      }
       style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md }}
     >
       <Text variant="bodyMedium" style={{ flex: 1 }}>
@@ -110,10 +118,10 @@ export function MonthComparisonCard({
         higherIsBetter
       />
       <Text variant="labelLarge" accessibilityRole="header">
-        {t('Biggest changes in {noun}', { noun: noun })}
+        {t('Biggest changes in {noun}', { noun })}
       </Text>
       {visible.length === 0 ? (
-        <Text tone="muted">{t('No change in {noun} between these months.', { noun: noun })}</Text>
+        <Text tone="muted">{t('No change in {noun} between these months.', { noun })}</Text>
       ) : (
         visible.map((change) => {
           const up = change.deltaMinor > 0;

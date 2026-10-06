@@ -22,7 +22,7 @@ const SEARCH_DEBOUNCE_MS = 250;
 
 function plural(count: number): string {
   const { t } = currentTranslator();
-  return count === 1 ? t('Task') : t('{count} tasks', { count: count });
+  return count === 1 ? t('Task') : t('{count} tasks', { count });
 }
 
 export function useTaskListViewModel() {

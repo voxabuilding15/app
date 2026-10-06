@@ -17,6 +17,12 @@ const RECENT_TITLE = {
   monthly: msg('Last 6 months'),
 } as const;
 
+const RECENT_LABEL = {
+  daily: msg('Last 7 days against a goal of {goalCount}'),
+  weekly: msg('Last 8 weeks against a goal of {goalCount}'),
+  monthly: msg('Last 6 months against a goal of {goalCount}'),
+} as const;
+
 function recentLabel(unit: UnitProgress, period: Habit['period']): string {
   switch (period) {
     case 'daily':
@@ -51,16 +57,13 @@ export function HabitChartsCard({ habit, stats }: HabitChartsCardProps) {
     <Card style={{ gap: spacing.xl }}>
       <View style={{ gap: spacing.md }}>
         <Text variant="titleMedium" accessibilityRole="header">
-          {RECENT_TITLE[habit.period]}
+          {t(RECENT_TITLE[habit.period])}
         </Text>
         <BarChart
           data={recent}
           color={habit.color}
           goal={habit.goalCount}
-          label={t('{value} against a goal of {goalCount}', {
-            value: RECENT_TITLE[habit.period],
-            goalCount: habit.goalCount,
-          })}
+          label={t(RECENT_LABEL[habit.period], { goalCount: habit.goalCount })}
         />
       </View>
       {hasHistory ? (

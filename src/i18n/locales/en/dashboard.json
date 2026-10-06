@@ -8,7 +8,6 @@
   "{count} session_one": "{count} session",
   "{count} session_other": "{count} sessions",
   "Add expense": "Add expense",
-  "Add task": "Add task",
   "Good afternoon": "Good afternoon",
   "Good evening": "Good evening",
   "Good morning": "Good morning",
@@ -17,6 +16,5 @@
   "Nothing overdue": "Nothing overdue",
   "Quick actions": "Quick actions",
   "Scheduled today": "Scheduled today",
-  "See all statistics": "See all statistics",
-  "Start focus": "Start focus"
+  "See all statistics": "See all statistics"
 }

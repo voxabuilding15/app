@@ -4,13 +4,14 @@ import type { CalendarItem } from '../domain/items';
 import { weekDays, type CalendarView } from '../domain/views';
 import { msg } from '@/i18n/msg';
 import { currentTranslator } from '@/i18n/translate';
+import { appLocale } from '@/i18n/formatting';
 
 export function formatTime(ms: number): string {
-  return new Date(ms).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+  return new Date(ms).toLocaleTimeString(appLocale(), { hour: 'numeric', minute: '2-digit' });
 }
 
 export function formatDayLong(day: DateKey): string {
-  return new Date(dateKeyToNoon(day)).toLocaleDateString(undefined, {
+  return new Date(dateKeyToNoon(day)).toLocaleDateString(appLocale(), {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
@@ -18,7 +19,7 @@ export function formatDayLong(day: DateKey): string {
 }
 
 export function formatDayShort(day: DateKey): string {
-  return new Date(dateKeyToNoon(day)).toLocaleDateString(undefined, {
+  return new Date(dateKeyToNoon(day)).toLocaleDateString(appLocale(), {
     weekday: 'short',
     day: 'numeric',
     month: 'short',
@@ -26,7 +27,7 @@ export function formatDayShort(day: DateKey): string {
 }
 
 export function weekdayShort(day: DateKey): string {
-  return new Date(dateKeyToNoon(day)).toLocaleDateString(undefined, { weekday: 'short' });
+  return new Date(dateKeyToNoon(day)).toLocaleDateString(appLocale(), { weekday: 'short' });
 }
 
 /** "9:00 AM – 10:30 AM", "All day", or a single time for a point-in-time item. */
@@ -42,7 +43,7 @@ export function formatTimeRange(item: CalendarItem): string {
 
 /** "9 AM" label for an hour of the day. */
 export function formatHour(hour: number): string {
-  return new Date(2000, 0, 1, hour).toLocaleTimeString(undefined, { hour: 'numeric' });
+  return new Date(2000, 0, 1, hour).toLocaleTimeString(appLocale(), { hour: 'numeric' });
 }
 
 /** Heading for the period shown: "October 2026", "5 – 11 Oct 2026", "Monday 5 October". */
@@ -51,17 +52,17 @@ export function periodTitle(view: CalendarView, anchor: DateKey): string {
   const noon = new Date(dateKeyToNoon(anchor));
   switch (view) {
     case 'month':
-      return noon.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+      return noon.toLocaleDateString(appLocale(), { month: 'long', year: 'numeric' });
     case 'week': {
       const days = weekDays(anchor);
       const first = new Date(dateKeyToNoon(days[0]!));
       const last = new Date(dateKeyToNoon(days[6]!));
       const sameMonth = first.getMonth() === last.getMonth();
       const start = first.toLocaleDateString(
-        undefined,
+        appLocale(),
         sameMonth ? { day: 'numeric' } : { day: 'numeric', month: 'short' },
       );
-      const end = last.toLocaleDateString(undefined, {
+      const end = last.toLocaleDateString(appLocale(), {
         day: 'numeric',
         month: 'short',
         year: 'numeric',

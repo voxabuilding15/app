@@ -30,7 +30,7 @@ interface DrawingModalProps {
 
 /** Full-screen sketch pad. Mount only while open so it starts fresh each time. */
 export function DrawingModal({ initial, onSave, onClose }: DrawingModalProps) {
-  const { t } = useTranslator();
+  const { t, tn } = useTranslator();
   const { colors } = useTheme();
   const { width, height } = useWindowDimensions();
   const [strokes, setStrokes] = useState<Stroke[]>(initial?.strokes ?? []);
@@ -96,10 +96,11 @@ export function DrawingModal({ initial, onSave, onClose }: DrawingModalProps) {
             <GestureDetector gesture={pan}>
               <View
                 accessible
-                accessibilityLabel={t('Drawing canvas, {length} {value}', {
-                  length: strokes.length,
-                  value: strokes.length === 1 ? 'stroke' : 'strokes',
-                })}
+                accessibilityLabel={tn(
+                  strokes.length,
+                  'Drawing canvas, {count} stroke',
+                  'Drawing canvas, {count} strokes',
+                )}
                 style={{
                   borderRadius: radius.md,
                   overflow: 'hidden',

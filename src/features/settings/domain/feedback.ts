@@ -50,9 +50,9 @@ export function composeFeedback(
     );
   }
   return {
-    subject: t('FocusFlow {appVersion} – {value}', {
+    subject: t('FocusFlow {appVersion} – {subject}', {
       appVersion: diagnostics.appVersion,
-      value: SUBJECTS[kind],
+      subject: t(SUBJECTS[kind]),
     }),
     body: lines.join('\n'),
   };
