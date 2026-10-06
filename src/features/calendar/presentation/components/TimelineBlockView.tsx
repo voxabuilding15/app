@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
-import { Pressable, View } from 'react-native';
+import { I18nManager, Pressable, View } from 'react-native';
 
 import { Text } from '@/components';
 import { radius, useTheme, withAlpha } from '@/theme';
@@ -94,10 +94,11 @@ export function TimelineBlockView({ block, metrics, onPress, onMove }: TimelineB
         {
           columnWidth: metrics.moveAcrossDays ? columnWidth : 0,
           hourHeight,
+          reverseDays: I18nManager.isRTL,
         },
       );
       // Rest on the snapped position while the move is applied.
-      translateX.set(shift.days * columnWidth);
+      translateX.set(shift.days * columnWidth * (I18nManager.isRTL ? -1 : 1));
       translateY.set((shift.minutes / 60) * hourHeight);
       void commit(shift);
     })

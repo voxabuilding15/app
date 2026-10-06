@@ -99,10 +99,12 @@ export function usedPhrases() {
     found.set(key, entry);
   };
   for (const file of sourceFiles(join(root, 'src'))) {
-    if (file.includes(`${join('src', 'i18n')}`)) {
-      continue;
-    }
-    const source = ts.createSourceFile(file, readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true);
+    const source = ts.createSourceFile(
+      file,
+      readFileSync(file, 'utf8'),
+      ts.ScriptTarget.Latest,
+      true,
+    );
     const visit = (node) => {
       if (ts.isCallExpression(node)) {
         const name = calleeName(node.expression);
@@ -129,7 +131,8 @@ function categories(language) {
   return new Intl.PluralRules(language).resolvedOptions().pluralCategories;
 }
 
-const placeholders = (text) => [...new Set([...text.matchAll(/\{(\w+)\}/g)].map((m) => m[1]))].sort();
+const placeholders = (text) =>
+  [...new Set([...text.matchAll(/\{(\w+)\}/g)].map((m) => m[1]))].sort();
 
 function readNamespace(language, namespace) {
   const path = join(localesDir, language, `${namespace}.json`);
@@ -138,9 +141,14 @@ function readNamespace(language, namespace) {
 
 function writeNamespace(language, namespace, data) {
   const sorted = Object.fromEntries(
-    Object.entries(data).sort(([a], [b]) => a.localeCompare(b, 'en', { sensitivity: 'base' }) || (a < b ? -1 : 1)),
+    Object.entries(data).sort(
+      ([a], [b]) => a.localeCompare(b, 'en', { sensitivity: 'base' }) || (a < b ? -1 : 1),
+    ),
   );
-  writeFileSync(join(localesDir, language, `${namespace}.json`), `${JSON.stringify(sorted, null, 2)}\n`);
+  writeFileSync(
+    join(localesDir, language, `${namespace}.json`),
+    `${JSON.stringify(sorted, null, 2)}\n`,
+  );
 }
 
 function allNamespaces() {
@@ -184,11 +192,14 @@ export function problems() {
   for (const language of LANGUAGES) {
     const have = merged(language);
     const places = Object.fromEntries(
-      allNamespaces().flatMap((ns) => Object.keys(readNamespace(language, ns)).map((key) => [key, ns])),
+      allNamespaces().flatMap((ns) =>
+        Object.keys(readNamespace(language, ns)).map((key) => [key, ns]),
+      ),
     );
     for (const [key, entry] of used) {
       const wanted = home(entry);
-      const forms = entry.other === undefined ? [key] : categories(language).map((c) => `${key}_${c}`);
+      const forms =
+        entry.other === undefined ? [key] : categories(language).map((c) => `${key}_${c}`);
       for (const form of forms) {
         const value = have[form];
         if (typeof value !== 'string' || value.trim() === '') {
@@ -201,7 +212,10 @@ export function problems() {
         const reference = expected[form] ?? expected[`${key}_other`] ?? key;
         // A plural form may leave out {count} ("one day", "two days") when the word says it already.
         const ignore = entry.other === undefined ? [] : ['count'];
-        const same = (text) => placeholders(text).filter((name) => !ignore.includes(name)).join();
+        const same = (text) =>
+          placeholders(text)
+            .filter((name) => !ignore.includes(name))
+            .join();
         if (same(value) !== same(reference)) {
           issues.push(`${language}: "${form}" has different placeholders than the English`);
         }
@@ -254,7 +268,9 @@ if (command === 'extract') {
   if (issues.length > 60) {
     process.stdout.write(`... and ${issues.length - 60} more\n`);
   }
-  process.stdout.write(issues.length === 0 ? 'translations are complete\n' : `${issues.length} problems\n`);
+  process.stdout.write(
+    issues.length === 0 ? 'translations are complete\n' : `${issues.length} problems\n`,
+  );
   process.exit(issues.length === 0 ? 0 : 1);
 } else if (command === 'todo') {
   const [language, only] = args;
@@ -304,8 +320,12 @@ if (command === 'extract') {
   for (const ns of touched) {
     writeNamespace(language, ns, data[ns]);
   }
-  process.stdout.write(`merged ${Object.keys(incoming).length - skipped} phrases into ${[...touched].join(', ')}\n`);
+  process.stdout.write(
+    `merged ${Object.keys(incoming).length - skipped} phrases into ${[...touched].join(', ')}\n`,
+  );
 } else if (process.argv[1] === import.meta.filename) {
-  process.stdout.write('usage: node scripts/i18n.mjs extract | check | todo <lang> [area] | merge <lang> <file>\n');
+  process.stdout.write(
+    'usage: node scripts/i18n.mjs extract | check | todo <lang> [area] | merge <lang> <file>\n',
+  );
   process.exit(command === undefined ? 0 : 1);
 }

@@ -16,6 +16,18 @@ export interface Translator {
 
 export type Translate = (key: string, options?: Record<string, unknown>) => string;
 
+/** English text for every plural form, so an untranslated phrase reads right in any language. */
+function pluralDefaults(one: string, other: string): Record<string, string> {
+  return {
+    defaultValue_one: one,
+    defaultValue_zero: other,
+    defaultValue_two: other,
+    defaultValue_few: other,
+    defaultValue_many: other,
+    defaultValue_other: other,
+  };
+}
+
 export function buildTranslator(translate: Translate, language: string): Translator {
   const code = isLanguageCode(language) ? language : DEFAULT_LANGUAGE;
   const info = LANGUAGE_INFO[code];
@@ -25,7 +37,7 @@ export function buildTranslator(translate: Translate, language: string): Transla
     isRTL: info.rtl,
     t: (text, vars) => translate(text, { ...vars }),
     tn: (count, one, other, vars) =>
-      translate(one, { ...vars, count, defaultValue_one: one, defaultValue_other: other }),
+      translate(one, { ...vars, count, ...pluralDefaults(one, other) }),
   };
 }
 

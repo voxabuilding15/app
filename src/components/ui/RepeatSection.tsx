@@ -20,22 +20,23 @@ import { FormSection } from './FormSection';
 import { Input } from './Input';
 import { Text } from './Text';
 import { WEEKDAY_DISPLAY_ORDER, WeekdayChips } from './WeekdayChips';
+import { translatedLabels } from '@/i18n/labels';
 
-const PRESET_LABEL: Record<RecurrencePreset, string> = {
+const PRESET_LABEL: Record<RecurrencePreset, string> = translatedLabels({
   none: msg('Never'),
   daily: msg('Daily'),
   weekly: msg('Weekly'),
   monthly: msg('Monthly'),
   yearly: msg('Yearly'),
   custom: msg('Custom'),
-};
+});
 
-const UNIT_LABEL: Record<RecurrenceUnit, string> = {
+const UNIT_LABEL: Record<RecurrenceUnit, string> = translatedLabels({
   day: msg('Days'),
   week: msg('Weeks'),
   month: msg('Months'),
   year: msg('Years'),
-};
+});
 
 /** Plain-language description such as "Daily", "Every 2 weeks on Mon, Wed" or "Yearly". */
 export function describeRecurrence(rule: RecurrenceRule): string {

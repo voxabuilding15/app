@@ -57,7 +57,7 @@ export function FormatToolbar({ onInline, onBlock }: FormatToolbarProps) {
         <IconButton
           key={button.format}
           icon={button.icon}
-          label={button.label}
+          label={t(button.label)}
           onPress={() => onInline(button.format)}
         />
       ))}
@@ -65,7 +65,7 @@ export function FormatToolbar({ onInline, onBlock }: FormatToolbarProps) {
         <IconButton
           key={button.format}
           icon={button.icon}
-          label={button.label}
+          label={t(button.label)}
           onPress={() => onBlock(button.format)}
         />
       ))}

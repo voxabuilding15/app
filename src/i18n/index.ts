@@ -1,7 +1,8 @@
 import './bootstrap';
 
 export { currentLanguageChoice, deviceLanguageTags, syncLanguage } from './bootstrap';
-export { applyDirection, planDirection } from './direction';
+export { applyDirection } from './direction';
+export { planDirection } from './direction-plan';
 export { appLocale, isRtl, monthName, weekdayName } from './formatting';
 export { i18n } from './instance';
 export {

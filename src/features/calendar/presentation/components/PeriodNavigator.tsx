@@ -6,6 +6,7 @@ import { useTranslator } from '@/i18n';
 import { msg } from '@/i18n/msg';
 
 import type { CalendarView } from '../../domain/views';
+import { translatedLabels } from '@/i18n/labels';
 
 interface PeriodNavigatorProps {
   title: string;
@@ -15,19 +16,19 @@ interface PeriodNavigatorProps {
   onToday: () => void;
 }
 
-const PREVIOUS: Record<CalendarView, string> = {
+const PREVIOUS: Record<CalendarView, string> = translatedLabels({
   month: msg('Show previous month'),
   week: msg('Show previous week'),
   day: msg('Show previous day'),
   agenda: msg('Show previous days'),
-};
+});
 
-const NEXT: Record<CalendarView, string> = {
+const NEXT: Record<CalendarView, string> = translatedLabels({
   month: msg('Show next month'),
   week: msg('Show next week'),
   day: msg('Show next day'),
   agenda: msg('Show next days'),
-};
+});
 
 /** Title of the period shown with previous, next and "Today" controls. */
 export function PeriodNavigator({

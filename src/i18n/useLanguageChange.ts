@@ -4,6 +4,7 @@ import { Alert } from 'react-native';
 import { applyDirection, directionMatches } from './direction';
 import { currentLanguageChoice } from './bootstrap';
 import { LANGUAGE_INFO, type Language } from './languages';
+import { currentTranslator } from './translate';
 import { useTranslator } from './useTranslator';
 
 /**
@@ -11,11 +12,13 @@ import { useTranslator } from './useTranslator';
  * (Arabic), the layout needs a restart, which is offered first so nothing is lost by surprise.
  */
 export function useLanguageChange(): (language: Language) => void {
-  const { t, setPreference } = useTranslator();
+  const { setPreference } = useTranslator();
 
   return useCallback(
     (language: Language) => {
       setPreference(language);
+      // The words have already changed, so the question is asked in the new language.
+      const { t } = currentTranslator();
       const wantRtl = LANGUAGE_INFO[currentLanguageChoice()].rtl;
       if (directionMatches(wantRtl)) {
         return;
@@ -43,6 +46,6 @@ export function useLanguageChange(): (language: Language) => void {
         ],
       );
     },
-    [setPreference, t],
+    [setPreference],
   );
 }

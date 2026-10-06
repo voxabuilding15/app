@@ -60,6 +60,16 @@ jest.mock('react-native-mmkv', () => {
   };
 });
 
+// The phone is set to English, so tests see the same text as before.
+jest.mock('expo-localization', () => ({
+  getLocales: () => [{ languageTag: 'en-US', languageCode: 'en', textDirection: 'ltr' }],
+}));
+
+jest.mock('react-native-restart', () => ({
+  __esModule: true,
+  default: { restart: jest.fn(), Restart: jest.fn(), getReason: jest.fn(async () => null) },
+}));
+
 jest.mock('expo-haptics', () => ({
   impactAsync: jest.fn(),
   notificationAsync: jest.fn(),

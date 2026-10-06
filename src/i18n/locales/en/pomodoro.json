@@ -7,6 +7,8 @@
   "{count} second_one": "{count} second",
   "{count} second_other": "{count} seconds",
   "{countdown} left": "{countdown} left",
+  "{done} of {goal}": "{done} of {goal}",
+  "{kind} {title}: {time}": "{kind} {title}: {time}",
   "{kind}, {time} left": "{kind}, {time} left",
   "{kind}, {time} left, paused": "{kind}, {time} left, paused",
   "{phase} finished": "{phase} finished",

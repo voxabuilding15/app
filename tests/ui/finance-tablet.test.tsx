@@ -57,7 +57,7 @@ describe('finance tablet layout (1100 x 800)', () => {
     await screen.findByLabelText(/^Cash/);
     expect(halfWidthCells()).toBe(2);
     await fireEvent.press(screen.getByLabelText('Budgets'));
-    await screen.findByLabelText(/^A, monthly/);
+    await screen.findByLabelText(/^A, Monthly/);
     expect(halfWidthCells()).toBe(2);
     await fireEvent.press(screen.getByLabelText('Recurring'));
     await screen.findByLabelText(/^Expense \$9\.00/);

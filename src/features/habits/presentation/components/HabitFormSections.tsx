@@ -23,13 +23,14 @@ import { HABIT_ICONS } from '../icons';
 
 import { HabitIconBubble } from './HabitIconBubble';
 import { msg } from '@/i18n/msg';
+import { translatedLabels } from '@/i18n/labels';
 
-const PRESET_LABEL: Record<FrequencyPreset, string> = {
+const PRESET_LABEL: Record<FrequencyPreset, string> = translatedLabels({
   daily: msg('Daily'),
   weekly: msg('Weekly'),
   monthly: msg('Monthly'),
   custom: msg('Custom days'),
-};
+});
 
 interface AppearanceSectionProps {
   draft: HabitDraft;

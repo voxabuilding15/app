@@ -149,7 +149,7 @@ describe('BudgetsSection', () => {
     await renderWithApp(<BudgetsSection />, app);
 
     const card = await screen.findByLabelText(
-      'Food, monthly budget, $50.00 of $200.00 spent, $150.00 left',
+      'Food, Monthly budget, $50.00 of $200.00 spent, $150.00 left',
     );
     expect(card).toBeTruthy();
     expect(screen.getByText('$150.00 left')).toBeTruthy();
@@ -168,7 +168,7 @@ describe('BudgetsSection', () => {
     expect(await screen.findByText('Over by $5.50')).toBeTruthy();
     expect(screen.getByText('1 budget is over its limit')).toBeTruthy();
     expect(
-      screen.getByLabelText(/^Tight, monthly budget, \$15\.50 of \$10\.00 spent, over by \$5\.50/),
+      screen.getByLabelText(/^Tight, Monthly budget, \$15\.50 of \$10\.00 spent, over by \$5\.50/),
     ).toBeTruthy();
     expect(screen.getByLabelText('155% of the budget spent')).toBeTruthy();
   });
@@ -177,14 +177,14 @@ describe('BudgetsSection', () => {
     const app = createApp();
     const id = await addBudget(app, { name: 'Fun' });
     await renderWithApp(<BudgetsSection />, app);
-    await fireEvent.press(await screen.findByLabelText(/^Fun, monthly budget/));
+    await fireEvent.press(await screen.findByLabelText(/^Fun, Monthly budget/));
     expect(router.push).toHaveBeenCalledWith({ pathname: '/finance/budget/[id]', params: { id } });
 
     await fireEvent.press(screen.getByLabelText('Delete'));
     expect(await screen.findByText('Budget deleted')).toBeTruthy();
     await gone(/^Fun/);
     await fireEvent.press(screen.getByLabelText('Undo'));
-    expect(await screen.findByLabelText(/^Fun, monthly budget/)).toBeTruthy();
+    expect(await screen.findByLabelText(/^Fun, Monthly budget/)).toBeTruthy();
   });
 
   it('labels weekly, custom and upcoming budgets', async () => {

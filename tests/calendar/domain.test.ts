@@ -424,6 +424,15 @@ describe('drag math', () => {
 
   it('snaps vertical drags to 15 minutes and converts horizontal drags to whole days', () => {
     assert.deepEqual(dragToShift(0, 60, metrics), { days: 0, minutes: 60 });
+    // With the layout read right to left, a drag to the right goes to the earlier day.
+    assert.deepEqual(dragToShift(2 * metrics.columnWidth, 0, { ...metrics, reverseDays: true }), {
+      days: -2,
+      minutes: 0,
+    });
+    assert.deepEqual(dragToShift(-metrics.columnWidth, 0, { ...metrics, reverseDays: true }), {
+      days: 1,
+      minutes: 0,
+    });
     assert.deepEqual(dragToShift(0, 22, metrics), { days: 0, minutes: 15 });
     assert.deepEqual(dragToShift(0, 7, metrics), { days: 0, minutes: 0 });
     assert.deepEqual(dragToShift(0, -37, metrics), { days: 0, minutes: -30 });

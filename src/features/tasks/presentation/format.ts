@@ -4,12 +4,13 @@ import { describeRecurrence } from '@/components';
 import { msg } from '@/i18n/msg';
 import { currentTranslator } from '@/i18n/translate';
 import { appLocale } from '@/i18n/formatting';
+import { translatedLabels } from '@/i18n/labels';
 
-export const PRIORITY_LABEL: Record<Priority, string> = {
+export const PRIORITY_LABEL: Record<Priority, string> = translatedLabels({
   low: msg('Low'),
   medium: msg('Medium'),
   high: msg('High'),
-};
+});
 
 export function formatTime(at: number): string {
   return new Date(at).toLocaleTimeString(appLocale(), { hour: 'numeric', minute: '2-digit' });

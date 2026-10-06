@@ -428,7 +428,7 @@ describe('NoteEditorScreen: attachments', () => {
     };
     await openNew(app);
     await fireEvent.changeText(screen.getByLabelText('Title'), 'With PDF');
-    await fireEvent.press(screen.getByLabelText('Add pdf'));
+    await fireEvent.press(screen.getByLabelText('Add PDF'));
     await fireEvent.press(await screen.findByLabelText(/^PDF: plan\.pdf, 2 KB/));
     await waitFor(() =>
       expect(sharing.shareAsync).toHaveBeenCalledWith(
@@ -448,7 +448,7 @@ describe('NoteEditorScreen: attachments', () => {
     };
     await openNew(app);
     await fireEvent.changeText(screen.getByLabelText('Title'), 'Bad file');
-    await fireEvent.press(screen.getByLabelText('Add pdf'));
+    await fireEvent.press(screen.getByLabelText('Add PDF'));
     expect(await screen.findByText('Choose a PDF file.')).toBeTruthy();
   });
 

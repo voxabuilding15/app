@@ -10,6 +10,8 @@
   "{count} second_one": "{count} seconde",
   "{count} second_other": "{count} secondes",
   "{countdown} left": "{countdown} restantes",
+  "{done} of {goal}": "{done} sur {goal}",
+  "{kind} {title}: {time}": "{kind} {title} : {time}",
   "{kind}, {time} left": "{kind}, {time} restantes",
   "{kind}, {time} left, paused": "{kind}, {time} restantes, en pause",
   "{phase} finished": "{phase} terminée",

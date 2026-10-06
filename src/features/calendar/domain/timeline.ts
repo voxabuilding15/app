@@ -85,6 +85,8 @@ export interface DragMetrics {
   columnWidth: number;
   hourHeight: number;
   stepMinutes?: number;
+  /** Days run right to left, so dragging to the right goes back in time. */
+  reverseDays?: boolean;
 }
 
 export interface TimeShift {
@@ -95,7 +97,8 @@ export interface TimeShift {
 /** Converts a drag distance in px into whole days and snapped minutes. */
 export function dragToShift(dx: number, dy: number, metrics: DragMetrics): TimeShift {
   const step = metrics.stepMinutes ?? SNAP_MINUTES;
-  const days = metrics.columnWidth > 0 ? Math.round(dx / metrics.columnWidth) : 0;
+  const direction = metrics.reverseDays === true ? -1 : 1;
+  const days = metrics.columnWidth > 0 ? Math.round((dx * direction) / metrics.columnWidth) : 0;
   const minutes = Math.round((dy / metrics.hourHeight) * (60 / step)) * step;
   return { days: days === 0 ? 0 : days, minutes: minutes === 0 ? 0 : minutes };
 }

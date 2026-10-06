@@ -4,6 +4,7 @@ import { Alert, Linking, Share } from 'react-native';
 import { readPrivacy } from '@/core';
 import { FeedbackScreen } from '@/features/settings/presentation/screens/FeedbackScreen';
 import { SettingsScreen } from '@/features/settings/presentation/screens/SettingsScreen';
+import { syncLanguage } from '@/i18n/bootstrap';
 import { useLanguageStore } from '@/i18n/store';
 
 import { createSeeder } from '../support/seed';
@@ -15,9 +16,14 @@ jest.mock('react-native/Libraries/Utilities/useWindowDimensions', () => ({
   default: () => ({ width: 400, height: 800, scale: 2, fontScale: 1 }),
 }));
 
+const localization = jest.requireMock('expo-localization') as { getLocales: () => unknown };
+const englishPhone = localization.getLocales;
+
 afterEach(() => {
   jest.restoreAllMocks();
+  localization.getLocales = englishPhone;
   useLanguageStore.setState({ preference: 'system' });
+  syncLanguage();
 });
 
 describe('SettingsScreen', () => {
@@ -43,24 +49,57 @@ describe('SettingsScreen', () => {
 
   it('switches the whole screen to French and back', async () => {
     await renderWithApp(<SettingsScreen />);
+    expect(await screen.findByLabelText('System (English)')).toBeTruthy();
     await fireEvent.press(await screen.findByLabelText('Français'));
     expect(await screen.findByText('Paramètres')).toBeTruthy();
     expect(screen.getByText('Apparence')).toBeTruthy();
-    expect(screen.getAllByLabelText('Système')).toHaveLength(2);
+    expect(screen.getByLabelText('Système (Français)')).toBeTruthy();
+    expect(useLanguageStore.getState().preference).toBe('fr');
     await fireEvent.press(screen.getByLabelText('English'));
     expect(await screen.findByText('Appearance')).toBeTruthy();
   });
 
   it('follows a French phone when the language is left on System', async () => {
-    const original = Intl.DateTimeFormat;
-    jest
-      .spyOn(Intl, 'DateTimeFormat')
-      .mockImplementation(
-        (...args: ConstructorParameters<typeof Intl.DateTimeFormat>) =>
-          new original(args[0] ?? 'fr-FR', args[1]) as Intl.DateTimeFormat,
-      );
+    localization.getLocales = () => [{ languageTag: 'fr-FR', languageCode: 'fr' }];
+    syncLanguage();
     await renderWithApp(<SettingsScreen />);
     expect(await screen.findByText('Apparence')).toBeTruthy();
+    expect(screen.getByLabelText('Système (Français)')).toBeTruthy();
+    expect(useLanguageStore.getState().preference).toBe('system');
+  });
+
+  it('falls back to English when the phone speaks a language the app does not have', async () => {
+    localization.getLocales = () => [{ languageTag: 'de-DE', languageCode: 'de' }];
+    syncLanguage();
+    await renderWithApp(<SettingsScreen />);
+    expect(await screen.findByText('Appearance')).toBeTruthy();
+  });
+
+  it('offers a restart when the language reads the other way, and mirrors the layout on restart', async () => {
+    const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
+    const restart = jest.requireMock('react-native-restart').default.restart as jest.Mock;
+    const { I18nManager } = jest.requireActual('react-native') as typeof import('react-native');
+    const force = jest.spyOn(I18nManager, 'forceRTL').mockImplementation(() => undefined);
+
+    await renderWithApp(<SettingsScreen />);
+    await fireEvent.press(await screen.findByLabelText('العربية'));
+    // The words change at once.
+    expect(await screen.findByText('الإعدادات')).toBeTruthy();
+    expect(alert).toHaveBeenCalledTimes(1);
+    const buttons = alert.mock.calls[0]?.[2] as { text: string; onPress?: () => void }[];
+    expect(buttons.map((button) => button.text)).toEqual(['لاحقًا', 'إعادة التشغيل الآن']);
+
+    buttons[1]?.onPress?.();
+    await waitFor(() => expect(restart).toHaveBeenCalled());
+    expect(force).toHaveBeenCalledWith(true);
+  });
+
+  it('does not ask for a restart between languages that read the same way', async () => {
+    const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
+    await renderWithApp(<SettingsScreen />);
+    await fireEvent.press(await screen.findByLabelText('Français'));
+    expect(await screen.findByText('Paramètres')).toBeTruthy();
+    expect(alert).not.toHaveBeenCalled();
   });
 
   it('opens the backup screen and shows what is stored', async () => {

@@ -12,12 +12,13 @@ import type {
 import { msg } from '@/i18n/msg';
 import { currentTranslator } from '@/i18n/translate';
 import { appLocale } from '@/i18n/formatting';
+import { translatedLabels } from '@/i18n/labels';
 
-export const TRANSACTION_TYPE_LABEL: Record<TransactionType, string> = {
+export const TRANSACTION_TYPE_LABEL: Record<TransactionType, string> = translatedLabels({
   expense: msg('Expense'),
   income: msg('Income'),
   transfer: msg('Transfer'),
-};
+});
 
 export const TRANSACTION_TYPE_ICON: Record<TransactionType, IconName> = {
   expense: 'arrow-upward',
@@ -25,12 +26,12 @@ export const TRANSACTION_TYPE_ICON: Record<TransactionType, IconName> = {
   transfer: 'swap-horiz',
 };
 
-export const ACCOUNT_TYPE_LABEL: Record<AccountType, string> = {
+export const ACCOUNT_TYPE_LABEL: Record<AccountType, string> = translatedLabels({
   cash: msg('Cash'),
   bank: msg('Bank'),
   savings: msg('Savings'),
   credit_card: msg('Credit card'),
-};
+});
 
 export const ACCOUNT_TYPE_ICON: Record<AccountType, IconName> = {
   cash: 'payments',
@@ -39,11 +40,11 @@ export const ACCOUNT_TYPE_ICON: Record<AccountType, IconName> = {
   credit_card: 'credit-card',
 };
 
-export const BUDGET_PERIOD_LABEL: Record<BudgetPeriod, string> = {
+export const BUDGET_PERIOD_LABEL: Record<BudgetPeriod, string> = translatedLabels({
   monthly: msg('Monthly'),
   weekly: msg('Weekly'),
   custom: msg('Custom'),
-};
+});
 
 export function formatTime(at: number): string {
   return new Date(at).toLocaleTimeString(appLocale(), { hour: 'numeric', minute: '2-digit' });
@@ -135,11 +136,11 @@ export function describeTransaction(item: Transaction, now: number, currency: st
   return parts.filter(Boolean).join(', ');
 }
 
-const BUDGET_KIND: Record<string, string> = {
+const BUDGET_KIND: Record<string, string> = translatedLabels({
   monthly: msg('Monthly budget'),
   weekly: msg('Weekly budget'),
   custom: msg('Custom budget'),
-};
+});
 
 export function describeBudget(progress: BudgetProgress, currency: string): string {
   const { t } = currentTranslator();

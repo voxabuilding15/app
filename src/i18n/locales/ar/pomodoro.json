@@ -19,6 +19,8 @@
   "{count} second_two": "ثانيتان",
   "{count} second_zero": "{count} ثانية",
   "{countdown} left": "متبقي {countdown}",
+  "{done} of {goal}": "{done} من {goal}",
+  "{kind} {title}: {time}": "{kind} {title}: {time}",
   "{kind}, {time} left": "{kind}، متبقي {time}",
   "{kind}, {time} left, paused": "{kind}، متبقي {time}، متوقف مؤقتًا",
   "{phase} finished": "انتهت {phase}",

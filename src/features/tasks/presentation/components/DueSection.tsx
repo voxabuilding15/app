@@ -47,7 +47,7 @@ export function DueSection({
         {QUICK.map((q) => (
           <Chip
             key={q.kind}
-            label={q.label}
+            label={t(q.label)}
             selected={selectedDay === addDays(startOfDay(now), q.days)}
             onPress={() => onQuickDate(q.kind)}
           />

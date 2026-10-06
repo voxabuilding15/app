@@ -5,6 +5,7 @@ import type { AttachmentKind, NoteSummary } from '../domain/entities';
 import { msg } from '@/i18n/msg';
 import { currentTranslator } from '@/i18n/translate';
 import { appLocale } from '@/i18n/formatting';
+import { translatedLabels } from '@/i18n/labels';
 
 export const ATTACHMENT_ICON: Record<AttachmentKind, IconName> = {
   image: 'image',
@@ -13,12 +14,12 @@ export const ATTACHMENT_ICON: Record<AttachmentKind, IconName> = {
   drawing: 'draw',
 };
 
-export const ATTACHMENT_LABEL: Record<AttachmentKind, string> = {
+export const ATTACHMENT_LABEL: Record<AttachmentKind, string> = translatedLabels({
   image: msg('Image'),
   pdf: 'PDF',
   audio: msg('Voice recording'),
   drawing: msg('Drawing'),
-};
+});
 
 export function formatTime(at: number): string {
   return new Date(at).toLocaleTimeString(appLocale(), { hour: 'numeric', minute: '2-digit' });

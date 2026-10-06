@@ -1,5 +1,6 @@
 import { msg } from '@/i18n/msg';
 import { currentTranslator } from '@/i18n/translate';
+import { translatedLabels } from '@/i18n/labels';
 export type FeedbackKind = 'bug' | 'idea' | 'other';
 
 export const FEEDBACK_MAX_LENGTH = 2_000;
@@ -21,11 +22,11 @@ export function validateFeedback(message: string): FeedbackError | null {
   return trimmed.length > FEEDBACK_MAX_LENGTH ? 'too-long' : null;
 }
 
-const SUBJECTS: Record<FeedbackKind, string> = {
+const SUBJECTS: Record<FeedbackKind, string> = translatedLabels({
   bug: msg('Problem report'),
   idea: msg('Idea'),
   other: msg('Feedback'),
-};
+});
 
 /**
  * Text ready to hand to any app that can send it. It never contains the person's data, only the

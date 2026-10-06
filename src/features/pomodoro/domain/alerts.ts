@@ -4,12 +4,13 @@ import { nextPhase, startPhase, wantsAutoStart, type TimerKind, type TimerState 
 import { msg } from '@/i18n/msg';
 import { currentTranslator } from '@/i18n/translate';
 import { appLocale } from '@/i18n/formatting';
+import { translatedLabels } from '@/i18n/labels';
 
-const PHASE_LABEL: Record<TimerKind, string> = {
+const PHASE_LABEL: Record<TimerKind, string> = translatedLabels({
   focus: msg('Focus'),
   short_break: msg('Short break'),
   long_break: msg('Long break'),
-};
+});
 
 /** How many phase ends are scheduled ahead when auto-start chains phases together. */
 const MAX_BOUNDARIES = 4;

@@ -2,14 +2,15 @@ import type { DueFilter, SortField, TaskScope } from '../domain/filters';
 import type { Priority } from '../domain/entities';
 import { msg } from '@/i18n/msg';
 import { currentTranslator } from '@/i18n/translate';
+import { translatedLabels } from '@/i18n/labels';
 
-const SORT_LABELS: Record<SortField, string> = {
+const SORT_LABELS: Record<SortField, string> = translatedLabels({
   due: msg('Due date'),
   priority: msg('Priority'),
   created: msg('Date created'),
   title: msg('Title'),
   completed: msg('Date completed'),
-};
+});
 
 export function sortLabel(field: SortField): string {
   return currentTranslator().t(SORT_LABELS[field]);

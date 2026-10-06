@@ -51,7 +51,10 @@ function GoalRing({ title, progress }: { title: string; progress: GoalProgress }
   const detail =
     fraction === null
       ? t('No goal')
-      : `${formatFocusTime(progress.focusSeconds)} of ${formatFocusTime(progress.goalMinutes * 60)}`;
+      : t('{done} of {goal}', {
+          done: formatFocusTime(progress.focusSeconds),
+          goal: formatFocusTime(progress.goalMinutes * 60),
+        });
   return (
     <View style={{ alignItems: 'center', gap: spacing.xs, flex: 1, minWidth: 96 }}>
       <ProgressRing
@@ -235,7 +238,11 @@ export function StatsPanel({ vm }: { vm: StatsViewModel }) {
             <View
               key={`${link.kind}-${link.id}`}
               accessible
-              accessibilityLabel={`${link.kind === 'task' ? t('Task') : t('Habit')} ${link.title}: ${formatFocusTime(link.seconds)}`}
+              accessibilityLabel={t('{kind} {title}: {time}', {
+                kind: link.kind === 'task' ? t('Task') : t('Habit'),
+                title: link.title,
+                time: formatFocusTime(link.seconds),
+              })}
               style={{ flexDirection: 'row', justifyContent: 'space-between', gap: spacing.md }}
             >
               <Text variant="bodyLarge" style={{ flex: 1 }} numberOfLines={1}>

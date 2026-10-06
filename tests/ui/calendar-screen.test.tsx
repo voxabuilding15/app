@@ -20,7 +20,7 @@ describe('CalendarScreen', () => {
 
     expect(await screen.findByLabelText(/^Event: Planning/)).toBeTruthy();
     expect(screen.getByLabelText(/, today, 1 item$/)).toBeTruthy();
-    expect(screen.getByLabelText('Next month')).toBeTruthy();
+    expect(screen.getByLabelText('Show next month')).toBeTruthy();
   });
 
   it('shows tasks and habits together with events', async () => {
@@ -94,7 +94,7 @@ describe('CalendarScreen', () => {
 
     const nextMonth = new Date(todayStart());
     nextMonth.setMonth(nextMonth.getMonth() + 1, 1);
-    await fireEvent.press(screen.getByLabelText('Next month'));
+    await fireEvent.press(screen.getByLabelText('Show next month'));
     await waitFor(() => expect(screen.queryByLabelText(/^Event: Planning/)).toBeNull());
     await fireEvent.press(screen.getByLabelText('Today'));
     expect(await screen.findByLabelText(/^Event: Planning/)).toBeTruthy();
@@ -107,11 +107,11 @@ describe('CalendarScreen', () => {
 
     await fireEvent.press(await screen.findByLabelText('Week'));
     expect(await screen.findByLabelText(/^Event: Planning, /)).toBeTruthy();
-    expect(screen.getByLabelText('Previous week')).toBeTruthy();
+    expect(screen.getByLabelText('Show previous week')).toBeTruthy();
 
     await fireEvent.press(screen.getByLabelText('Day'));
     expect(await screen.findByLabelText(/^Event: Planning, /)).toBeTruthy();
-    expect(screen.getByLabelText('Next day')).toBeTruthy();
+    expect(screen.getByLabelText('Show next day')).toBeTruthy();
   });
 
   it('shows all-day events above the timeline', async () => {

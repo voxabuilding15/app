@@ -200,7 +200,7 @@ describe('FinanceScreen: activity', () => {
     await renderWithApp(<FinanceScreen />, app);
 
     await fireEvent.press(await screen.findByLabelText('Budgets'));
-    expect(await screen.findByLabelText(/^Monthly, monthly budget/)).toBeTruthy();
+    expect(await screen.findByLabelText(/^Monthly, Monthly budget/)).toBeTruthy();
     await fireEvent.press(screen.getByLabelText('Recurring'));
     expect(await screen.findByLabelText(/^Expense \$9\.00, Rent/)).toBeTruthy();
     await fireEvent.press(screen.getByLabelText('Stats'));

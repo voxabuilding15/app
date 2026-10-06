@@ -8,12 +8,13 @@ import type { HabitPeriod } from '../../domain/entities';
 import type { HabitStats } from '../../domain/progress';
 import { describeStreak } from '../format';
 import { msg } from '@/i18n/msg';
+import { translatedLabels } from '@/i18n/labels';
 
-const RATE_WINDOW: Record<HabitPeriod, string> = {
+const RATE_WINDOW: Record<HabitPeriod, string> = translatedLabels({
   daily: msg('last 30 days'),
   weekly: msg('last 12 weeks'),
   monthly: msg('last 12 months'),
-};
+});
 
 interface HabitStatsGridProps {
   stats: HabitStats;

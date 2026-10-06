@@ -6,26 +6,27 @@ import type { AmbientSound } from '../domain/settings';
 import { msg } from '@/i18n/msg';
 import { currentTranslator } from '@/i18n/translate';
 import { appLocale } from '@/i18n/formatting';
+import { translatedLabels } from '@/i18n/labels';
 
-export const KIND_LABEL: Record<TimerKind, string> = {
+export const KIND_LABEL: Record<TimerKind, string> = translatedLabels({
   focus: msg('Focus'),
   short_break: msg('Short break'),
   long_break: msg('Long break'),
-};
+});
 
-export const OUTCOME_LABEL: Record<SessionOutcome, string> = {
+export const OUTCOME_LABEL: Record<SessionOutcome, string> = translatedLabels({
   completed: msg('Completed'),
   stopped: msg('Stopped early'),
   skipped: msg('Skipped'),
-};
+});
 
-export const SOUND_LABEL: Record<AmbientSound, string> = {
+export const SOUND_LABEL: Record<AmbientSound, string> = translatedLabels({
   none: msg('Off'),
   'white-noise': msg('White noise'),
   rain: msg('Rain'),
   forest: msg('Forest'),
   'coffee-shop': msg('Coffee shop'),
-};
+});
 
 export const SOUND_ICON: Record<AmbientSound, IconName> = {
   none: 'volume-off',

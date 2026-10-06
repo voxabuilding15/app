@@ -7,17 +7,18 @@ import { useTranslator } from '@/i18n';
 import { BUDGET_PERIODS, type BudgetPeriod } from '../../domain/entities';
 import { BUDGET_PERIOD_LABEL, formatDayKey } from '../format';
 import { msg } from '@/i18n/msg';
+import { translatedLabels } from '@/i18n/labels';
 
 const PERIOD_OPTIONS = BUDGET_PERIODS.map((value) => ({
   value,
   label: BUDGET_PERIOD_LABEL[value],
 }));
 
-const PERIOD_HINT: Record<BudgetPeriod, string> = {
+const PERIOD_HINT: Record<BudgetPeriod, string> = translatedLabels({
   monthly: msg('Starts over on the first of every month.'),
   weekly: msg('Starts over every Monday.'),
   custom: msg('Covers the dates you choose, such as a trip or a project.'),
-};
+});
 
 interface BudgetPeriodSectionProps {
   period: BudgetPeriod;

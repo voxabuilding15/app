@@ -7,18 +7,19 @@ import type { HabitSummary, UnitProgress, UnitState } from '../domain/progress';
 import { ALL_WEEKDAYS } from '../domain/schedule';
 import { msg } from '@/i18n/msg';
 import { currentTranslator } from '@/i18n/translate';
+import { translatedLabels } from '@/i18n/labels';
 
-const PERIOD_PHRASE: Record<HabitPeriod, string> = {
+const PERIOD_PHRASE: Record<HabitPeriod, string> = translatedLabels({
   daily: msg('{done} of {goal} today'),
   weekly: msg('{done} of {goal} this week'),
   monthly: msg('{done} of {goal} this month'),
-};
+});
 
-const GOAL_PER: Record<HabitPeriod, string> = {
+const GOAL_PER: Record<HabitPeriod, string> = translatedLabels({
   daily: msg('Goal per day'),
   weekly: msg('Goal per week'),
   monthly: msg('Goal per month'),
-};
+});
 
 /** The label of the goal field: "Goal per day", "Goal per week" or "Goal per month". */
 export function goalPerLabel(period: HabitPeriod): string {
@@ -83,13 +84,13 @@ export function describeStreak(streak: number, period: HabitPeriod): string {
   }
 }
 
-const STATE_LABEL: Record<UnitState, string> = {
+const STATE_LABEL: Record<UnitState, string> = translatedLabels({
   satisfied: msg('Done'),
   missed: msg('Missed'),
   excused: msg('Skipped'),
-  pending: 'To do',
+  pending: msg('To do'),
   off: msg('Not scheduled'),
-};
+});
 
 export function describeState(state: UnitState): string {
   return STATE_LABEL[state];
@@ -128,19 +129,20 @@ export function shortMonth(key: DateKey): string {
 
 /** Accessible one-sentence summary of a habit for screen readers. */
 export function describeHabit(summary: HabitSummary): string {
+  const { t } = currentTranslator();
   const { habit, current, streak } = summary;
   const parts = [habit.name, describeProgress(current, habit.period)];
   if (habit.paused) {
-    parts.push('paused');
+    parts.push(t('paused'));
   }
   if (summary.skippedToday) {
-    parts.push('skipped today');
+    parts.push(t('skipped today'));
   }
   if (streak > 0) {
-    parts.push(`${describeStreak(streak, habit.period)} streak`);
+    parts.push(t('{streak} streak', { streak: describeStreak(streak, habit.period) }));
   }
   if (habit.category) {
-    parts.push(`category ${habit.category.name}`);
+    parts.push(t('category {name}', { name: habit.category.name }));
   }
   return parts.join(', ');
 }
