@@ -12,10 +12,12 @@ import {
 import { SqliteCategoryRepository } from '@/database/category-repository';
 import { getCalendarModule } from '@/features/calendar/presentation/module';
 import { getFinanceModule } from '@/features/finance/presentation/module';
+import { getNotesModule } from '@/features/notes/presentation/module';
 import { getHabitsModule } from '@/features/habits/presentation/module';
 import { getTasksModule } from '@/features/tasks/presentation/module';
 import { ThemeProvider } from '@/theme';
 
+import { FakeAuthenticator, FakePicker, FakeStorage } from '../notes/fakes';
 import { createTestDatabase } from '../tasks/test-database';
 
 /** The mocked router shared with every screen under test (see setup.tsx). */
@@ -85,6 +87,9 @@ export function createApp() {
     storage: memoryStorage(),
     notifications,
   };
+  const files = new FakeStorage();
+  const picker = new FakePicker();
+  const authenticator = new FakeAuthenticator();
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false, staleTime: Infinity, gcTime: 0 } },
   });
@@ -95,6 +100,8 @@ export function createApp() {
     habits: getHabitsModule(container).habits,
     calendar: getCalendarModule(container).calendar,
     finance: getFinanceModule(container),
+    notes: getNotesModule(container, { storage: files, picker, authenticator }),
+    noteFakes: { files, picker, authenticator },
     notifications,
   };
 }

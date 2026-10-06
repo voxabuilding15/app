@@ -11,6 +11,7 @@ import { APP_NAME } from '@/constants/app';
 import { EventNotificationBridge } from '@/features/calendar';
 import { FinanceBridge } from '@/features/finance';
 import { HabitNotificationBridge } from '@/features/habits';
+import { NotesBridge } from '@/features/notes';
 import { TaskNotificationBridge } from '@/features/tasks';
 import { useIsTablet } from '@/hooks';
 import { DRAWER_ITEMS, DrawerContent, TABS_ROUTE } from '@/navigation';
@@ -30,6 +31,7 @@ function RootNavigator() {
       <HabitNotificationBridge />
       <FinanceBridge />
       <EventNotificationBridge />
+      <NotesBridge />
       <Drawer
         drawerContent={(props) => <DrawerContent {...props} />}
         screenOptions={{
@@ -51,6 +53,7 @@ function RootNavigator() {
             name={item.name}
             options={{
               title: item.title,
+              headerShown: item.ownHeader ? false : undefined,
               headerLeft: isTablet ? () => null : undefined,
             }}
           />

@@ -2,12 +2,11 @@ import { useRouter } from 'expo-router';
 import { useCallback } from 'react';
 import { View } from 'react-native';
 
-import { Card, EmptyState, Icon, Text } from '@/components';
+import { Card, EmptyState, Icon, Text, ResponsiveList } from '@/components';
 import { spacing, useTheme } from '@/theme';
 
 import type { BudgetProgress } from '../../domain/entities';
 import { BudgetCard } from '../components/BudgetCard';
-import { FinanceList } from '../components/FinanceList';
 import { useCurrency } from '../queries';
 import { useBudgetsViewModel } from '../view-models/useBudgetsViewModel';
 
@@ -28,7 +27,7 @@ export function BudgetsSection() {
   const handleDelete = useCallback((item: BudgetProgress) => void remove(item.budget.id), [remove]);
 
   return (
-    <FinanceList
+    <ResponsiveList
       data={vm.budgets}
       keyExtractor={(item) => item.budget.id}
       renderItem={(item) => (

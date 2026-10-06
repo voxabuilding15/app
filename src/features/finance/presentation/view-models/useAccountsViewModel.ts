@@ -9,7 +9,7 @@ import { useFinanceModule } from '../module';
 import { useAccounts, useCurrency, useInvalidateFinance } from '../queries';
 
 import { INVALID_AMOUNT } from './useMovementForm';
-import { useNotice, useUndoableDelete } from './useUndoableDelete';
+import { useNotice, useUndoableDelete } from '@/hooks';
 
 export function useAccountsViewModel() {
   const { accounts: useCases } = useFinanceModule();

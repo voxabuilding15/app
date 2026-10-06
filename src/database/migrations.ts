@@ -391,4 +391,86 @@ export const migrations: readonly Migration[] = [
       `CREATE INDEX idx_budget_categories_category ON budget_categories(category_id)`,
     ],
   },
+  {
+    version: 6,
+    name: 'notes_feature',
+    rebuildsTables: true,
+    statements: [
+      // Folders can be nested. Deleting a folder is done by the app, which first moves what it
+      // holds to the parent, so the parent link is RESTRICT rather than CASCADE.
+      `CREATE TABLE folders_new (
+        id TEXT PRIMARY KEY NOT NULL,
+        parent_id TEXT REFERENCES folders_new(id) ON DELETE RESTRICT,
+        name TEXT NOT NULL,
+        created_at INTEGER NOT NULL,
+        CHECK (parent_id IS NULL OR parent_id <> id)
+      )`,
+      `INSERT INTO folders_new (id, parent_id, name, created_at)
+         SELECT id, NULL, name, created_at FROM folders`,
+
+      // Notes keep their body as Markdown. `is_checklist` goes away: a checklist is just
+      // "- [ ] item" lines, so existing checklist notes are converted line by line.
+      `CREATE TABLE notes_new (
+        id TEXT PRIMARY KEY NOT NULL,
+        folder_id TEXT REFERENCES folders_new(id) ON DELETE SET NULL,
+        title TEXT NOT NULL DEFAULT '',
+        body TEXT NOT NULL DEFAULT '',
+        color TEXT,
+        pinned INTEGER NOT NULL DEFAULT 0 CHECK (pinned IN (0,1)),
+        favorite INTEGER NOT NULL DEFAULT 0 CHECK (favorite IN (0,1)),
+        locked INTEGER NOT NULL DEFAULT 0 CHECK (locked IN (0,1)),
+        archived_at INTEGER,
+        deleted_at INTEGER,
+        reminder_at INTEGER,
+        notification_id TEXT,
+        created_at INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL
+      )`,
+      `INSERT INTO notes_new (id, folder_id, title, body, pinned, favorite, created_at, updated_at)
+         SELECT id, folder_id, title,
+                CASE WHEN is_checklist = 1 AND body <> ''
+                     THEN '- [ ] ' || replace(body, char(10), char(10) || '- [ ] ')
+                     ELSE body END,
+                pinned, favorite, created_at, updated_at
+         FROM notes`,
+      `DROP TABLE notes`,
+      `DROP TABLE folders`,
+      `ALTER TABLE folders_new RENAME TO folders`,
+      `ALTER TABLE notes_new RENAME TO notes`,
+
+      // Folder names are unique among siblings, ignoring case.
+      `CREATE UNIQUE INDEX idx_folders_sibling_name ON folders(COALESCE(parent_id, ''), name COLLATE NOCASE)`,
+      `CREATE INDEX idx_folders_parent ON folders(parent_id)`,
+
+      `CREATE INDEX idx_notes_active ON notes(updated_at) WHERE archived_at IS NULL AND deleted_at IS NULL`,
+      `CREATE INDEX idx_notes_folder ON notes(folder_id, updated_at) WHERE deleted_at IS NULL`,
+      `CREATE INDEX idx_notes_favorite ON notes(updated_at) WHERE favorite = 1 AND archived_at IS NULL AND deleted_at IS NULL`,
+      `CREATE INDEX idx_notes_archived ON notes(archived_at) WHERE archived_at IS NOT NULL AND deleted_at IS NULL`,
+      `CREATE INDEX idx_notes_deleted ON notes(deleted_at) WHERE deleted_at IS NOT NULL`,
+      `CREATE INDEX idx_notes_reminder ON notes(reminder_at) WHERE reminder_at IS NOT NULL`,
+
+      // Tags are the shared categories of kind 'note', attached many-to-many.
+      `CREATE TABLE note_tags (
+        note_id TEXT NOT NULL REFERENCES notes(id) ON DELETE CASCADE,
+        category_id TEXT NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
+        PRIMARY KEY (note_id, category_id)
+      ) WITHOUT ROWID`,
+      `CREATE INDEX idx_note_tags_category ON note_tags(category_id)`,
+
+      // Files live in the app's document folder; `path` is relative to it, so it survives the app
+      // being moved. Rows go with their note, and the app removes the files.
+      `CREATE TABLE note_attachments (
+        id TEXT PRIMARY KEY NOT NULL,
+        note_id TEXT NOT NULL REFERENCES notes(id) ON DELETE CASCADE,
+        kind TEXT NOT NULL CHECK (kind IN ('image','pdf','audio','drawing')),
+        name TEXT NOT NULL,
+        mime TEXT NOT NULL,
+        path TEXT NOT NULL,
+        size_bytes INTEGER NOT NULL DEFAULT 0 CHECK (size_bytes >= 0),
+        duration_ms INTEGER CHECK (duration_ms IS NULL OR duration_ms >= 0),
+        created_at INTEGER NOT NULL
+      )`,
+      `CREATE INDEX idx_note_attachments_note ON note_attachments(note_id, created_at)`,
+    ],
+  },
 ];

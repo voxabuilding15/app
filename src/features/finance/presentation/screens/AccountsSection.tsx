@@ -1,14 +1,13 @@
 import { useCallback } from 'react';
 import { View } from 'react-native';
 
-import { EmptyState, StatTile, SwitchRow } from '@/components';
+import { EmptyState, StatTile, SwitchRow, ResponsiveList } from '@/components';
 import { formatMoney } from '@/core';
 import { spacing } from '@/theme';
 
 import type { AccountBalance } from '../../domain/entities';
 import { AccountRow } from '../components/AccountRow';
 import { AccountSheet } from '../components/AccountSheet';
-import { FinanceList } from '../components/FinanceList';
 import { useCurrency } from '../queries';
 import { useAccountsViewModel } from '../view-models/useAccountsViewModel';
 
@@ -39,7 +38,7 @@ export function AccountsSection({ onShowTransactions }: AccountsSectionProps) {
 
   return (
     <View style={{ flex: 1 }}>
-      <FinanceList
+      <ResponsiveList
         data={vm.accounts}
         keyExtractor={(account) => account.id}
         renderItem={(account) => (

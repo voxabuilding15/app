@@ -94,3 +94,63 @@ jest.mock('expo-router', () => {
     },
   };
 });
+
+// Native modules the Notes feature uses. The state object lets tests steer what they do.
+jest.mock('expo-audio', () => {
+  const state = {
+    permission: true,
+    uri: 'file:///cache/recording.m4a' as string | null,
+    durationMillis: 4200,
+    playing: false,
+  };
+  const recorder = {
+    get uri() {
+      return state.uri;
+    },
+    prepareToRecordAsync: jest.fn(async () => undefined),
+    record: jest.fn(),
+    stop: jest.fn(async () => undefined),
+    getStatus: () => ({ durationMillis: state.durationMillis, isRecording: true }),
+  };
+  const player = {
+    play: jest.fn(() => {
+      state.playing = true;
+    }),
+    pause: jest.fn(() => {
+      state.playing = false;
+    }),
+    seekTo: jest.fn(async () => undefined),
+  };
+  return {
+    __state: state,
+    __recorder: recorder,
+    __player: player,
+    RecordingPresets: { HIGH_QUALITY: {} },
+    requestRecordingPermissionsAsync: jest.fn(async () => ({ granted: state.permission })),
+    setAudioModeAsync: jest.fn(async () => undefined),
+    useAudioRecorder: () => recorder,
+    useAudioPlayer: () => player,
+    useAudioPlayerStatus: () => ({
+      playing: state.playing,
+      currentTime: 0,
+      didJustFinish: false,
+    }),
+  };
+});
+
+jest.mock('expo-sharing', () => ({
+  isAvailableAsync: jest.fn(async () => true),
+  shareAsync: jest.fn(async () => undefined),
+}));
+
+jest.mock('expo-local-authentication', () => ({
+  hasHardwareAsync: jest.fn(async () => true),
+  isEnrolledAsync: jest.fn(async () => true),
+  authenticateAsync: jest.fn(async () => ({ success: true })),
+}));
+
+jest.mock('expo-file-system', () => ({
+  File: class {},
+  Directory: class {},
+  Paths: { document: '' },
+}));

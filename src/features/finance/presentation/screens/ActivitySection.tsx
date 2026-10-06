@@ -2,11 +2,10 @@ import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { View } from 'react-native';
 
-import { EmptyState, ListControls, SortSheet } from '@/components';
+import { EmptyState, ListControls, SortSheet, ResponsiveList } from '@/components';
 import { useNow } from '@/hooks';
 
 import type { Transaction } from '../../domain/entities';
-import { FinanceList } from '../components/FinanceList';
 import { SummaryTiles } from '../components/SummaryTiles';
 import { TransactionFilterSheet } from '../components/TransactionFilterSheet';
 import { TransactionRow } from '../components/TransactionRow';
@@ -98,7 +97,7 @@ export function ActivitySection({ initialAccountId, onShowAccounts }: ActivitySe
         onOpenSort={() => setSortOpen(true)}
         onClear={vm.clearFilters}
       />
-      <FinanceList
+      <ResponsiveList
         data={vm.items}
         keyExtractor={(item) => item.id}
         renderItem={(item) => (

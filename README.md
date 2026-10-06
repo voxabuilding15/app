@@ -46,5 +46,6 @@ Features talk to infrastructure only through `core` ports; the composition root 
 - Components and screens: `PascalCase.tsx`. Hooks: `useThing.ts`. Other modules: `kebab-case.ts`.
 - Every folder exposes a barrel `index.ts`; import across layers through it.
 - Money is stored as integer minor units and converted to and from text only by `core/money.ts`; timestamps are epoch ms; calendar dates are `YYYY-MM-DD`.
+- Notes are stored as Markdown; attachments (images, PDFs, voice notes and drawings) live in the app's document folder and are referenced by relative path. Locking a note gates the UI (PIN hash or the phone's own lock) but does not encrypt the stored text.
 - The Finance currency is one app-wide setting; once accounts exist it can only change to a currency with the same number of decimals, so amounts are never silently reinterpreted.
 - Dependencies are added in the phase that first uses them (no unused native modules ship).

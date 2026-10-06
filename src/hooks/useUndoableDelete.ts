@@ -16,6 +16,8 @@ export function useNotice() {
 interface UndoableDeleteOptions<T> {
   /** What was deleted, e.g. "Transaction": the message reads "Transaction deleted". */
   noun: string;
+  /** Replaces "<noun> deleted", e.g. for moving something to the trash. */
+  deletedMessage?: string;
   /** Deletes the item and returns it, so it can be put back. */
   remove: (id: string) => Promise<T>;
   restore: (item: T) => Promise<void>;
@@ -32,6 +34,7 @@ interface UndoableDeleteOptions<T> {
  */
 export function useUndoableDelete<T>({
   noun,
+  deletedMessage,
   remove,
   restore,
   onChanged,
@@ -43,7 +46,7 @@ export function useUndoableDelete<T>({
       try {
         const removed = await remove(id);
         show({
-          message: `${noun} deleted`,
+          message: deletedMessage ?? `${noun} deleted`,
           actionLabel: 'Undo',
           onAction: () => {
             show(null);
@@ -57,6 +60,6 @@ export function useUndoableDelete<T>({
       }
       await onChanged();
     },
-    [noun, remove, restore, onChanged, show, explain],
+    [noun, deletedMessage, remove, restore, onChanged, show, explain],
   );
 }

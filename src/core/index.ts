@@ -21,9 +21,10 @@ export {
   weekdayOfKey,
 } from './dates';
 export type { DateKey } from './dates';
+export { constantTimeEquals, stretchedHash } from './hash';
 export { createId } from './ids';
 export { MAX_MINOR, formatMoney, minorDigits, parseMoney, toAmountText } from './money';
-export { ensureNotificationPermission } from './notifications';
+export { ensureNotificationPermission, scheduleReminder } from './notifications';
 export { reminderInstant } from './reminders';
 export {
   MAX_RECURRENCE_INTERVAL,

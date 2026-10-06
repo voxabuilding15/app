@@ -2,18 +2,26 @@ import { Stack } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, View, useWindowDimensions } from 'react-native';
 
-import { Button, EmptyState, IconButton, NameColorSheet, Screen, Text } from '@/components';
+import {
+  Button,
+  DateTimeSection,
+  EmptyState,
+  IconButton,
+  NameColorSheet,
+  Screen,
+  Text,
+} from '@/components';
 import { useHideTabBar, useNow } from '@/hooks';
 import { ACCENT_COLORS, spacing, useTheme } from '@/theme';
 
 import type { TransactionDraft } from '../../domain/validation';
-import { DateTimeSection } from '../components/DateTimeSection';
 import { MovementSections } from '../components/MovementSections';
 import {
   useTransactionFormViewModel,
   useTransactionLoader,
   type NewTransactionDefaults,
 } from '../view-models/useTransactionFormViewModel';
+import { formatDate, formatTime } from '../format';
 import { useAccounts } from '../queries';
 
 const WIDE_MIN_WIDTH = 900;
@@ -136,8 +144,9 @@ function TransactionFormBody({ transactionId, initial }: TransactionFormBodyProp
   );
   const when = (
     <DateTimeSection
-      at={draft.occurredAt}
-      now={now}
+      title="Date and time"
+      dayLabel={formatDate(draft.occurredAt, now)}
+      timeLabel={formatTime(draft.occurredAt)}
       error={errors.date}
       onPickDay={() => void vm.pickDay()}
       onPickTime={() => void vm.pickClock()}

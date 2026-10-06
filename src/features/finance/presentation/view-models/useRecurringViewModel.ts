@@ -4,7 +4,7 @@ import type { RecurringRecord, RecurringTransaction } from '../../domain/entitie
 import { useFinanceModule } from '../module';
 import { useInvalidateFinance, useRecurringList } from '../queries';
 
-import { useNotice, useUndoableDelete } from './useUndoableDelete';
+import { useNotice, useUndoableDelete } from '@/hooks';
 
 export function useRecurringViewModel() {
   const { recurring: useCases } = useFinanceModule();

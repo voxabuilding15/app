@@ -348,3 +348,144 @@ describe('migration v5 (finance)', () => {
     assert.throws(() => db.runSync(`INSERT INTO budget_categories VALUES ('b','nope')`));
   });
 });
+
+describe('migration v6 (notes)', () => {
+  const run = (
+    db: ReturnType<typeof createTestDatabase>,
+    sql: string,
+    params: (string | number | null)[] = [],
+  ) => db.runSync(sql, params);
+  const note = (db: ReturnType<typeof createTestDatabase>, id: string, extra = '') =>
+    run(
+      db,
+      `INSERT INTO notes (id,title,created_at,updated_at${extra ? ',' + extra.split('=')[0] : ''}) VALUES (?,?,1,1${extra ? ',' + extra.split('=')[1] : ''})`,
+      [id, id],
+    );
+  const folder = (
+    db: ReturnType<typeof createTestDatabase>,
+    id: string,
+    parent: string | null,
+    name = id,
+  ) =>
+    run(db, `INSERT INTO folders (id,parent_id,name,created_at) VALUES (?,?,?,1)`, [
+      id,
+      parent,
+      name,
+    ]);
+
+  it('upgrades a v5 database, keeping notes, folders and flags', () => {
+    const { db, upgrade } = createDatabaseAtVersion(5);
+    db.runSync(`INSERT INTO folders VALUES ('f1','Work',10)`);
+    db.runSync(
+      `INSERT INTO notes (id,folder_id,title,body,is_checklist,pinned,favorite,created_at,updated_at)
+       VALUES ('n1','f1','Plan','Write code',0,1,1,20,30)`,
+    );
+    db.runSync(
+      `INSERT INTO notes (id,folder_id,title,body,is_checklist,created_at,updated_at)
+       VALUES ('n2',NULL,'Groceries','Milk' || char(10) || 'Eggs',1,21,31)`,
+    );
+    db.runSync(
+      `INSERT INTO notes (id,title,body,is_checklist,created_at,updated_at) VALUES ('n3','Empty','',1,22,32)`,
+    );
+    upgrade();
+
+    assert.equal(getSchemaVersion(db), migrations.at(-1)?.version);
+    assert.equal(db.getAllSync('PRAGMA foreign_key_check').length, 0);
+    assert.deepEqual(db.getAllSync('SELECT id, parent_id, name, created_at FROM folders'), [
+      { id: 'f1', parent_id: null, name: 'Work', created_at: 10 },
+    ]);
+    const notes = db.getAllSync<Record<string, unknown>>(
+      'SELECT id, folder_id, title, body, pinned, favorite, locked, archived_at, deleted_at, created_at, updated_at FROM notes ORDER BY id',
+    );
+    assert.deepEqual(notes[0], {
+      id: 'n1',
+      folder_id: 'f1',
+      title: 'Plan',
+      body: 'Write code',
+      pinned: 1,
+      favorite: 1,
+      locked: 0,
+      archived_at: null,
+      deleted_at: null,
+      created_at: 20,
+      updated_at: 30,
+    });
+    assert.equal(notes[1]?.body, '- [ ] Milk\n- [ ] Eggs', 'checklist notes become Markdown tasks');
+    assert.equal(notes[2]?.body, '', 'an empty checklist stays empty');
+    assert.equal(db.getFirstSync<{ foreign_keys: number }>('PRAGMA foreign_keys')?.foreign_keys, 1);
+  });
+
+  it('nests folders, rejects self-parenting and duplicate sibling names, and restricts deletes', () => {
+    const db = createTestDatabase();
+    folder(db, 'a', null, 'Work');
+    folder(db, 'b', 'a', 'Plans');
+    folder(db, 'c', null, 'Plans'); // same name under a different parent
+    assert.throws(() => folder(db, 'd', 'a', 'plans'), 'siblings are unique ignoring case');
+    assert.throws(() => folder(db, 'e', null, 'WORK'));
+    assert.throws(() => folder(db, 'f', 'f', 'Loop'), 'a folder cannot be its own parent');
+    assert.throws(() => folder(db, 'g', 'ghost', 'Orphan'), 'the parent must exist');
+    assert.throws(
+      () => run(db, `DELETE FROM folders WHERE id='a'`),
+      'folders with children cannot be dropped',
+    );
+    run(db, `DELETE FROM folders WHERE id='b'`);
+    run(db, `DELETE FROM folders WHERE id='a'`);
+  });
+
+  it('keeps notes when their folder goes, and validates flags', () => {
+    const db = createTestDatabase();
+    folder(db, 'a', null);
+    note(db, 'n');
+    run(db, `UPDATE notes SET folder_id='a' WHERE id='n'`);
+    run(db, `DELETE FROM folders WHERE id='a'`);
+    assert.equal(
+      db.getFirstSync<{ folder_id: string | null }>('SELECT folder_id FROM notes')?.folder_id,
+      null,
+    );
+    assert.throws(() => run(db, `UPDATE notes SET pinned=2 WHERE id='n'`));
+    assert.throws(() => run(db, `UPDATE notes SET locked=-1 WHERE id='n'`));
+  });
+
+  it('tags notes with note categories and cascades both ways', () => {
+    const db = createTestDatabase();
+    run(db, `INSERT INTO categories VALUES ('t1','note','Idea','#111','folder',1)`);
+    run(db, `INSERT INTO categories VALUES ('t2','note','Todo','#222','folder',1)`);
+    note(db, 'n');
+    run(db, `INSERT INTO note_tags VALUES ('n','t1')`);
+    run(db, `INSERT INTO note_tags VALUES ('n','t2')`);
+    assert.throws(() => run(db, `INSERT INTO note_tags VALUES ('n','t1')`));
+    assert.throws(() => run(db, `INSERT INTO note_tags VALUES ('n','ghost')`));
+    run(db, `DELETE FROM categories WHERE id='t1'`);
+    assert.equal(db.getFirstSync<{ n: number }>('SELECT COUNT(*) AS n FROM note_tags')?.n, 1);
+    run(db, `DELETE FROM notes WHERE id='n'`);
+    assert.equal(db.getFirstSync<{ n: number }>('SELECT COUNT(*) AS n FROM note_tags')?.n, 0);
+  });
+
+  it('stores attachments, validating their kind, and removes them with the note', () => {
+    const db = createTestDatabase();
+    note(db, 'n');
+    const attach = (id: string, kind: string, size = 5) =>
+      run(
+        db,
+        `INSERT INTO note_attachments (id,note_id,kind,name,mime,path,size_bytes,created_at) VALUES (?, 'n', ?, 'x', 'm', 'p', ?, 1)`,
+        [id, kind, size],
+      );
+    for (const kind of ['image', 'pdf', 'audio', 'drawing']) {
+      attach(kind, kind);
+    }
+    assert.throws(() => attach('bad', 'video'));
+    assert.throws(() => attach('neg', 'image', -1));
+    assert.throws(() =>
+      run(
+        db,
+        `INSERT INTO note_attachments (id,note_id,kind,name,mime,path,created_at) VALUES ('o','ghost','image','x','m','p',1)`,
+      ),
+    );
+    assert.throws(() => run(db, `UPDATE note_attachments SET duration_ms = -5 WHERE id='audio'`));
+    run(db, `DELETE FROM notes WHERE id='n'`);
+    assert.equal(
+      db.getFirstSync<{ n: number }>('SELECT COUNT(*) AS n FROM note_attachments')?.n,
+      0,
+    );
+  });
+});

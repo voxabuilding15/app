@@ -2,7 +2,7 @@ import { useBudgets, useInvalidateFinance } from '../queries';
 import { useFinanceModule } from '../module';
 import type { Budget } from '../../domain/entities';
 
-import { useNotice, useUndoableDelete } from './useUndoableDelete';
+import { useNotice, useUndoableDelete } from '@/hooks';
 
 export function useBudgetsViewModel() {
   const { budgets: useCases } = useFinanceModule();

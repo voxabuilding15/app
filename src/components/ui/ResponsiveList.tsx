@@ -1,12 +1,20 @@
 import type { ReactElement, ReactNode } from 'react';
 import { ActivityIndicator, FlatList, View, useWindowDimensions } from 'react-native';
 
-import { EmptyState, FAB, Snackbar } from '@/components';
 import { spacing, useTheme } from '@/theme';
 
-import type { Notice } from '../view-models/useUndoableDelete';
+import { EmptyState } from './EmptyState';
+import { FAB } from './FAB';
+import { Snackbar } from './Snackbar';
+
+import type { Notice } from '@/hooks';
 
 const TWO_COLUMN_MIN_WIDTH = 900;
+
+/** Two columns on tablets, one on phones. */
+function defaultColumns(width: number): number {
+  return width >= TWO_COLUMN_MIN_WIDTH ? 2 : 1;
+}
 const LIST_MAX_WIDTH = 1100;
 const FAB_CLEARANCE = 88;
 
@@ -14,7 +22,7 @@ function Separator() {
   return <View style={{ height: spacing.sm }} />;
 }
 
-interface FinanceListProps<T> {
+interface ResponsiveListProps<T> {
   data: readonly T[];
   keyExtractor: (item: T) => string;
   renderItem: (item: T) => ReactElement;
@@ -33,10 +41,12 @@ interface FinanceListProps<T> {
   fab?: { label: string; onPress: () => void };
   notice: Notice | null;
   onDismissNotice: () => void;
+  /** How many columns to use at a given width. */
+  columnsFor?: (width: number) => number;
 }
 
-/** The scrolling list, states, floating button and snackbar every Finance tab shares. */
-export function FinanceList<T>({
+/** A scrolling list with loading, error and empty states, a floating button and a snackbar. */
+export function ResponsiveList<T>({
   data,
   keyExtractor,
   renderItem,
@@ -53,10 +63,11 @@ export function FinanceList<T>({
   fab,
   notice,
   onDismissNotice,
-}: FinanceListProps<T>) {
+  columnsFor = defaultColumns,
+}: ResponsiveListProps<T>) {
   const { colors } = useTheme();
   const { width } = useWindowDimensions();
-  const columns = width >= TWO_COLUMN_MIN_WIDTH ? 2 : 1;
+  const columns = columnsFor(width);
 
   const placeholder = isLoading ? (
     <View style={{ paddingVertical: spacing.xxl }}>
@@ -85,7 +96,7 @@ export function FinanceList<T>({
         data={data as T[]}
         keyExtractor={keyExtractor}
         renderItem={({ item }) => (
-          <View style={{ flex: 1, maxWidth: columns > 1 ? '50%' : undefined }}>
+          <View style={{ flex: 1, maxWidth: columns > 1 ? `${100 / columns}%` : undefined }}>
             {renderItem(item)}
           </View>
         )}

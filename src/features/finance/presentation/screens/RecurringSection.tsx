@@ -1,10 +1,9 @@
 import { useRouter } from 'expo-router';
 import { useCallback } from 'react';
 
-import { EmptyState } from '@/components';
+import { EmptyState, ResponsiveList } from '@/components';
 
 import type { RecurringTransaction } from '../../domain/entities';
-import { FinanceList } from '../components/FinanceList';
 import { RecurringRow } from '../components/RecurringRow';
 import { useCurrency } from '../queries';
 import { useRecurringViewModel } from '../view-models/useRecurringViewModel';
@@ -29,7 +28,7 @@ export function RecurringSection() {
   const handleDelete = useCallback((item: RecurringTransaction) => void remove(item.id), [remove]);
 
   return (
-    <FinanceList
+    <ResponsiveList
       data={vm.items}
       keyExtractor={(item) => item.id}
       renderItem={(item) => (

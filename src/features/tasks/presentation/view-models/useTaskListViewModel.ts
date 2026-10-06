@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BackHandler } from 'react-native';
 
-import { useDebouncedValue } from '@/hooks';
+import { useDebouncedValue, type Notice } from '@/hooks';
 
 import type { Task } from '../../domain/entities';
 import {
@@ -17,12 +17,6 @@ import { useInvalidateTasks, useTaskList, useTaskStats } from '../queries';
 
 const PAGE_SIZE = 100;
 const SEARCH_DEBOUNCE_MS = 250;
-
-export interface Notice {
-  message: string;
-  actionLabel?: string;
-  onAction?: () => void;
-}
 
 function plural(count: number): string {
   return count === 1 ? 'Task' : `${count} tasks`;

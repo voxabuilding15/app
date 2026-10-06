@@ -8,3 +8,5 @@ export { useNamedItemEditor } from './useNamedItemEditor';
 export { useNotificationPermission } from './useNotificationPermission';
 export { useNotificationResponses } from './useNotificationResponses';
 export { useOnAppForeground } from './useOnAppForeground';
+export { useNotice, useUndoableDelete } from './useUndoableDelete';
+export type { Notice } from './useUndoableDelete';
