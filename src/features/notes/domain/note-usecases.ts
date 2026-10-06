@@ -18,6 +18,7 @@ import type {
   NoteRepository,
 } from './ports';
 import { hasErrors, validateNote, type NoteDraft, type NoteErrors } from './validation';
+import { currentTranslator } from '@/i18n/translate';
 
 export type ReminderStatus = 'none' | 'scheduled' | 'blocked' | 'past';
 
@@ -42,10 +43,11 @@ function isActive(note: Pick<NoteRecord, 'archivedAt' | 'deletedAt'>): boolean {
 }
 
 function reminderBody(note: NoteRecord): string {
+  const { t } = currentTranslator();
   if (note.locked) {
-    return 'Locked note';
+    return t('Locked note');
   }
-  return excerptOf(note.body, REMINDER_BODY_CHARS) || 'Open your note';
+  return excerptOf(note.body, REMINDER_BODY_CHARS) || t('Open your note');
 }
 
 export function createNoteUseCases({
@@ -57,6 +59,7 @@ export function createNoteUseCases({
   onChanged,
   clock,
 }: NoteUseCaseDeps) {
+  const { t } = currentTranslator();
   /** Brings the OS notification in line with the note's current state. */
   async function syncReminder(record: NoteRecord): Promise<ReminderStatus> {
     if (record.notificationId !== null) {
@@ -76,7 +79,7 @@ export function createNoteUseCases({
     }
     const outcome = await reminders.schedule({
       noteId: record.id,
-      title: record.title.trim() || 'Note',
+      title: record.title.trim() || t('Note'),
       body: reminderBody(record),
       fireAt: record.reminderAt,
     });
@@ -138,18 +141,18 @@ export function createNoteUseCases({
       const errors = validateNote(draft);
       const existing = id === null ? null : await notes.getRecord(id);
       if (id !== null && existing === null) {
-        throw new Error('This note no longer exists.');
+        throw new Error(t('This note no longer exists.'));
       }
 
       const body = normalizeBody(draft.body);
       if (!errors.title && !errors.body && draft.title.trim() === '' && body.trim() === '') {
         const files = existing === null ? [] : await attachments.listFor(existing.id);
         if (files.length === 0) {
-          errors.content = 'Add a title or some text';
+          errors.content = t('Add a title or some text');
         }
       }
       if (draft.folderId !== null && (await folders.get(draft.folderId)) === null) {
-        errors.folder = 'This folder no longer exists';
+        errors.folder = t('This folder no longer exists');
       }
       const now = clock.now();
       if (
@@ -158,7 +161,7 @@ export function createNoteUseCases({
         draft.reminderAt !== existing?.reminderAt &&
         draft.reminderAt <= now
       ) {
-        errors.reminder = 'Choose a time in the future';
+        errors.reminder = t('Choose a time in the future');
       }
       if (hasErrors(errors)) {
         return { ok: false, errors };
@@ -209,7 +212,7 @@ export function createNoteUseCases({
 
     async setFolder(ids: readonly string[], folderId: string | null): Promise<void> {
       if (folderId !== null && (await folders.get(folderId)) === null) {
-        throw new Error('This folder no longer exists.');
+        throw new Error(t('This folder no longer exists.'));
       }
       await notes.setFolder(ids, folderId);
       onChanged();

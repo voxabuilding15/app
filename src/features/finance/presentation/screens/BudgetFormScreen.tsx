@@ -16,6 +16,7 @@ import {
 } from '@/components';
 import { useHideTabBar } from '@/hooks';
 import { ACCENT_COLORS, spacing, useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import { NAME_MAX_LENGTH, type BudgetDraft } from '../../domain/validation';
 import { BudgetPeriodSection } from '../components/BudgetPeriodSection';
@@ -30,10 +31,11 @@ interface BudgetFormScreenProps {
 }
 
 export function BudgetFormScreen({ budgetId }: BudgetFormScreenProps) {
+  const { t } = useTranslator();
   useHideTabBar();
   const { colors } = useTheme();
   const load = useBudgetLoader(budgetId);
-  const title = budgetId === null ? 'New budget' : 'Edit budget';
+  const title = budgetId === null ? t('New budget') : t('Edit budget');
 
   if (load.phase === 'ready') {
     return <BudgetFormBody budgetId={budgetId} initial={load.initial} />;
@@ -54,20 +56,22 @@ export function BudgetFormScreen({ budgetId }: BudgetFormScreenProps) {
           <ActivityIndicator
             size="large"
             color={colors.primary}
-            accessibilityLabel="Loading budget"
+            accessibilityLabel={t('Loading budget')}
           />
         </View>
       ) : (
         <Screen>
           <EmptyState
             icon="error-outline"
-            title={load.phase === 'notFound' ? 'Budget not found' : "Couldn't load the budget"}
+            title={
+              load.phase === 'notFound' ? t('Budget not found') : t("Couldn't load the budget")
+            }
             message={
               load.phase === 'notFound'
-                ? 'This budget may have been deleted.'
-                : 'Your data is safe on this device. Try again.'
+                ? t('This budget may have been deleted.')
+                : t('Your data is safe on this device. Try again.')
             }
-            actionLabel={load.phase === 'failed' ? 'Try again' : undefined}
+            actionLabel={load.phase === 'failed' ? t('Try again') : undefined}
             onAction={load.phase === 'failed' ? load.retry : undefined}
           />
         </Screen>
@@ -77,6 +81,7 @@ export function BudgetFormScreen({ budgetId }: BudgetFormScreenProps) {
 }
 
 function BudgetFormBody({ budgetId, initial }: { budgetId: string | null; initial: BudgetDraft }) {
+  const { t } = useTranslator();
   const { width } = useWindowDimensions();
   const vm = useBudgetFormViewModel(budgetId, initial);
   const [creatingCategory, setCreatingCategory] = useState(false);
@@ -85,9 +90,9 @@ function BudgetFormBody({ budgetId, initial }: { budgetId: string | null; initia
 
   const details = (
     <>
-      <FormSection title="Details">
+      <FormSection title={t('Details')}>
         <Input
-          label="Name"
+          label={t('Name')}
           value={draft.name}
           onChangeText={vm.setName}
           error={errors.name}
@@ -96,7 +101,7 @@ function BudgetFormBody({ budgetId, initial }: { budgetId: string | null; initia
           returnKeyType="next"
         />
         <Input
-          label={`Limit (${vm.currency})`}
+          label={t('Limit ({currency})', { currency: vm.currency })}
           value={vm.amountText}
           onChangeText={vm.setAmountText}
           error={vm.amountTextError ?? errors.amount}
@@ -116,10 +121,10 @@ function BudgetFormBody({ budgetId, initial }: { budgetId: string | null; initia
   );
 
   const categories = (
-    <FormSection title="Spending it covers">
+    <FormSection title={t('Spending it covers')}>
       <View style={WRAP_ROW}>
         <Chip
-          label="All spending"
+          label={t('All spending')}
           selected={draft.categoryIds.length === 0}
           onPress={vm.clearCategories}
         />
@@ -134,13 +139,13 @@ function BudgetFormBody({ budgetId, initial }: { budgetId: string | null; initia
         ))}
         <Chip
           icon="add"
-          label="New"
-          accessibilityLabel="Create a category"
+          label={t('New')}
+          accessibilityLabel={t('Create a category')}
           onPress={() => setCreatingCategory(true)}
         />
       </View>
       <Text variant="labelSmall" tone="muted">
-        Pick categories to limit the budget to them; otherwise every expense counts.
+        {t('Pick categories to limit the budget to them; otherwise every expense counts.')}
       </Text>
     </FormSection>
   );
@@ -149,9 +154,11 @@ function BudgetFormBody({ budgetId, initial }: { budgetId: string | null; initia
     <>
       <Stack.Screen
         options={{
-          title: vm.isEditing ? 'Edit budget' : 'New budget',
+          title: vm.isEditing ? t('Edit budget') : t('New budget'),
           headerRight: vm.isEditing
-            ? () => <IconButton icon="delete" label="Delete budget" onPress={vm.confirmDelete} />
+            ? () => (
+                <IconButton icon="delete" label={t('Delete budget')} onPress={vm.confirmDelete} />
+              )
             : undefined,
         }}
       />
@@ -173,7 +180,7 @@ function BudgetFormBody({ budgetId, initial }: { budgetId: string | null; initia
           </Text>
         ) : null}
         <Button
-          label={vm.isEditing ? 'Save changes' : 'Create budget'}
+          label={vm.isEditing ? t('Save changes') : t('Create budget')}
           fullWidth
           loading={vm.saving}
           onPress={() => void vm.save()}
@@ -182,7 +189,7 @@ function BudgetFormBody({ budgetId, initial }: { budgetId: string | null; initia
 
       {creatingCategory ? (
         <NameColorSheet
-          title="New category"
+          title={t('New category')}
           initialName=""
           initialColor={ACCENT_COLORS[0]}
           onSave={async (name, color) => {

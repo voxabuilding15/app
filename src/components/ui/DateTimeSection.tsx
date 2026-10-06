@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import { Chip } from './Chip';
 import { WRAP_ROW } from './ChipGroup';
 import { FormSection } from './FormSection';
+import { useTranslator } from '@/i18n';
 
 interface DateTimeSectionProps {
   title: string;
@@ -26,36 +27,37 @@ export function DateTimeSection({
   dayLabel,
   timeLabel,
   error,
-  emptyLabel = 'Add date',
+  emptyLabel,
   onPickDay,
   onPickTime,
   onClear,
   children,
 }: DateTimeSectionProps) {
+  const { t } = useTranslator();
   return (
     <FormSection title={title} error={error}>
       <View style={WRAP_ROW}>
         {dayLabel === null || timeLabel === null ? (
-          <Chip icon="event" label={emptyLabel} onPress={onPickDay} />
+          <Chip icon="event" label={emptyLabel ?? t('Add date')} onPress={onPickDay} />
         ) : (
           <>
             <Chip
               icon="event"
               label={dayLabel}
-              accessibilityLabel={`Date ${dayLabel}. Change`}
+              accessibilityLabel={t('Date {value}. Change', { value: dayLabel })}
               onPress={onPickDay}
             />
             <Chip
               icon="schedule"
               label={timeLabel}
-              accessibilityLabel={`Time ${timeLabel}. Change`}
+              accessibilityLabel={t('Time {value}. Change', { value: timeLabel })}
               onPress={onPickTime}
             />
             {onClear ? (
               <Chip
                 icon="close"
-                label="Remove"
-                accessibilityLabel="Remove date"
+                label={t('Remove')}
+                accessibilityLabel={t('Remove date')}
                 onPress={onClear}
               />
             ) : null}

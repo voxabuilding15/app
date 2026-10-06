@@ -2,6 +2,7 @@ import { View } from 'react-native';
 
 import { Chip, FormSection, Text, WRAP_ROW } from '@/components';
 import type { DateKey } from '@/core';
+import { useTranslator } from '@/i18n';
 
 import { formatDayKey } from '../format';
 
@@ -26,32 +27,37 @@ export function ScheduleSection({
   onPickEnd,
   onEnds,
 }: ScheduleSectionProps) {
+  const { t } = useTranslator();
   return (
-    <FormSection title="Schedule" error={error}>
+    <FormSection title={t('Schedule')} error={error}>
       <View style={WRAP_ROW}>
         <Chip
           icon="event"
-          label={`Starts ${formatDayKey(startDate)}`}
-          accessibilityLabel={`Starts ${formatDayKey(startDate)}. Change`}
+          label={t('Starts {dayKey}', { dayKey: formatDayKey(startDate) })}
+          accessibilityLabel={t('Starts {dayKey}. Change', { dayKey: formatDayKey(startDate) })}
           onPress={onPickStart}
         />
       </View>
       <View style={WRAP_ROW}>
-        <Chip label="Never ends" selected={endDate === null} onPress={() => onEnds('never')} />
-        <Chip label="Ends on a date" selected={endDate !== null} onPress={() => onEnds('date')} />
+        <Chip label={t('Never ends')} selected={endDate === null} onPress={() => onEnds('never')} />
+        <Chip
+          label={t('Ends on a date')}
+          selected={endDate !== null}
+          onPress={() => onEnds('date')}
+        />
         {endDate !== null ? (
           <Chip
             icon="event"
             label={formatDayKey(endDate)}
-            accessibilityLabel={`Ends ${formatDayKey(endDate)}. Change`}
+            accessibilityLabel={t('Ends {dayKey}. Change', { dayKey: formatDayKey(endDate) })}
             onPress={onPickEnd}
           />
         ) : null}
       </View>
       <Text variant="labelSmall" tone="muted">
         {backfills
-          ? 'This start date is in the past, so the transactions since then are added now.'
-          : 'Added automatically on each date, at 9:00.'}
+          ? t('This start date is in the past, so the transactions since then are added now.')
+          : t('Added automatically on each date, at 9:00.')}
       </Text>
     </FormSection>
   );

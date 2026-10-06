@@ -3,6 +3,7 @@ import { View } from 'react-native';
 
 import { Button, Chip, Sheet, Text, WRAP_ROW } from '@/components';
 import { spacing } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import { CURRENCIES } from '../../domain/settings';
 import { useFinanceModule } from '../module';
@@ -14,6 +15,7 @@ interface CurrencySheetProps {
 
 /** Sheet to choose the currency amounts are shown in. Mount only while open. */
 export function CurrencySheet({ onClose }: CurrencySheetProps) {
+  const { t } = useTranslator();
   const { settings } = useFinanceModule();
   const invalidate = useInvalidateFinance();
   const current = useCurrency();
@@ -30,9 +32,9 @@ export function CurrencySheet({ onClose }: CurrencySheetProps) {
   };
 
   return (
-    <Sheet visible title="Currency" onClose={onClose}>
+    <Sheet visible title={t('Currency')} onClose={onClose}>
       <Text variant="bodyMedium" tone="muted">
-        Amounts are only relabelled when you switch, not converted.
+        {t('Amounts are only relabelled when you switch, not converted.')}
       </Text>
       <View style={WRAP_ROW}>
         {CURRENCIES.map((option) => (
@@ -51,7 +53,7 @@ export function CurrencySheet({ onClose }: CurrencySheetProps) {
         </View>
       ) : null}
       <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.md }}>
-        <Button label="Done" onPress={onClose} />
+        <Button label={t('Done')} onPress={onClose} />
       </View>
     </Sheet>
   );

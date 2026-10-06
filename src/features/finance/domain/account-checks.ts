@@ -1,5 +1,6 @@
 import type { TransactionType } from './entities';
 import type { AccountRepository } from './ports';
+import { currentTranslator } from '@/i18n/translate';
 
 interface Movement {
   type: TransactionType;
@@ -26,15 +27,16 @@ export async function checkAccounts(
   movement: Movement,
   current: CurrentAccounts | null,
 ): Promise<AccountProblems> {
+  const { t } = currentTranslator();
   const problem = async (accountId: string | null, already: string | null) => {
     if (accountId === null || accountId === already) {
       return undefined;
     }
     const account = await accounts.get(accountId);
     if (account === null) {
-      return 'This account no longer exists';
+      return t('This account no longer exists');
     }
-    return account.archivedAt === null ? undefined : 'This account is archived';
+    return account.archivedAt === null ? undefined : t('This account is archived');
   };
 
   const problems: AccountProblems = {};

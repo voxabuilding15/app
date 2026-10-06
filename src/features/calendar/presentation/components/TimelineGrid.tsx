@@ -11,6 +11,7 @@ import { MINUTES_PER_DAY, layoutTimeline, type TimeShift } from '../../domain/ti
 import { formatDayLong, formatHour, weekdayShort } from '../format';
 
 import { TimelineBlockView } from './TimelineBlockView';
+import { useTranslator } from '@/i18n';
 
 const HOUR_HEIGHT = 56;
 const GUTTER_WIDTH = 52;
@@ -106,6 +107,7 @@ export function TimelineGrid({
   onPressDay,
   onMoveEvent,
 }: TimelineGridProps) {
+  const { t } = useTranslator();
   const { colors } = useTheme();
   const verticalRef = useRef<ScrollView>(null);
   const scrolled = useRef(false);
@@ -140,7 +142,7 @@ export function TimelineGrid({
               >
                 <PressableScale
                   accessibilityRole="button"
-                  accessibilityLabel={`${formatDayLong(day)}${isToday ? ', today' : ''}`}
+                  accessibilityLabel={`${formatDayLong(day)}${isToday ? t(', today') : ''}`}
                   disabled={!onPressDay}
                   onPress={() => onPressDay?.(day)}
                   pressedScale={0.97}
@@ -172,7 +174,7 @@ export function TimelineGrid({
                   <PressableScale
                     key={item.key}
                     accessibilityRole="button"
-                    accessibilityLabel={`All day: ${item.title}`}
+                    accessibilityLabel={t('All day: {title}', { title: item.title })}
                     pressedScale={0.97}
                     onPress={() => onPressItem(item)}
                   >
@@ -195,7 +197,7 @@ export function TimelineGrid({
                 ))}
                 {days.length > 1 && allDay.length > HEADER_CHIPS ? (
                   <Text variant="labelSmall" tone="muted" style={{ fontSize: 10 }}>
-                    {`+${allDay.length - HEADER_CHIPS} more`}
+                    {t('+{value} more', { value: allDay.length - HEADER_CHIPS })}
                   </Text>
                 ) : null}
               </View>

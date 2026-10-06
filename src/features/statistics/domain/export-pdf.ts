@@ -161,5 +161,10 @@ export function reportToPdf(report: StatsReport, words: Words): Uint8Array {
     y += CHART_HEIGHT + 30;
   }
 
-  return doc.build(`FocusFlow ${t('Statistics report')} ${periodTitle(report)}`);
+  return doc.build(
+    t('FocusFlow {t} {periodTitle}', {
+      t: t('Statistics report'),
+      periodTitle: periodTitle(report),
+    }),
+  );
 }

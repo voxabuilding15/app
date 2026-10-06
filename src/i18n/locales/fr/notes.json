@@ -1,0 +1,9 @@
+{
+  "How locked notes open": "Comment s’ouvrent les notes verrouillées",
+  "Lock settings": "Réglages du verrouillage",
+  "locked notes": "les notes verrouillées",
+  "Locking keeps notes private from anyone using your phone, but the text is stored on the device without encryption. Use your phone’s own encryption for full protection.": "Le verrouillage protège vos notes de toute personne utilisant votre téléphone, mais le texte est stocké sans chiffrement sur l'appareil. Utilisez le chiffrement de votre téléphone pour une protection complète.",
+  "Mark a note as locked in its settings. Locked notes hide their text in lists and search, and ask to be unlocked before opening. They lock again after 5 minutes or when you leave the app.": "Marquez une note comme verrouillée dans ses réglages. Les notes verrouillées masquent leur texte dans les listes et la recherche, et demandent à être déverrouillées avant d'ouvrir. Elles se reverrouillent après 5 minutes ou quand vous quittez l'application.",
+  "Notes now use your phone’s lock": "Les notes utilisent désormais le verrouillage de votre téléphone",
+  "Your notes": "Vos notes"
+}

@@ -16,6 +16,7 @@ import {
   type RecurrencePreset,
 } from '@/core';
 import { useDiscardGuard, useNow } from '@/hooks';
+import { useTranslator } from '@/i18n';
 
 import type { EventEntry, EventRecurrence } from '../../domain/entities';
 import { occurrenceForDay } from '../../domain/occurrences';
@@ -129,6 +130,7 @@ export function useEventFormViewModel(
   initial: EventDraft,
   series: EventEntry | null,
 ) {
+  const { t } = useTranslator();
   const router = useRouter();
   const { calendar } = useCalendarModule();
   const invalidate = useInvalidateCalendar();
@@ -322,10 +324,10 @@ export function useEventFormViewModel(
         update({ categoryId: result.id });
         return null;
       } catch {
-        return "Couldn't save. Please try again.";
+        return t("Couldn't save. Please try again.");
       }
     },
-    [calendar, invalidate, update],
+    [calendar, invalidate, update, t],
   );
 
   const finish = useCallback(() => {
@@ -340,8 +342,8 @@ export function useEventFormViewModel(
     let target: SaveTarget = eventId === null ? { kind: 'new' } : { kind: 'event', id: eventId };
     if (eventId !== null && isRecurringEdit) {
       const scope = await askScope(
-        'Save recurring event',
-        'Apply your changes to just this event, or to all events in the series?',
+        t('Save recurring event'),
+        t('Apply your changes to just this event, or to all events in the series?'),
       );
       if (scope === null) {
         return;
@@ -368,7 +370,7 @@ export function useEventFormViewModel(
       }
       finish();
     } catch {
-      setSaveError("Couldn't save the event. Please try again.");
+      setSaveError(t("Couldn't save the event. Please try again."));
     } finally {
       setSaving(false);
     }
@@ -382,6 +384,7 @@ export function useEventFormViewModel(
     draft,
     invalidate,
     finish,
+    t,
   ]);
 
   const deleteEvent = useCallback(async () => {
@@ -395,25 +398,25 @@ export function useEventFormViewModel(
         await invalidate();
         finish();
       } catch {
-        setSaveError("Couldn't delete the event. Please try again.");
+        setSaveError(t("Couldn't delete the event. Please try again."));
       }
     };
 
     if (isRecurringEdit) {
       const scope = await askScope(
-        'Delete recurring event',
-        'Delete just this event, or all events in the series?',
+        t('Delete recurring event'),
+        t('Delete just this event, or all events in the series?'),
       );
       if (scope !== null) {
         await remove(scope);
       }
       return;
     }
-    Alert.alert('Delete this event?', 'This permanently removes the event.', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: () => void remove('all') },
+    Alert.alert(t('Delete this event?'), t('This permanently removes the event.'), [
+      { text: t('Cancel'), style: 'cancel' },
+      { text: t('Delete'), style: 'destructive', onPress: () => void remove('all') },
     ]);
-  }, [eventId, occurrenceDate, initial.start, isRecurringEdit, calendar, invalidate, finish]);
+  }, [eventId, occurrenceDate, initial.start, isRecurringEdit, calendar, invalidate, finish, t]);
 
   return {
     isEditing: eventId !== null,

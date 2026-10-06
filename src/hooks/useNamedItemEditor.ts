@@ -2,10 +2,13 @@ import { useCallback, useState } from 'react';
 import { Alert } from 'react-native';
 
 import type { Category, NamedInput, SaveNameResult } from '@/core';
+import { useTranslator } from '@/i18n';
+
+import { NAMED_ITEM_TEXT, type NamedItemKind } from './named-item-text';
 
 interface NamedItemEditorOptions {
-  /** What the items are called, e.g. "category". Used in prompts. */
-  noun: string;
+  /** What the items are, e.g. "category". Used in prompts. */
+  noun: NamedItemKind;
   save: (input: NamedInput) => Promise<SaveNameResult>;
   remove: (id: string) => Promise<void>;
   /** Refreshes whatever displays the items after a change. */
@@ -19,6 +22,7 @@ interface EditTarget {
 
 /** State for creating, renaming and deleting named, colored items such as categories and labels. */
 export function useNamedItemEditor({ noun, save, remove, onChanged }: NamedItemEditorOptions) {
+  const { t } = useTranslator();
   const [editing, setEditing] = useState<EditTarget | null>(null);
   const [failure, setFailure] = useState<string | null>(null);
 
@@ -34,32 +38,32 @@ export function useNamedItemEditor({ noun, save, remove, onChanged }: NamedItemE
         setEditing(null);
         return null;
       } catch {
-        return "Couldn't save. Please try again.";
+        return t("Couldn't save. Please try again.");
       }
     },
-    [editing, save, onChanged],
+    [editing, save, onChanged, t],
   );
 
   const confirmRemove = useCallback(
     (item: Category) => {
       Alert.alert(
-        `Delete ${noun} "${item.name}"?`,
-        `Items keep existing; they just lose this ${noun}.`,
+        t(NAMED_ITEM_TEXT[noun].confirmTitle, { name: item.name }),
+        t(NAMED_ITEM_TEXT[noun].confirmMessage),
         [
-          { text: 'Cancel', style: 'cancel' },
+          { text: t('Cancel'), style: 'cancel' },
           {
-            text: 'Delete',
+            text: t('Delete'),
             style: 'destructive',
             onPress: () => {
               remove(item.id)
                 .then(onChanged)
-                .catch(() => setFailure("Couldn't delete. Please try again."));
+                .catch(() => setFailure(t("Couldn't delete. Please try again.")));
             },
           },
         ],
       );
     },
-    [noun, remove, onChanged],
+    [noun, remove, onChanged, t],
   );
 
   return {

@@ -8,6 +8,7 @@ import { radius, spacing, useTheme } from '@/theme';
 import { itemsOnDay, type CalendarItem } from '../../domain/items';
 import { monthGrid } from '../../domain/views';
 import { formatDayLong, weekdayShort } from '../format';
+import { useTranslator } from '@/i18n';
 
 const MAX_DOTS = 3;
 
@@ -30,11 +31,12 @@ function DayCellComponent({
   compact,
   onSelect,
 }: DayCellProps) {
+  const { t } = useTranslator();
   const { colors } = useTheme();
   const number = Number(day.slice(8));
-  const label = `${formatDayLong(day)}${isToday ? ', today' : ''}, ${
+  const label = `${formatDayLong(day)}${isToday ? t(', today') : ''}, ${
     items.length === 0
-      ? 'nothing planned'
+      ? t('nothing planned')
       : `${items.length} ${items.length === 1 ? 'item' : 'items'}`
   }`;
 

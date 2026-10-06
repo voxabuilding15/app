@@ -11,3 +11,4 @@ export { useOnAppForeground } from './useOnAppForeground';
 export { useNotice, useUndoableDelete } from './useUndoableDelete';
 export type { Notice } from './useUndoableDelete';
 export { useLockController } from './useLockController';
+export { NAMED_ITEM_TEXT, type NamedItemKind } from './named-item-text';

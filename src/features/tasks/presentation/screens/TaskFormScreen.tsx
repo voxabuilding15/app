@@ -17,6 +17,7 @@ import {
 } from '@/components';
 import { useHideTabBar } from '@/hooks';
 import { ACCENT_COLORS, spacing, useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { Priority } from '../../domain/entities';
 import { TASK_REPEAT_PRESETS, TASK_REPEAT_UNITS } from '../../domain/repeat';
@@ -47,10 +48,11 @@ interface TaskFormScreenProps {
 }
 
 export function TaskFormScreen({ taskId }: TaskFormScreenProps) {
+  const { t } = useTranslator();
   useHideTabBar();
   const { colors } = useTheme();
   const load = useTaskLoader(taskId);
-  const title = taskId === null ? 'New task' : 'Edit task';
+  const title = taskId === null ? t('New task') : t('Edit task');
 
   if (load.phase === 'ready') {
     return <TaskFormBody taskId={taskId} initial={load.initial} status={load.status} />;
@@ -71,20 +73,20 @@ export function TaskFormScreen({ taskId }: TaskFormScreenProps) {
           <ActivityIndicator
             size="large"
             color={colors.primary}
-            accessibilityLabel="Loading task"
+            accessibilityLabel={t('Loading task')}
           />
         </View>
       ) : (
         <Screen>
           <EmptyState
             icon="error-outline"
-            title={load.phase === 'notFound' ? 'Task not found' : "Couldn't load the task"}
+            title={load.phase === 'notFound' ? t('Task not found') : t("Couldn't load the task")}
             message={
               load.phase === 'notFound'
-                ? 'This task may have been deleted.'
-                : 'Your data is safe on this device. Try again.'
+                ? t('This task may have been deleted.')
+                : t('Your data is safe on this device. Try again.')
             }
-            actionLabel={load.phase === 'failed' ? 'Try again' : undefined}
+            actionLabel={load.phase === 'failed' ? t('Try again') : undefined}
             onAction={load.phase === 'failed' ? load.retry : undefined}
           />
         </Screen>
@@ -100,6 +102,7 @@ interface TaskFormBodyProps {
 }
 
 function TaskFormBody({ taskId, initial, status }: TaskFormBodyProps) {
+  const { t } = useTranslator();
   const { width } = useWindowDimensions();
   const vm = useTaskFormViewModel(taskId, initial);
   const [creating, setCreating] = useState<'category' | 'label' | null>(null);
@@ -110,24 +113,32 @@ function TaskFormBody({ taskId, initial, status }: TaskFormBodyProps) {
     ? () => (
         <View style={{ flexDirection: 'row' }}>
           {status === 'archived' ? (
-            <IconButton icon="unarchive" label="Restore task" onPress={() => void vm.restore()} />
+            <IconButton
+              icon="unarchive"
+              label={t('Restore task')}
+              onPress={() => void vm.restore()}
+            />
           ) : (
-            <IconButton icon="archive" label="Archive task" onPress={() => void vm.archive()} />
+            <IconButton
+              icon="archive"
+              label={t('Archive task')}
+              onPress={() => void vm.archive()}
+            />
           )}
-          <IconButton icon="delete" label="Delete task" onPress={vm.confirmDelete} />
+          <IconButton icon="delete" label={t('Delete task')} onPress={vm.confirmDelete} />
         </View>
       )
     : undefined;
 
   const options = (
-    <Stack.Screen options={{ title: vm.isEditing ? 'Edit task' : 'New task', headerRight }} />
+    <Stack.Screen options={{ title: vm.isEditing ? t('Edit task') : t('New task'), headerRight }} />
   );
 
   const details = (
     <>
-      <FormSection title="Details">
+      <FormSection title={t('Details')}>
         <Input
-          label="Title"
+          label={t('Title')}
           value={draft.title}
           onChangeText={vm.setTitle}
           error={errors.title}
@@ -136,7 +147,7 @@ function TaskFormBody({ taskId, initial, status }: TaskFormBodyProps) {
           returnKeyType="next"
         />
         <Input
-          label="Notes"
+          label={t('Notes')}
           value={draft.notes}
           onChangeText={vm.setNotes}
           error={errors.notes}
@@ -157,7 +168,7 @@ function TaskFormBody({ taskId, initial, status }: TaskFormBodyProps) {
 
   const scheduling = (
     <>
-      <FormSection title="Priority">
+      <FormSection title={t('Priority')}>
         <SegmentedControl<Priority>
           options={PRIORITY_OPTIONS}
           value={draft.priority}
@@ -190,7 +201,7 @@ function TaskFormBody({ taskId, initial, status }: TaskFormBodyProps) {
             error={errors.repeat}
             onPreset={vm.setRepeatPreset}
             onChange={vm.changeRepeat}
-            hint="Completing the task creates the next one automatically."
+            hint={t('Completing the task creates the next one automatically.')}
           />
         </>
       ) : null}
@@ -215,7 +226,7 @@ function TaskFormBody({ taskId, initial, status }: TaskFormBodyProps) {
       <Screen maxWidth={wide ? WIDE_MAX_WIDTH : undefined}>
         {status === 'archived' || status === 'completed' ? (
           <Text tone="muted" accessibilityRole="alert">
-            {status === 'archived' ? 'This task is archived.' : 'This task is completed.'}
+            {status === 'archived' ? t('This task is archived.') : t('This task is completed.')}
           </Text>
         ) : null}
         {wide ? (
@@ -235,7 +246,7 @@ function TaskFormBody({ taskId, initial, status }: TaskFormBodyProps) {
           </Text>
         ) : null}
         <Button
-          label={vm.isEditing ? 'Save changes' : 'Create task'}
+          label={vm.isEditing ? t('Save changes') : t('Create task')}
           fullWidth
           loading={vm.saving}
           onPress={() => void vm.save()}
@@ -244,7 +255,7 @@ function TaskFormBody({ taskId, initial, status }: TaskFormBodyProps) {
 
       {creating !== null ? (
         <NameColorSheet
-          title={creating === 'category' ? 'New category' : 'New label'}
+          title={creating === 'category' ? t('New category') : t('New label')}
           initialName=""
           initialColor={ACCENT_COLORS[0]}
           onSave={async (name, color) => {

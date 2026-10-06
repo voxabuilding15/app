@@ -5,15 +5,21 @@ import { useFinanceModule } from '../module';
 import { useInvalidateFinance, useRecurringList } from '../queries';
 
 import { useNotice, useUndoableDelete } from '@/hooks';
+import { useTranslator } from '@/i18n';
 
 export function useRecurringViewModel() {
+  const { t } = useTranslator();
   const { recurring: useCases } = useFinanceModule();
   const invalidate = useInvalidateFinance();
   const { notice, show, dismiss } = useNotice();
   const query = useRecurringList();
 
   const remove = useUndoableDelete<RecurringRecord>({
-    noun: 'Recurring transaction',
+    messages: {
+      deleted: t('Recurring transaction deleted'),
+      restoreFailed: t("Couldn't restore the recurring transaction"),
+      deleteFailed: t("Couldn't delete the recurring transaction"),
+    },
     remove: useCases.remove,
     restore: useCases.restore,
     onChanged: invalidate,
@@ -24,13 +30,13 @@ export function useRecurringViewModel() {
     async (item: RecurringTransaction, paused: boolean) => {
       try {
         await useCases.setPaused(item.id, paused);
-        show({ message: paused ? 'Paused' : 'Resumed' });
+        show({ message: paused ? t('Paused') : t('Resumed') });
       } catch {
-        show({ message: "Couldn't update the recurring transaction" });
+        show({ message: t("Couldn't update the recurring transaction") });
       }
       await invalidate();
     },
-    [useCases, show, invalidate],
+    [useCases, show, invalidate, t],
   );
 
   return {

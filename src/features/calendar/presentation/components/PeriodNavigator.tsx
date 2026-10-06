@@ -2,6 +2,7 @@ import { View } from 'react-native';
 
 import { Button, IconButton, Text } from '@/components';
 import { spacing } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { CalendarView } from '../../domain/views';
 
@@ -28,6 +29,7 @@ export function PeriodNavigator({
   onNext,
   onToday,
 }: PeriodNavigatorProps) {
+  const { t } = useTranslator();
   return (
     <View
       style={{
@@ -37,7 +39,11 @@ export function PeriodNavigator({
         paddingHorizontal: spacing.sm,
       }}
     >
-      <IconButton icon="chevron-left" label={`Previous ${UNIT[view]}`} onPress={onPrevious} />
+      <IconButton
+        icon="chevron-left"
+        label={t('Previous {value}', { value: UNIT[view] })}
+        onPress={onPrevious}
+      />
       <Text
         variant="titleMedium"
         accessibilityRole="header"
@@ -47,8 +53,12 @@ export function PeriodNavigator({
       >
         {title}
       </Text>
-      <IconButton icon="chevron-right" label={`Next ${UNIT[view]}`} onPress={onNext} />
-      <Button label="Today" variant="tonal" onPress={onToday} />
+      <IconButton
+        icon="chevron-right"
+        label={t('Next {value}', { value: UNIT[view] })}
+        onPress={onNext}
+      />
+      <Button label={t('Today')} variant="tonal" onPress={onToday} />
     </View>
   );
 }

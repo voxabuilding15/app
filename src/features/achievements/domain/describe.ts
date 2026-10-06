@@ -1,6 +1,7 @@
 import { ALL_ACHIEVEMENTS, type Tier } from './catalog';
 import { CHALLENGE_TEMPLATES } from './challenges';
 import type { Unlock, UnlockKind } from './entities';
+import { currentTranslator } from '@/i18n/translate';
 
 /** What to show for an unlock, in English with placeholders for the screens to translate. */
 export interface UnlockText {
@@ -23,6 +24,7 @@ function parseChallenge(ref: string): { period: 'week' | 'month'; templateId: st
 }
 
 export function describeUnlock(unlock: Pick<Unlock, 'kind' | 'ref'>): UnlockText | null {
+  const { t } = currentTranslator();
   if (unlock.kind === 'challenge') {
     const parsed = parseChallenge(unlock.ref);
     const template = CHALLENGE_TEMPLATES.find((item) => item.id === parsed?.templateId);
@@ -33,7 +35,9 @@ export function describeUnlock(unlock: Pick<Unlock, 'kind' | 'ref'>): UnlockText
       kind: 'challenge',
       title: template.title,
       description:
-        parsed.period === 'week' ? 'Weekly challenge completed' : 'Monthly challenge completed',
+        parsed.period === 'week'
+          ? t('Weekly challenge completed')
+          : t('Monthly challenge completed'),
       count: template[parsed.period],
       icon: 'flag',
       tier: null,

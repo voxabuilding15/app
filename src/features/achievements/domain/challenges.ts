@@ -1,6 +1,7 @@
 import { addDaysToKey, startOfWeekKey, type DateKey } from '@/core';
 
 import type { CounterId, PeriodCounts } from './entities';
+import { msg } from '@/i18n/msg';
 
 export type ChallengePeriod = 'week' | 'month';
 
@@ -17,34 +18,40 @@ export interface ChallengeTemplate {
 
 /** A challenge is measured by one counter over the week or month. */
 export const CHALLENGE_TEMPLATES: readonly ChallengeTemplate[] = [
-  { id: 'tasks', title: 'Complete {count} tasks', counter: 'tasks', week: 10, month: 40 },
+  { id: 'tasks', title: msg('Complete {count} tasks'), counter: 'tasks', week: 10, month: 40 },
   {
     id: 'focus',
-    title: 'Focus for {count} minutes',
+    title: msg('Focus for {count} minutes'),
     counter: 'focusMinutes',
     week: 180,
     month: 720,
   },
   {
     id: 'habits',
-    title: 'Check in {count} times on your habits',
+    title: msg('Check in {count} times on your habits'),
     counter: 'checkIns',
     week: 15,
     month: 60,
   },
-  { id: 'active', title: 'Be active on {count} days', counter: 'activeDays', week: 5, month: 20 },
-  { id: 'notes', title: 'Write {count} notes', counter: 'notes', week: 3, month: 10 },
+  {
+    id: 'active',
+    title: msg('Be active on {count} days'),
+    counter: 'activeDays',
+    week: 5,
+    month: 20,
+  },
+  { id: 'notes', title: msg('Write {count} notes'), counter: 'notes', week: 3, month: 10 },
   {
     id: 'money',
-    title: 'Record {count} transactions',
+    title: msg('Record {count} transactions'),
     counter: 'transactions',
     week: 5,
     month: 20,
   },
-  { id: 'events', title: 'Schedule {count} events', counter: 'events', week: 4, month: 15 },
+  { id: 'events', title: msg('Schedule {count} events'), counter: 'events', week: 4, month: 15 },
   {
     id: 'sessions',
-    title: 'Finish {count} focus sessions',
+    title: msg('Finish {count} focus sessions'),
     counter: 'focusSessions',
     week: 5,
     month: 20,

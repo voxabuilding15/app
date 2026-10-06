@@ -14,6 +14,7 @@ import {
 } from '@/components';
 import { useHideTabBar } from '@/hooks';
 import { ACCENT_COLORS, spacing, useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import {
   HABIT_NAME_MAX_LENGTH,
@@ -36,10 +37,11 @@ interface HabitFormScreenProps {
 }
 
 export function HabitFormScreen({ habitId }: HabitFormScreenProps) {
+  const { t } = useTranslator();
   useHideTabBar();
   const { colors } = useTheme();
   const load = useHabitLoader(habitId, ACCENT_COLORS[0]);
-  const title = habitId === null ? 'New habit' : 'Edit habit';
+  const title = habitId === null ? t('New habit') : t('Edit habit');
 
   if (load.phase === 'ready') {
     return <HabitFormBody habitId={habitId} initial={load.initial} />;
@@ -60,20 +62,20 @@ export function HabitFormScreen({ habitId }: HabitFormScreenProps) {
           <ActivityIndicator
             size="large"
             color={colors.primary}
-            accessibilityLabel="Loading habit"
+            accessibilityLabel={t('Loading habit')}
           />
         </View>
       ) : (
         <Screen>
           <EmptyState
             icon="error-outline"
-            title={load.phase === 'notFound' ? 'Habit not found' : "Couldn't load the habit"}
+            title={load.phase === 'notFound' ? t('Habit not found') : t("Couldn't load the habit")}
             message={
               load.phase === 'notFound'
-                ? 'This habit may have been deleted.'
-                : 'Your data is safe on this device. Try again.'
+                ? t('This habit may have been deleted.')
+                : t('Your data is safe on this device. Try again.')
             }
-            actionLabel={load.phase === 'failed' ? 'Try again' : undefined}
+            actionLabel={load.phase === 'failed' ? t('Try again') : undefined}
             onAction={load.phase === 'failed' ? load.retry : undefined}
           />
         </Screen>
@@ -83,6 +85,7 @@ export function HabitFormScreen({ habitId }: HabitFormScreenProps) {
 }
 
 function HabitFormBody({ habitId, initial }: { habitId: string | null; initial: HabitDraft }) {
+  const { t } = useTranslator();
   const { width } = useWindowDimensions();
   const vm = useHabitFormViewModel(habitId, initial);
   const [creatingCategory, setCreatingCategory] = useState(false);
@@ -91,9 +94,9 @@ function HabitFormBody({ habitId, initial }: { habitId: string | null; initial: 
 
   const basics = (
     <>
-      <FormSection title="Details">
+      <FormSection title={t('Details')}>
         <Input
-          label="Name"
+          label={t('Name')}
           value={draft.name}
           onChangeText={vm.setName}
           error={errors.name}
@@ -102,7 +105,7 @@ function HabitFormBody({ habitId, initial }: { habitId: string | null; initial: 
           returnKeyType="next"
         />
         <Input
-          label="Notes"
+          label={t('Notes')}
           value={draft.notes}
           onChangeText={vm.setNotes}
           error={errors.notes}
@@ -139,7 +142,7 @@ function HabitFormBody({ habitId, initial }: { habitId: string | null; initial: 
 
   return (
     <>
-      <Stack.Screen options={{ title: vm.isEditing ? 'Edit habit' : 'New habit' }} />
+      <Stack.Screen options={{ title: vm.isEditing ? t('Edit habit') : t('New habit') }} />
       <Screen maxWidth={wide ? WIDE_MAX_WIDTH : undefined}>
         {wide ? (
           <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: spacing.lg }}>
@@ -158,7 +161,7 @@ function HabitFormBody({ habitId, initial }: { habitId: string | null; initial: 
           </Text>
         ) : null}
         <Button
-          label={vm.isEditing ? 'Save changes' : 'Create habit'}
+          label={vm.isEditing ? t('Save changes') : t('Create habit')}
           fullWidth
           loading={vm.saving}
           onPress={() => void vm.save()}
@@ -167,7 +170,7 @@ function HabitFormBody({ habitId, initial }: { habitId: string | null; initial: 
 
       {creatingCategory ? (
         <NameColorSheet
-          title="New category"
+          title={t('New category')}
           initialName=""
           initialColor={ACCENT_COLORS[0]}
           onSave={async (name, color) => {

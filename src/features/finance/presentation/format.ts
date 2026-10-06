@@ -9,11 +9,13 @@ import type {
   Transaction,
   TransactionType,
 } from '../domain/entities';
+import { msg } from '@/i18n/msg';
+import { currentTranslator } from '@/i18n/translate';
 
 export const TRANSACTION_TYPE_LABEL: Record<TransactionType, string> = {
-  expense: 'Expense',
-  income: 'Income',
-  transfer: 'Transfer',
+  expense: msg('Expense'),
+  income: msg('Income'),
+  transfer: msg('Transfer'),
 };
 
 export const TRANSACTION_TYPE_ICON: Record<TransactionType, IconName> = {
@@ -23,10 +25,10 @@ export const TRANSACTION_TYPE_ICON: Record<TransactionType, IconName> = {
 };
 
 export const ACCOUNT_TYPE_LABEL: Record<AccountType, string> = {
-  cash: 'Cash',
-  bank: 'Bank',
-  savings: 'Savings',
-  credit_card: 'Credit card',
+  cash: msg('Cash'),
+  bank: msg('Bank'),
+  savings: msg('Savings'),
+  credit_card: msg('Credit card'),
 };
 
 export const ACCOUNT_TYPE_ICON: Record<AccountType, IconName> = {
@@ -37,9 +39,9 @@ export const ACCOUNT_TYPE_ICON: Record<AccountType, IconName> = {
 };
 
 export const BUDGET_PERIOD_LABEL: Record<BudgetPeriod, string> = {
-  monthly: 'Monthly',
-  weekly: 'Weekly',
-  custom: 'Custom',
+  monthly: msg('Monthly'),
+  weekly: msg('Weekly'),
+  custom: msg('Custom'),
 };
 
 export function formatTime(at: number): string {
@@ -48,13 +50,14 @@ export function formatTime(at: number): string {
 
 /** "Today", "Yesterday" or a short date such as "Mon, 5 Oct" (with the year when it is not this one). */
 export function formatDate(at: number, now: number): string {
+  const { t } = currentTranslator();
   const today = startOfDay(now);
   const day = startOfDay(at);
   if (day === today) {
-    return 'Today';
+    return t('Today');
   }
   if (day === startOfDay(today - 12 * 3_600_000)) {
-    return 'Yesterday';
+    return t('Yesterday');
   }
   const sameYear = new Date(at).getFullYear() === new Date(now).getFullYear();
   return new Date(at).toLocaleDateString(undefined, {
@@ -116,9 +119,10 @@ export function describeFlow(item: Pick<Transaction, 'account' | 'toAccount'>): 
 
 /** Accessible one-sentence summary of a transaction for screen readers. */
 export function describeTransaction(item: Transaction, now: number, currency: string): string {
+  const { t } = currentTranslator();
   const parts = [
     `${TRANSACTION_TYPE_LABEL[item.type]} ${formatMoney(item.amountMinor, currency)}`,
-    item.category?.name ?? (item.type === 'transfer' ? null : 'no category'),
+    item.category?.name ?? (item.type === 'transfer' ? null : t('no category')),
     describeFlow(item),
     `${formatDate(item.occurredAt, now)}, ${formatTime(item.occurredAt)}`,
     item.note || null,
@@ -128,15 +132,19 @@ export function describeTransaction(item: Transaction, now: number, currency: st
 }
 
 export function describeBudget(progress: BudgetProgress, currency: string): string {
+  const { t } = currentTranslator();
   const { budget, spentMinor, remainingMinor } = progress;
   const standing =
     remainingMinor < 0
-      ? `over by ${formatMoney(-remainingMinor, currency)}`
-      : `${formatMoney(remainingMinor, currency)} left`;
+      ? t('over by {money}', { money: formatMoney(-remainingMinor, currency) })
+      : t('{money} left', { money: formatMoney(remainingMinor, currency) });
   return [
     budget.name,
-    `${BUDGET_PERIOD_LABEL[budget.period].toLowerCase()} budget`,
-    `${formatMoney(spentMinor, currency)} of ${formatMoney(budget.amountMinor, currency)} spent`,
+    t('{lowerCase} budget', { lowerCase: BUDGET_PERIOD_LABEL[budget.period].toLowerCase() }),
+    t('{money} of {money2} spent', {
+      money: formatMoney(spentMinor, currency),
+      money2: formatMoney(budget.amountMinor, currency),
+    }),
     standing,
   ].join(', ');
 }

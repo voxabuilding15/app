@@ -14,6 +14,7 @@ import {
 } from '@/components';
 import { useNow } from '@/hooks';
 import { spacing, useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { Task } from '../../domain/entities';
 import type { TaskScope } from '../../domain/filters';
@@ -24,11 +25,12 @@ import { TaskRow } from '../components/TaskRow';
 import { SORT_FIELDS, sortLabel } from '../options';
 import { useTaxonomy } from '../queries';
 import { useTaskListViewModel, type TaskListViewModel } from '../view-models/useTaskListViewModel';
+import { msg } from '@/i18n/msg';
 
 const SCOPES = [
-  { value: 'active', label: 'Active' },
-  { value: 'completed', label: 'Done' },
-  { value: 'archived', label: 'Archived' },
+  { value: 'active', label: msg('Active') },
+  { value: 'completed', label: msg('Done') },
+  { value: 'archived', label: msg('Archived') },
 ] as const satisfies readonly { value: TaskScope; label: string }[];
 
 const TWO_COLUMN_MIN_WIDTH = 900;
@@ -40,12 +42,17 @@ function Separator() {
 }
 
 function ListEmpty({ vm, onAdd }: { vm: TaskListViewModel; onAdd: () => void }) {
+  const { t } = useTranslator();
   const { colors } = useTheme();
 
   if (vm.isLoading) {
     return (
       <View style={{ paddingVertical: spacing.xxl }}>
-        <ActivityIndicator size="large" color={colors.primary} accessibilityLabel="Loading tasks" />
+        <ActivityIndicator
+          size="large"
+          color={colors.primary}
+          accessibilityLabel={t('Loading tasks')}
+        />
       </View>
     );
   }
@@ -53,9 +60,9 @@ function ListEmpty({ vm, onAdd }: { vm: TaskListViewModel; onAdd: () => void }) 
     return (
       <EmptyState
         icon="error-outline"
-        title="Couldn't load tasks"
-        message="Your tasks are safe on this device. Try loading the list again."
-        actionLabel="Try again"
+        title={t("Couldn't load tasks")}
+        message={t('Your tasks are safe on this device. Try loading the list again.')}
+        actionLabel={t('Try again')}
         onAction={() => void vm.refetch()}
       />
     );
@@ -64,9 +71,9 @@ function ListEmpty({ vm, onAdd }: { vm: TaskListViewModel; onAdd: () => void }) 
     return (
       <EmptyState
         icon="search-off"
-        title="No matching tasks"
-        message="Nothing matches your search and filters."
-        actionLabel="Clear search and filters"
+        title={t('No matching tasks')}
+        message={t('Nothing matches your search and filters.')}
+        actionLabel={t('Clear search and filters')}
         onAction={vm.clearFilters}
       />
     );
@@ -76,25 +83,25 @@ function ListEmpty({ vm, onAdd }: { vm: TaskListViewModel; onAdd: () => void }) 
       return (
         <EmptyState
           icon="task-alt"
-          title="Nothing completed yet"
-          message="Tasks you finish will be listed here."
+          title={t('Nothing completed yet')}
+          message={t('Tasks you finish will be listed here.')}
         />
       );
     case 'archived':
       return (
         <EmptyState
           icon="inventory-2"
-          title="No archived tasks"
-          message="Archive tasks you want out of the way but don't want to delete."
+          title={t('No archived tasks')}
+          message={t("Archive tasks you want out of the way but don't want to delete.")}
         />
       );
     default:
       return (
         <EmptyState
           icon="check-circle"
-          title="No tasks yet"
-          message="Add your first task with a due date, reminder or subtasks."
-          actionLabel="Add task"
+          title={t('No tasks yet')}
+          message={t('Add your first task with a due date, reminder or subtasks.')}
+          actionLabel={t('Add task')}
           onAction={onAdd}
         />
       );
@@ -102,6 +109,7 @@ function ListEmpty({ vm, onAdd }: { vm: TaskListViewModel; onAdd: () => void }) 
 }
 
 export function TaskListScreen() {
+  const { t } = useTranslator();
   const vm = useTaskListViewModel();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -192,14 +200,14 @@ export function TaskListScreen() {
           onDelete={() => void vm.removeSelected()}
         />
       ) : (
-        <ScreenToolbar title="Tasks">
+        <ScreenToolbar title={t('Tasks')}>
           <IconButton
             icon={vm.searchOpen ? 'close' : 'search'}
-            label={vm.searchOpen ? 'Close search' : 'Search tasks'}
+            label={vm.searchOpen ? t('Close search') : t('Search tasks')}
             onPress={vm.toggleSearch}
           />
-          <IconButton icon="checklist" label="Select tasks" onPress={() => startSelecting()} />
-          <IconButton icon="label" label="Manage categories and labels" onPress={openManage} />
+          <IconButton icon="checklist" label={t('Select tasks')} onPress={() => startSelecting()} />
+          <IconButton icon="label" label={t('Manage categories and labels')} onPress={openManage} />
         </ScreenToolbar>
       )}
       <ListControls
@@ -209,8 +217,8 @@ export function TaskListScreen() {
         searchOpen={vm.searchOpen}
         searchText={vm.searchText}
         onSearchText={vm.setSearchText}
-        searchLabel="Search tasks"
-        searchPlaceholder="Title, notes or subtasks"
+        searchLabel={t('Search tasks')}
+        searchPlaceholder={t('Title, notes or subtasks')}
         activeFilterCount={vm.activeFilterCount}
         isFiltering={vm.isFiltering}
         onOpenFilter={() => setFilterOpen(true)}
@@ -258,7 +266,7 @@ export function TaskListScreen() {
         keyboardShouldPersistTaps="handled"
       />
 
-      {selecting ? null : <FAB icon="add" label="Add task" onPress={openNew} />}
+      {selecting ? null : <FAB icon="add" label={t('Add task')} onPress={openNew} />}
       {vm.notice ? (
         <Snackbar
           message={vm.notice.message}
@@ -280,7 +288,7 @@ export function TaskListScreen() {
       />
       <SortSheet
         visible={sortOpen}
-        title="Sort tasks"
+        title={t('Sort tasks')}
         fields={SORT_FIELDS[vm.filter.scope].map((value) => ({ value, label: sortLabel(value) }))}
         sort={vm.sort}
         onChange={vm.changeSort}

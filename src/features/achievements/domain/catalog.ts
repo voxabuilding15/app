@@ -1,4 +1,7 @@
 import type { CounterId, Lifetime } from './entities';
+import { useTranslator } from '@/i18n';
+import { msg } from '@/i18n/msg';
+import { currentTranslator } from '@/i18n/translate';
 
 export type Tier = 'bronze' | 'silver' | 'gold' | 'platinum';
 
@@ -39,71 +42,71 @@ interface MilestoneLine {
 const MILESTONE_LINES: readonly MilestoneLine[] = [
   {
     counter: 'tasks',
-    title: 'Task finisher',
-    describe: 'Complete {count} tasks',
+    title: msg('Task finisher'),
+    describe: msg('Complete {count} tasks'),
     icon: 'check-circle',
     targets: [10, 50, 250, 1000],
   },
   {
     counter: 'checkIns',
-    title: 'Habit builder',
-    describe: 'Check in {count} times on your habits',
+    title: msg('Habit builder'),
+    describe: msg('Check in {count} times on your habits'),
     icon: 'local-fire-department',
     targets: [25, 100, 500, 2000],
   },
   {
     counter: 'focusMinutes',
-    title: 'Deep worker',
-    describe: 'Focus for {count} hours',
+    title: msg('Deep worker'),
+    describe: msg('Focus for {count} hours'),
     icon: 'timer',
     targets: [300, 1500, 6000, 30000],
     shown: (minutes) => minutes / 60,
   },
   {
     counter: 'focusSessions',
-    title: 'Session streaker',
-    describe: 'Finish {count} focus sessions',
+    title: msg('Session streaker'),
+    describe: msg('Finish {count} focus sessions'),
     icon: 'self-improvement',
     targets: [10, 50, 250, 1000],
   },
   {
     counter: 'notes',
-    title: 'Note taker',
-    describe: 'Write {count} notes',
+    title: msg('Note taker'),
+    describe: msg('Write {count} notes'),
     icon: 'sticky-note-2',
     targets: [10, 50, 200, 1000],
   },
   {
     counter: 'events',
-    title: 'Planner',
-    describe: 'Schedule {count} events',
+    title: msg('Planner'),
+    describe: msg('Schedule {count} events'),
     icon: 'event',
     targets: [10, 50, 200, 1000],
   },
   {
     counter: 'transactions',
-    title: 'Money tracker',
-    describe: 'Record {count} transactions',
+    title: msg('Money tracker'),
+    describe: msg('Record {count} transactions'),
     icon: 'account-balance-wallet',
     targets: [25, 100, 500, 2500],
   },
 ];
 
 const FIRST_STEPS: readonly { id: string; counter: CounterId; title: string; icon: string }[] = [
-  { id: 'first-task', counter: 'tasks', title: 'First task done', icon: 'check-circle' },
+  { id: 'first-task', counter: 'tasks', title: msg('First task done'), icon: 'check-circle' },
   {
     id: 'first-habit',
     counter: 'checkIns',
-    title: 'First habit check-in',
+    title: msg('First habit check-in'),
     icon: 'local-fire-department',
   },
-  { id: 'first-focus', counter: 'focusSessions', title: 'First focus session', icon: 'timer' },
-  { id: 'first-note', counter: 'notes', title: 'First note', icon: 'sticky-note-2' },
-  { id: 'first-event', counter: 'events', title: 'First event', icon: 'event' },
+  { id: 'first-focus', counter: 'focusSessions', title: msg('First focus session'), icon: 'timer' },
+  { id: 'first-note', counter: 'notes', title: msg('First note'), icon: 'sticky-note-2' },
+  { id: 'first-event', counter: 'events', title: msg('First event'), icon: 'event' },
   {
     id: 'first-transaction',
     counter: 'transactions',
-    title: 'First transaction',
+    title: msg('First transaction'),
     icon: 'account-balance-wallet',
   },
 ];
@@ -122,22 +125,25 @@ const FIRST_STEP_XP = 20;
 const COUNTER_IDS: readonly CounterId[] = FIRST_STEPS.map((step) => step.counter);
 
 export const BADGES: readonly AchievementDef[] = [
-  ...FIRST_STEPS.map((step): AchievementDef => ({
-    id: step.id,
-    group: 'badge',
-    title: step.title,
-    description: 'Your very first one',
-    count: 1,
-    icon: step.icon,
-    xp: FIRST_STEP_XP,
-    counter: step.counter,
-    target: 1,
-  })),
+  ...FIRST_STEPS.map((step): AchievementDef => {
+    const { t } = currentTranslator();
+    return {
+      id: step.id,
+      group: 'badge',
+      title: step.title,
+      description: t('Your very first one'),
+      count: 1,
+      icon: step.icon,
+      xp: FIRST_STEP_XP,
+      counter: step.counter,
+      target: 1,
+    };
+  }),
   {
     id: 'all-rounder',
     group: 'badge',
-    title: 'All-rounder',
-    description: 'Use tasks, habits, focus, notes, events and money at least once',
+    title: msg('All-rounder'),
+    description: msg('Use tasks, habits, focus, notes, events and money at least once'),
     count: 0,
     icon: 'workspace-premium',
     xp: 100,
@@ -146,23 +152,26 @@ export const BADGES: readonly AchievementDef[] = [
   {
     id: 'marathon',
     group: 'badge',
-    title: 'Marathon focus',
-    description: 'Stay with one focus session for {count} minutes',
+    title: msg('Marathon focus'),
+    description: msg('Stay with one focus session for {count} minutes'),
     count: 90,
     icon: 'hourglass-top',
     xp: 50,
     test: (lifetime) => lifetime.longestFocusMinutes >= 90,
   },
-  ...[5, 10, 25].map((level): AchievementDef => ({
-    id: `level-${level}`,
-    group: 'badge',
-    title: 'Level {count}',
-    description: 'Reach level {count}',
-    count: level,
-    icon: 'military-tech',
-    xp: level * 10,
-    test: (_lifetime, context) => context.level >= level,
-  })),
+  ...[5, 10, 25].map((level): AchievementDef => {
+    const { t } = currentTranslator();
+    return {
+      id: `level-${level}`,
+      group: 'badge',
+      title: t('Level {count}'),
+      description: t('Reach level {count}'),
+      count: level,
+      icon: 'military-tech',
+      xp: level * 10,
+      test: (_lifetime, context) => context.level >= level,
+    };
+  }),
 ];
 
 export const MILESTONES: readonly AchievementDef[] = MILESTONE_LINES.flatMap((line) =>
@@ -184,16 +193,19 @@ export const MILESTONES: readonly AchievementDef[] = MILESTONE_LINES.flatMap((li
 );
 
 export const STREAK_BADGES: readonly AchievementDef[] = STREAK_REWARDS.map(
-  (reward): AchievementDef => ({
-    id: `streak-${reward.days}`,
-    group: 'streak',
-    title: '{count}-day streak',
-    description: 'Do something useful {count} days in a row',
-    count: reward.days,
-    icon: 'bolt',
-    xp: reward.xp,
-    target: reward.days,
-  }),
+  (reward): AchievementDef => {
+    const { t } = useTranslator();
+    return {
+      id: `streak-${reward.days}`,
+      group: 'streak',
+      title: t('{count}-day streak'),
+      description: t('Do something useful {count} days in a row'),
+      count: reward.days,
+      icon: 'bolt',
+      xp: reward.xp,
+      target: reward.days,
+    };
+  },
 );
 
 export const ALL_ACHIEVEMENTS: readonly AchievementDef[] = [

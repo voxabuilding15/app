@@ -5,6 +5,7 @@ import { Alert } from 'react-native';
 import { pickDate, pickTime } from '@/components';
 import { combineDayAndTime, formatMoney } from '@/core';
 import { useDiscardGuard, useNow } from '@/hooks';
+import { useTranslator } from '@/i18n';
 
 import type { OverBudget } from '../../domain/budget-usecases';
 import type { TransactionRecord, TransactionType } from '../../domain/entities';
@@ -14,6 +15,7 @@ import { useAccounts, useInvalidateFinance, useTransaction } from '../queries';
 
 import { useCategoryCreator } from './useCategoryCreator';
 import { INVALID_AMOUNT, useMovementForm } from './useMovementForm';
+import { currentTranslator } from '@/i18n/translate';
 
 export interface NewTransactionDefaults {
   type: TransactionType | null;
@@ -83,8 +85,14 @@ export function useTransactionLoader(
 }
 
 function overBudgetMessage(over: readonly OverBudget[], currency: string): string {
+  const { t } = currentTranslator();
   return over
-    .map((item) => `${item.name}: over by ${formatMoney(item.overByMinor, currency)}`)
+    .map((item) =>
+      t('{name}: over by {money}', {
+        name: item.name,
+        money: formatMoney(item.overByMinor, currency),
+      }),
+    )
     .join('\n');
 }
 
@@ -93,6 +101,7 @@ export function useTransactionFormViewModel(
   transactionId: string | null,
   initial: TransactionDraft,
 ) {
+  const { t } = useTranslator();
   const router = useRouter();
   const { transactions } = useFinanceModule();
   const invalidate = useInvalidateFinance();
@@ -162,15 +171,15 @@ export function useTransactionFormViewModel(
       }
       await invalidate();
       if (result.overBudgets.length > 0) {
-        Alert.alert('Over budget', overBudgetMessage(result.overBudgets, currency));
+        Alert.alert(t('Over budget'), overBudgetMessage(result.overBudgets, currency));
       }
       finish();
     } catch {
-      setSaveError("Couldn't save the transaction. Please try again.");
+      setSaveError(t("Couldn't save the transaction. Please try again."));
     } finally {
       setSaving(false);
     }
-  }, [saving, transactions, draft, transactionId, invalidate, currency, finish]);
+  }, [saving, transactions, draft, transactionId, invalidate, currency, finish, t]);
 
   const remove = useCallback(async () => {
     if (transactionId === null) {
@@ -181,16 +190,16 @@ export function useTransactionFormViewModel(
       await invalidate();
       finish();
     } catch {
-      setSaveError("Couldn't delete the transaction. Please try again.");
+      setSaveError(t("Couldn't delete the transaction. Please try again."));
     }
-  }, [transactionId, transactions, invalidate, finish]);
+  }, [transactionId, transactions, invalidate, finish, t]);
 
   const confirmDelete = useCallback(() => {
-    Alert.alert('Delete this transaction?', 'Your balances will be updated.', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: () => void remove() },
+    Alert.alert(t('Delete this transaction?'), t('Your balances will be updated.'), [
+      { text: t('Cancel'), style: 'cancel' },
+      { text: t('Delete'), style: 'destructive', onPress: () => void remove() },
     ]);
-  }, [remove]);
+  }, [remove, t]);
 
   const amountTextError = form.amountTextInvalid ? INVALID_AMOUNT : undefined;
 

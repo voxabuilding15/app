@@ -1,3 +1,5 @@
+import { msg } from '@/i18n/msg';
+import { currentTranslator } from '@/i18n/translate';
 export type FeedbackKind = 'bug' | 'idea' | 'other';
 
 export const FEEDBACK_MAX_LENGTH = 2_000;
@@ -20,9 +22,9 @@ export function validateFeedback(message: string): FeedbackError | null {
 }
 
 const SUBJECTS: Record<FeedbackKind, string> = {
-  bug: 'Problem report',
-  idea: 'Idea',
-  other: 'Feedback',
+  bug: msg('Problem report'),
+  idea: msg('Idea'),
+  other: msg('Feedback'),
 };
 
 /**
@@ -35,6 +37,7 @@ export function composeFeedback(
   diagnostics: Diagnostics,
   includeDiagnostics: boolean,
 ): { subject: string; body: string } {
+  const { t } = currentTranslator();
   const lines = [message.trim()];
   if (includeDiagnostics) {
     lines.push(
@@ -47,7 +50,10 @@ export function composeFeedback(
     );
   }
   return {
-    subject: `FocusFlow ${diagnostics.appVersion} – ${SUBJECTS[kind]}`,
+    subject: t('FocusFlow {appVersion} – {value}', {
+      appVersion: diagnostics.appVersion,
+      value: SUBJECTS[kind],
+    }),
     body: lines.join('\n'),
   };
 }

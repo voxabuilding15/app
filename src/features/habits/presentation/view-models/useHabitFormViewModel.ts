@@ -15,6 +15,7 @@ import {
 import { DEFAULT_HABIT_ICON } from '../icons';
 import { useHabitsModule } from '../module';
 import { useHabitCategories, useHabitDetail, useInvalidateHabits } from '../queries';
+import { useTranslator } from '@/i18n';
 
 const DEFAULT_REMINDER = '09:00';
 
@@ -66,6 +67,7 @@ export function useHabitLoader(habitId: string | null, defaultColor: string): Ha
 
 /** Editing state for one habit. `habitId` null creates a new habit; `initial` seeds the draft. */
 export function useHabitFormViewModel(habitId: string | null, initial: HabitDraft) {
+  const { t } = useTranslator();
   const router = useRouter();
   const { habits } = useHabitsModule();
   const invalidate = useInvalidateHabits();
@@ -121,10 +123,10 @@ export function useHabitFormViewModel(habitId: string | null, initial: HabitDraf
         update({ categoryId: result.id });
         return null;
       } catch {
-        return "Couldn't save. Please try again.";
+        return t("Couldn't save. Please try again.");
       }
     },
-    [habits, invalidate, update],
+    [habits, invalidate, update, t],
   );
 
   const save = useCallback(async () => {
@@ -146,11 +148,11 @@ export function useHabitFormViewModel(habitId: string | null, initial: HabitDraf
       allowLeaving();
       router.back();
     } catch {
-      setSaveError("Couldn't save the habit. Please try again.");
+      setSaveError(t("Couldn't save the habit. Please try again."));
     } finally {
       setSaving(false);
     }
-  }, [saving, habits, draft, habitId, invalidate, allowLeaving, router]);
+  }, [saving, habits, draft, habitId, invalidate, allowLeaving, router, t]);
 
   return {
     isEditing: habitId !== null,

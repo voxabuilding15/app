@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { ACCENT_COLORS, MIN_TOUCH_TARGET, useTheme } from '@/theme';
 
 import { PressableScale } from './PressableScale';
+import { useTranslator } from '@/i18n';
 
 interface ColorSwatchesProps {
   value: string;
@@ -13,6 +14,7 @@ const SWATCH_SIZE = 32;
 
 /** Radio group of the shared accent palette with 48dp touch targets. */
 export function ColorSwatches({ value, onChange }: ColorSwatchesProps) {
+  const { t } = useTranslator();
   const { colors } = useTheme();
 
   return (
@@ -23,7 +25,10 @@ export function ColorSwatches({ value, onChange }: ColorSwatchesProps) {
           <PressableScale
             key={option}
             accessibilityRole="radio"
-            accessibilityLabel={`Color ${index + 1} of ${ACCENT_COLORS.length}`}
+            accessibilityLabel={t('Color {number} of {total}', {
+              number: index + 1,
+              total: ACCENT_COLORS.length,
+            })}
             accessibilityState={{ selected }}
             haptic="selection"
             onPress={() => onChange(option)}

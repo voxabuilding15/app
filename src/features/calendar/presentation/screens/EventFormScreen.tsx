@@ -18,6 +18,7 @@ import {
 import type { DateKey } from '@/core';
 import { useHideTabBar } from '@/hooks';
 import { ACCENT_COLORS, spacing, useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import {
   EVENT_LOCATION_MAX_LENGTH,
@@ -49,10 +50,11 @@ interface EventFormScreenProps {
 }
 
 export function EventFormScreen({ eventId, occurrenceDate, defaults }: EventFormScreenProps) {
+  const { t } = useTranslator();
   useHideTabBar();
   const { colors } = useTheme();
   const load = useEventLoader(eventId, occurrenceDate, defaults);
-  const title = eventId === null ? 'New event' : 'Edit event';
+  const title = eventId === null ? t('New event') : t('Edit event');
 
   if (load.phase === 'ready') {
     return (
@@ -80,20 +82,20 @@ export function EventFormScreen({ eventId, occurrenceDate, defaults }: EventForm
           <ActivityIndicator
             size="large"
             color={colors.primary}
-            accessibilityLabel="Loading event"
+            accessibilityLabel={t('Loading event')}
           />
         </View>
       ) : (
         <Screen>
           <EmptyState
             icon="error-outline"
-            title={load.phase === 'notFound' ? 'Event not found' : "Couldn't load the event"}
+            title={load.phase === 'notFound' ? t('Event not found') : t("Couldn't load the event")}
             message={
               load.phase === 'notFound'
-                ? 'This event may have been deleted.'
-                : 'Your data is safe on this device. Try again.'
+                ? t('This event may have been deleted.')
+                : t('Your data is safe on this device. Try again.')
             }
-            actionLabel={load.phase === 'failed' ? 'Try again' : undefined}
+            actionLabel={load.phase === 'failed' ? t('Try again') : undefined}
             onAction={load.phase === 'failed' ? load.retry : undefined}
           />
         </Screen>
@@ -110,6 +112,7 @@ interface EventFormBodyProps {
 }
 
 function EventFormBody({ eventId, occurrenceDate, initial, series }: EventFormBodyProps) {
+  const { t } = useTranslator();
   const { width } = useWindowDimensions();
   const vm = useEventFormViewModel(eventId, occurrenceDate, initial, series);
   const [creatingCategory, setCreatingCategory] = useState(false);
@@ -118,9 +121,9 @@ function EventFormBody({ eventId, occurrenceDate, initial, series }: EventFormBo
 
   const details = (
     <>
-      <FormSection title="Details">
+      <FormSection title={t('Details')}>
         <Input
-          label="Title"
+          label={t('Title')}
           value={draft.title}
           onChangeText={vm.setTitle}
           error={errors.title}
@@ -129,14 +132,14 @@ function EventFormBody({ eventId, occurrenceDate, initial, series }: EventFormBo
           returnKeyType="next"
         />
         <Input
-          label="Location"
+          label={t('Location')}
           value={draft.location}
           onChangeText={vm.setLocation}
           error={errors.location}
           maxLength={EVENT_LOCATION_MAX_LENGTH}
         />
         <Input
-          label="Notes"
+          label={t('Notes')}
           value={draft.notes}
           onChangeText={vm.setNotes}
           error={errors.notes}
@@ -182,7 +185,7 @@ function EventFormBody({ eventId, occurrenceDate, initial, series }: EventFormBo
         offsets={eventReminderOffsetsFor(draft.allDay)}
         value={draft.reminderOffsetMinutes}
         timed={!draft.allDay}
-        atLabel="At start"
+        atLabel={t('At start')}
         error={errors.reminder}
         onChange={vm.setReminder}
       />
@@ -193,12 +196,12 @@ function EventFormBody({ eventId, occurrenceDate, initial, series }: EventFormBo
     <>
       <Stack.Screen
         options={{
-          title: vm.isEditing ? 'Edit event' : 'New event',
+          title: vm.isEditing ? t('Edit event') : t('New event'),
           headerRight: vm.isEditing
             ? () => (
                 <IconButton
                   icon="delete"
-                  label="Delete event"
+                  label={t('Delete event')}
                   onPress={() => void vm.deleteEvent()}
                 />
               )
@@ -208,7 +211,9 @@ function EventFormBody({ eventId, occurrenceDate, initial, series }: EventFormBo
       <Screen maxWidth={wide ? WIDE_MAX_WIDTH : undefined}>
         {vm.isRecurringEdit ? (
           <Text tone="muted">
-            This event repeats. You will choose whether changes apply to this event or all of them.
+            {t(
+              'This event repeats. You will choose whether changes apply to this event or all of them.',
+            )}
           </Text>
         ) : null}
         {wide ? (
@@ -228,7 +233,7 @@ function EventFormBody({ eventId, occurrenceDate, initial, series }: EventFormBo
           </Text>
         ) : null}
         <Button
-          label={vm.isEditing ? 'Save changes' : 'Create event'}
+          label={vm.isEditing ? t('Save changes') : t('Create event')}
           fullWidth
           loading={vm.saving}
           onPress={() => void vm.save()}
@@ -237,7 +242,7 @@ function EventFormBody({ eventId, occurrenceDate, initial, series }: EventFormBo
 
       {creatingCategory ? (
         <NameColorSheet
-          title="New category"
+          title={t('New category')}
           initialName=""
           initialColor={ACCENT_COLORS[0]}
           onSave={async (name, color) => {

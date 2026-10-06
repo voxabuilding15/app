@@ -1,12 +1,13 @@
 import type { DueFilter, SortField, TaskScope } from '../domain/filters';
 import type { Priority } from '../domain/entities';
+import { msg } from '@/i18n/msg';
 
 const SORT_LABELS: Record<SortField, string> = {
-  due: 'Due date',
-  priority: 'Priority',
-  created: 'Date created',
-  title: 'Title',
-  completed: 'Date completed',
+  due: msg('Due date'),
+  priority: msg('Priority'),
+  created: msg('Date created'),
+  title: msg('Title'),
+  completed: msg('Date completed'),
 };
 
 export function sortLabel(field: SortField): string {
@@ -20,15 +21,15 @@ export const SORT_FIELDS: Record<TaskScope, readonly SortField[]> = {
 };
 
 export const DUE_OPTIONS: readonly { value: DueFilter; label: string }[] = [
-  { value: 'any', label: 'Any time' },
-  { value: 'today', label: 'Today' },
-  { value: 'overdue', label: 'Overdue' },
-  { value: 'upcoming', label: 'Upcoming' },
-  { value: 'none', label: 'No date' },
+  { value: 'any', label: msg('Any time') },
+  { value: 'today', label: msg('Today') },
+  { value: 'overdue', label: msg('Overdue') },
+  { value: 'upcoming', label: msg('Upcoming') },
+  { value: 'none', label: msg('No date') },
 ];
 
 export const PRIORITY_OPTIONS: readonly { value: Priority; label: string }[] = [
-  { value: 'high', label: 'High' },
-  { value: 'medium', label: 'Medium' },
-  { value: 'low', label: 'Low' },
+  { value: 'high', label: msg('High') },
+  { value: 'medium', label: msg('Medium') },
+  { value: 'low', label: msg('Low') },
 ];

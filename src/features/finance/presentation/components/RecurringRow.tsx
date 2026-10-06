@@ -2,6 +2,7 @@ import { memo } from 'react';
 
 import type { SwipeAction } from '@/components';
 import { useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { RecurringTransaction } from '../../domain/entities';
 import {
@@ -24,12 +25,13 @@ export interface RecurringRowProps {
 }
 
 function RecurringRowComponent({ item, currency, onPress, onPause, onDelete }: RecurringRowProps) {
+  const { t } = useTranslator();
   const { colors } = useTheme();
   const finished = item.nextDate === null && !item.paused;
 
   const rightActions: SwipeAction[] = [
     {
-      label: 'Delete',
+      label: t('Delete'),
       icon: 'delete',
       background: colors.error,
       foreground: colors.surface,
@@ -40,7 +42,7 @@ function RecurringRowComponent({ item, currency, onPress, onPause, onDelete }: R
     ? []
     : [
         {
-          label: item.paused ? 'Resume' : 'Pause',
+          label: item.paused ? t('Resume') : t('Pause'),
           icon: item.paused ? 'play-arrow' : 'pause',
           background: colors.secondaryContainer,
           foreground: colors.onSecondaryContainer,
@@ -72,11 +74,11 @@ function RecurringRowComponent({ item, currency, onPress, onPause, onDelete }: R
           : [
               {
                 name: 'pause',
-                label: item.paused ? 'Resume' : 'Pause',
+                label: item.paused ? t('Resume') : t('Pause'),
                 run: () => onPause(item, !item.paused),
               },
             ]),
-        { name: 'delete', label: 'Delete', run: () => onDelete(item) },
+        { name: 'delete', label: t('Delete'), run: () => onDelete(item) },
       ]}
       onPress={() => onPress(item)}
     />

@@ -118,7 +118,7 @@ export function RestoreSheet({ vm }: { vm: BackupViewModel }) {
               {policies.map((option) => (
                 <Chip
                   key={option.value}
-                  label={option.label}
+                  label={t(option.label)}
                   selected={policy === option.value}
                   onPress={() => setPolicy(option.value)}
                 />

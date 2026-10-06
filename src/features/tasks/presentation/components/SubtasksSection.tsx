@@ -3,6 +3,7 @@ import { View } from 'react-native';
 
 import { Checkbox, FormSection, IconButton, Input } from '@/components';
 import { spacing } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { SubtaskDraft } from '../../domain/validation';
 
@@ -23,6 +24,7 @@ export function SubtasksSection({
   onToggle,
   onRemove,
 }: SubtasksSectionProps) {
+  const { t } = useTranslator();
   const [draft, setDraft] = useState('');
 
   const add = () => {
@@ -31,7 +33,7 @@ export function SubtasksSection({
   };
 
   return (
-    <FormSection title="Subtasks" error={error}>
+    <FormSection title={t('Subtasks')} error={error}>
       {subtasks.map((subtask, index) => (
         <View
           key={subtask.id ?? `new-${index}`}
@@ -39,12 +41,12 @@ export function SubtasksSection({
         >
           <Checkbox
             checked={subtask.completed}
-            label={`Subtask ${index + 1} done`}
+            label={t('Subtask {value} done', { value: index + 1 })}
             onChange={() => onToggle(index)}
           />
           <View style={{ flex: 1 }}>
             <Input
-              label={`Subtask ${index + 1}`}
+              label={t('Subtask {value}', { value: index + 1 })}
               labelHidden
               value={subtask.title}
               onChangeText={(title) => onRename(index, title)}
@@ -52,7 +54,7 @@ export function SubtasksSection({
           </View>
           <IconButton
             icon="close"
-            label={`Remove subtask ${index + 1}`}
+            label={t('Remove subtask {value}', { value: index + 1 })}
             onPress={() => onRemove(index)}
           />
         </View>
@@ -60,9 +62,9 @@ export function SubtasksSection({
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
         <View style={{ flex: 1 }}>
           <Input
-            label="Add subtask"
+            label={t('Add subtask')}
             labelHidden
-            placeholder="Add a subtask"
+            placeholder={t('Add a subtask')}
             value={draft}
             onChangeText={setDraft}
             onSubmitEditing={add}
@@ -72,7 +74,7 @@ export function SubtasksSection({
         </View>
         <IconButton
           icon="add"
-          label="Add subtask"
+          label={t('Add subtask')}
           tinted
           disabled={draft.trim() === ''}
           onPress={add}

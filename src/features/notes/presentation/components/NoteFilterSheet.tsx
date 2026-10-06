@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { Button, Chip, ChipGroup, Sheet } from '@/components';
 import type { Category } from '@/core';
 import { ACCENT_COLORS, spacing } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { FolderWithCount } from '../../domain/entities';
 import { NO_FOLDER, type NoteFilter } from '../../domain/filters';
@@ -31,6 +32,7 @@ export function NoteFilterSheet({
   onReset,
   onClose,
 }: NoteFilterSheetProps) {
+  const { t } = useTranslator();
   const ordered = [...folders].sort((a, b) =>
     folderPath(folders, a.id).localeCompare(folderPath(folders, b.id), undefined, {
       sensitivity: 'base',
@@ -38,15 +40,15 @@ export function NoteFilterSheet({
   );
 
   return (
-    <Sheet visible={visible} title="Filter notes" onClose={onClose}>
-      <ChipGroup title="Folder">
+    <Sheet visible={visible} title={t('Filter notes')} onClose={onClose}>
+      <ChipGroup title={t('Folder')}>
         <Chip
-          label="Any"
+          label={t('Any')}
           selected={filter.folderId === null}
           onPress={() => onChange({ folderId: null })}
         />
         <Chip
-          label="No folder"
+          label={t('No folder')}
           selected={filter.folderId === NO_FOLDER}
           onPress={() => onChange({ folderId: NO_FOLDER })}
         />
@@ -60,7 +62,7 @@ export function NoteFilterSheet({
         ))}
       </ChipGroup>
       {tags.length > 0 ? (
-        <ChipGroup title="Tags (any of)">
+        <ChipGroup title={t('Tags (any of)')}>
           {tags.map((tag) => (
             <Chip
               key={tag.id}
@@ -72,39 +74,39 @@ export function NoteFilterSheet({
           ))}
         </ChipGroup>
       ) : null}
-      <ChipGroup title="Color">
+      <ChipGroup title={t('Color')}>
         <Chip
-          label="Any"
+          label={t('Any')}
           selected={filter.color === null}
           onPress={() => onChange({ color: null })}
         />
         {ACCENT_COLORS.map((color, index) => (
           <Chip
             key={color}
-            label={`Color ${index + 1}`}
+            label={t('Color {value}', { value: index + 1 })}
             dotColor={color}
             selected={filter.color === color}
             onPress={() => onChange({ color })}
           />
         ))}
       </ChipGroup>
-      <ChipGroup title="Only notes with">
+      <ChipGroup title={t('Only notes with')}>
         <Chip
           icon="attach-file"
-          label="Attachments"
+          label={t('Attachments')}
           selected={filter.withAttachments}
           onPress={() => onChange({ withAttachments: !filter.withAttachments })}
         />
         <Chip
           icon="notifications-none"
-          label="Reminder"
+          label={t('Reminder')}
           selected={filter.withReminder}
           onPress={() => onChange({ withReminder: !filter.withReminder })}
         />
       </ChipGroup>
       <View style={{ flexDirection: 'row', gap: spacing.md, justifyContent: 'flex-end' }}>
-        <Button label="Reset" variant="outlined" onPress={onReset} />
-        <Button label="Done" onPress={onClose} />
+        <Button label={t('Reset')} variant="outlined" onPress={onReset} />
+        <Button label={t('Done')} onPress={onClose} />
       </View>
     </Sheet>
   );

@@ -1,4 +1,4 @@
-/**
+import { currentTranslator } from '@/i18n/translate'; /**
  * The seam where an online backup service plugs in. Nothing here talks to the network: a provider
  * (Google Drive, say) implements `CloudBackupProvider`, and everything else — creating the backup,
  * checking it, resolving conflicts, restoring — is the same code that local backups use.
@@ -31,7 +31,12 @@ export interface CloudBackupProvider {
 
 export class CloudUnavailableError extends Error {
   constructor(providerName: string) {
-    super(`${providerName} backup is not available in this version of the app.`);
+    const { t } = currentTranslator();
+    super(
+      t('{providerName} backup is not available in this version of the app.', {
+        providerName: providerName,
+      }),
+    );
     this.name = 'CloudUnavailableError';
   }
 }

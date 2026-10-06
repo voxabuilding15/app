@@ -1,0 +1,22 @@
+{
+  "{count} check-in today_one": "{count} check-in today",
+  "{count} check-in today_other": "{count} check-ins today",
+  "{count} done_one": "{count} done",
+  "{count} done_other": "{count} done",
+  "{count} overdue_one": "{count} overdue",
+  "{count} overdue_other": "{count} overdue",
+  "{count} session_one": "{count} session",
+  "{count} session_other": "{count} sessions",
+  "Add expense": "Add expense",
+  "Add task": "Add task",
+  "Good afternoon": "Good afternoon",
+  "Good evening": "Good evening",
+  "Good morning": "Good morning",
+  "Log habit": "Log habit",
+  "No income today": "No income today",
+  "Nothing overdue": "Nothing overdue",
+  "Quick actions": "Quick actions",
+  "Scheduled today": "Scheduled today",
+  "See all statistics": "See all statistics",
+  "Start focus": "Start focus"
+}

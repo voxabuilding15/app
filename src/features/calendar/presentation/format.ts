@@ -2,6 +2,8 @@ import { dateKeyToNoon, toDateKey, type DateKey } from '@/core';
 
 import type { CalendarItem } from '../domain/items';
 import { weekDays, type CalendarView } from '../domain/views';
+import { msg } from '@/i18n/msg';
+import { currentTranslator } from '@/i18n/translate';
 
 export function formatTime(ms: number): string {
   return new Date(ms).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
@@ -29,8 +31,9 @@ export function weekdayShort(day: DateKey): string {
 
 /** "9:00 AM – 10:30 AM", "All day", or a single time for a point-in-time item. */
 export function formatTimeRange(item: CalendarItem): string {
+  const { t } = currentTranslator();
   if (item.allDay) {
-    return 'All day';
+    return t('All day');
   }
   return item.end > item.start
     ? `${formatTime(item.start)} – ${formatTime(item.end)}`
@@ -44,6 +47,7 @@ export function formatHour(hour: number): string {
 
 /** Heading for the period shown: "October 2026", "5 – 11 Oct 2026", "Monday 5 October". */
 export function periodTitle(view: CalendarView, anchor: DateKey): string {
+  const { t } = currentTranslator();
   const noon = new Date(dateKeyToNoon(anchor));
   switch (view) {
     case 'month':
@@ -65,7 +69,7 @@ export function periodTitle(view: CalendarView, anchor: DateKey): string {
       return `${start} – ${end}`;
     }
     case 'agenda':
-      return `From ${formatDayShort(anchor)}`;
+      return t('From {dayShort}', { dayShort: formatDayShort(anchor) });
     default:
       return formatDayLong(anchor);
   }
@@ -73,7 +77,7 @@ export function periodTitle(view: CalendarView, anchor: DateKey): string {
 
 const HABIT_STATUS_LABEL = {
   done: 'done',
-  partial: 'partly done',
+  partial: msg('partly done'),
   pending: 'to do',
   missed: 'missed',
   skipped: 'skipped',
@@ -87,20 +91,28 @@ export function describeHabitStatus(item: Extract<CalendarItem, { kind: 'habit' 
 
 /** One-sentence description of an item for screen readers. */
 export function describeItem(item: CalendarItem): string {
+  const { t } = currentTranslator();
   switch (item.kind) {
     case 'event':
       return [
-        `Event: ${item.title}`,
+        t('Event: {title}', { title: item.title }),
         formatTimeRange(item),
         item.location || null,
-        item.recurring ? 'repeats' : null,
+        item.recurring ? t('repeats') : null,
       ]
         .filter(Boolean)
         .join(', ');
-    case 'task':
-      return `Task: ${item.title}, due ${item.allDay ? 'all day' : formatTime(item.start)}${item.done ? ', done' : ''}`;
+    case 'task': {
+      const when = item.allDay ? t('all day') : formatTime(item.start);
+      return item.done
+        ? t('Task: {title}, due {when}, done', { title: item.title, when })
+        : t('Task: {title}, due {when}', { title: item.title, when });
+    }
     default:
-      return `Habit: ${item.title}, ${describeHabitStatus(item)}`;
+      return t('Habit: {title}, {habitStatus}', {
+        title: item.title,
+        habitStatus: describeHabitStatus(item),
+      });
   }
 }
 

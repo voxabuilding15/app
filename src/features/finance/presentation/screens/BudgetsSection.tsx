@@ -4,6 +4,7 @@ import { View } from 'react-native';
 
 import { Card, EmptyState, Icon, Text, ResponsiveList } from '@/components';
 import { spacing, useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { BudgetProgress } from '../../domain/entities';
 import { BudgetCard } from '../components/BudgetCard';
@@ -12,6 +13,7 @@ import { useBudgetsViewModel } from '../view-models/useBudgetsViewModel';
 
 /** Weekly, monthly and custom budgets with how much of each is spent. */
 export function BudgetsSection() {
+  const { t } = useTranslator();
   const router = useRouter();
   const { colors } = useTheme();
   const currency = useCurrency();
@@ -39,16 +41,17 @@ export function BudgetsSection() {
         />
       )}
       extraData={currency}
-      noun="budgets"
+      loadingLabel={t('Loading budgets')}
+      errorTitle={t("Couldn't load budgets")}
       isLoading={vm.isLoading}
       isError={vm.isError}
       onRetry={() => void vm.refetch()}
       empty={
         <EmptyState
           icon="savings"
-          title="No budgets yet"
-          message="Set a weekly, monthly or custom limit and see how much you have left."
-          actionLabel="Add budget"
+          title={t('No budgets yet')}
+          message={t('Set a weekly, monthly or custom limit and see how much you have left.')}
+          actionLabel={t('Add budget')}
           onAction={openNew}
         />
       }
@@ -70,8 +73,8 @@ export function BudgetsSection() {
               <Icon name="warning" color={colors.onErrorContainer} />
               <Text style={{ flex: 1, color: colors.onErrorContainer }}>
                 {vm.overCount === 1
-                  ? '1 budget is over its limit'
-                  : `${vm.overCount} budgets are over their limit`}
+                  ? t('1 budget is over its limit')
+                  : t('{overCount} budgets are over their limit', { overCount: vm.overCount })}
               </Text>
             </View>
           </Card>
@@ -79,7 +82,7 @@ export function BudgetsSection() {
       }
       isRefreshing={vm.isRefreshing}
       onRefresh={() => void vm.refetch()}
-      fab={{ label: 'Add budget', onPress: openNew }}
+      fab={{ label: t('Add budget'), onPress: openNew }}
       notice={vm.notice}
       onDismissNotice={vm.dismissNotice}
     />

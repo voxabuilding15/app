@@ -2,6 +2,8 @@ import { ActivityIndicator, View } from 'react-native';
 
 import type { Category } from '@/core';
 import { ACCENT_COLORS, useTheme } from '@/theme';
+import { NAMED_ITEM_TEXT, type NamedItemKind } from '@/hooks';
+import { useTranslator } from '@/i18n';
 
 import { EmptyState } from './EmptyState';
 import { FAB } from './FAB';
@@ -26,7 +28,8 @@ interface CategoryManagerProps {
   /** Explains what categories are for, shown when there are none. */
   emptyMessage: string;
   /** What the items are called; defaults to categories. */
-  noun?: { singular: string; plural: string };
+  /** What the items are, so the texts read naturally in every language. */
+  noun?: NamedItemKind;
 }
 
 /** Full screen body for managing a feature's categories. */
@@ -43,8 +46,9 @@ export function CategoryManager({
   failure,
   dismissFailure,
   emptyMessage,
-  noun = { singular: 'category', plural: 'categories' },
+  noun = 'category',
 }: CategoryManagerProps) {
+  const { t } = useTranslator();
   const { colors } = useTheme();
 
   return (
@@ -52,34 +56,34 @@ export function CategoryManager({
       <View style={{ flex: 1, backgroundColor: colors.background }}>
         <Screen>
           {isLoading ? (
-            <ActivityIndicator color={colors.primary} accessibilityLabel="Loading" />
+            <ActivityIndicator color={colors.primary} accessibilityLabel={t('Loading')} />
           ) : isError ? (
             <EmptyState
               icon="error-outline"
-              title={`Couldn't load ${noun.plural}`}
-              message="Your data is safe on this device. Try again."
-              actionLabel="Try again"
+              title={t(NAMED_ITEM_TEXT[noun].loadError)}
+              message={t('Your data is safe on this device. Try again.')}
+              actionLabel={t('Try again')}
               onAction={onRetry}
             />
           ) : items.length === 0 ? (
             <EmptyState
               icon="folder"
-              title={`No ${noun.plural} yet`}
+              title={t(NAMED_ITEM_TEXT[noun].empty)}
               message={emptyMessage}
-              actionLabel={`Add ${noun.singular}`}
+              actionLabel={t(NAMED_ITEM_TEXT[noun].add)}
               onAction={() => startEditing(null)}
             />
           ) : (
             <NamedItemList items={items} onEdit={startEditing} onDelete={confirmRemove} />
           )}
         </Screen>
-        <FAB icon="add" label={`Add ${noun.singular}`} onPress={() => startEditing(null)} />
+        <FAB icon="add" label={t(NAMED_ITEM_TEXT[noun].add)} onPress={() => startEditing(null)} />
         {failure ? <Snackbar message={failure} onDismiss={dismissFailure} /> : null}
       </View>
 
       {editing ? (
         <NameColorSheet
-          title={`${editing.item ? 'Edit' : 'New'} ${noun.singular}`}
+          title={t(NAMED_ITEM_TEXT[noun][editing.item ? 'edit' : 'create'])}
           initialName={editing.item?.name ?? ''}
           initialColor={editing.item?.color ?? ACCENT_COLORS[0]}
           onSave={submit}

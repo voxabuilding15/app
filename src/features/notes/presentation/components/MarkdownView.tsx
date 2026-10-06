@@ -4,6 +4,7 @@ import { Checkbox, Text } from '@/components';
 import { radius, spacing, useTheme } from '@/theme';
 
 import { parseMarkdown, type Block, type Inline } from '../../domain/markdown';
+import { useTranslator } from '@/i18n';
 
 const INDENT = 20;
 
@@ -54,6 +55,7 @@ function BlockView({
   block: Block;
   onToggleTask?: (line: number) => void;
 }) {
+  const { t } = useTranslator();
   const { colors } = useTheme();
 
   switch (block.type) {
@@ -76,7 +78,7 @@ function BlockView({
           <Checkbox
             checked={block.checked}
             disabled={onToggleTask === undefined}
-            label={`${block.inlines.map((inline) => inline.text).join('')}, ${block.checked ? 'done' : 'not done'}`}
+            label={`${block.inlines.map((inline) => inline.text).join('')}, ${block.checked ? 'done' : t('not done')}`}
             onChange={() => onToggleTask?.(block.line)}
           />
           <Text

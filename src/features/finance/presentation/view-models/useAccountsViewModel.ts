@@ -10,8 +10,10 @@ import { useAccounts, useCurrency, useInvalidateFinance } from '../queries';
 
 import { INVALID_AMOUNT } from './useMovementForm';
 import { useNotice, useUndoableDelete } from '@/hooks';
+import { useTranslator } from '@/i18n';
 
 export function useAccountsViewModel() {
+  const { t } = useTranslator();
   const { accounts: useCases } = useFinanceModule();
   const invalidate = useInvalidateFinance();
   const { notice, show, dismiss } = useNotice();
@@ -25,12 +27,16 @@ export function useAccountsViewModel() {
   const explain = useCallback(
     (error: unknown) =>
       error instanceof AccountInUseError
-        ? 'This account has transactions. Archive it instead.'
+        ? t('This account has transactions. Archive it instead.')
         : null,
-    [],
+    [t],
   );
   const remove = useUndoableDelete<Account>({
-    noun: 'Account',
+    messages: {
+      deleted: t('Account deleted'),
+      restoreFailed: t("Couldn't restore the account"),
+      deleteFailed: t("Couldn't delete the account"),
+    },
     remove: useCases.remove,
     restore: useCases.restore,
     onChanged: invalidate,
@@ -42,13 +48,13 @@ export function useAccountsViewModel() {
     async (account: AccountBalance, archived: boolean) => {
       try {
         await useCases.setArchived(account.id, archived);
-        show({ message: archived ? 'Account archived' : 'Account restored' });
+        show({ message: archived ? t('Account archived') : t('Account restored') });
       } catch {
-        show({ message: "Couldn't update the account" });
+        show({ message: t("Couldn't update the account") });
       }
       await invalidate();
     },
-    [useCases, show, invalidate],
+    [useCases, show, invalidate, t],
   );
 
   return {
@@ -72,6 +78,7 @@ export function useAccountsViewModel() {
 
 /** Form state for the account sheet. Mount it only while the sheet is open. */
 export function useAccountEditor(account: AccountBalance | null, onSaved: () => void) {
+  const { t } = useTranslator();
   const { accounts } = useFinanceModule();
   const invalidate = useInvalidateFinance();
   const currency = useCurrency();
@@ -107,11 +114,11 @@ export function useAccountEditor(account: AccountBalance | null, onSaved: () => 
       await invalidate();
       onSaved();
     } catch {
-      setFailure("Couldn't save the account. Please try again.");
+      setFailure(t("Couldn't save the account. Please try again."));
     } finally {
       setSaving(false);
     }
-  }, [accounts, name, type, color, balance, account, invalidate, onSaved]);
+  }, [accounts, name, type, color, balance, account, invalidate, onSaved, t]);
 
   return {
     currency,

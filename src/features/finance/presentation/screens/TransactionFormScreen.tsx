@@ -13,6 +13,7 @@ import {
 } from '@/components';
 import { useHideTabBar, useNow } from '@/hooks';
 import { ACCENT_COLORS, spacing, useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { TransactionDraft } from '../../domain/validation';
 import { MovementSections } from '../components/MovementSections';
@@ -34,10 +35,11 @@ interface TransactionFormScreenProps {
 }
 
 export function TransactionFormScreen({ transactionId, defaults }: TransactionFormScreenProps) {
+  const { t } = useTranslator();
   useHideTabBar();
   const { colors } = useTheme();
   const load = useTransactionLoader(transactionId, defaults);
-  const title = transactionId === null ? 'New transaction' : 'Edit transaction';
+  const title = transactionId === null ? t('New transaction') : t('Edit transaction');
 
   if (load.phase === 'ready') {
     return <TransactionFormBody transactionId={transactionId} initial={load.initial} />;
@@ -58,7 +60,7 @@ export function TransactionFormScreen({ transactionId, defaults }: TransactionFo
           <ActivityIndicator
             size="large"
             color={colors.primary}
-            accessibilityLabel="Loading transaction"
+            accessibilityLabel={t('Loading transaction')}
           />
         </View>
       ) : (
@@ -66,14 +68,16 @@ export function TransactionFormScreen({ transactionId, defaults }: TransactionFo
           <EmptyState
             icon="error-outline"
             title={
-              load.phase === 'notFound' ? 'Transaction not found' : "Couldn't load the transaction"
+              load.phase === 'notFound'
+                ? t('Transaction not found')
+                : t("Couldn't load the transaction")
             }
             message={
               load.phase === 'notFound'
-                ? 'This transaction may have been deleted.'
-                : 'Your data is safe on this device. Try again.'
+                ? t('This transaction may have been deleted.')
+                : t('Your data is safe on this device. Try again.')
             }
-            actionLabel={load.phase === 'failed' ? 'Try again' : undefined}
+            actionLabel={load.phase === 'failed' ? t('Try again') : undefined}
             onAction={load.phase === 'failed' ? load.retry : undefined}
           />
         </Screen>
@@ -88,6 +92,7 @@ interface TransactionFormBodyProps {
 }
 
 function TransactionFormBody({ transactionId, initial }: TransactionFormBodyProps) {
+  const { t } = useTranslator();
   const { width } = useWindowDimensions();
   const now = useNow();
   const vm = useTransactionFormViewModel(transactionId, initial);
@@ -99,9 +104,15 @@ function TransactionFormBody({ transactionId, initial }: TransactionFormBodyProp
   const options = (
     <Stack.Screen
       options={{
-        title: vm.isEditing ? 'Edit transaction' : 'New transaction',
+        title: vm.isEditing ? t('Edit transaction') : t('New transaction'),
         headerRight: vm.isEditing
-          ? () => <IconButton icon="delete" label="Delete transaction" onPress={vm.confirmDelete} />
+          ? () => (
+              <IconButton
+                icon="delete"
+                label={t('Delete transaction')}
+                onPress={vm.confirmDelete}
+              />
+            )
           : undefined,
       }}
     />
@@ -114,8 +125,8 @@ function TransactionFormBody({ transactionId, initial }: TransactionFormBodyProp
         <Screen>
           <EmptyState
             icon="account-balance-wallet"
-            title="Add an account first"
-            message="Transactions belong to an account, such as Cash or a bank account."
+            title={t('Add an account first')}
+            message={t('Transactions belong to an account, such as Cash or a bank account.')}
           />
         </Screen>
       </>
@@ -144,7 +155,7 @@ function TransactionFormBody({ transactionId, initial }: TransactionFormBodyProp
   );
   const when = (
     <DateTimeSection
-      title="Date and time"
+      title={t('Date and time')}
       dayLabel={formatDate(draft.occurredAt, now)}
       timeLabel={formatTime(draft.occurredAt)}
       error={errors.date}
@@ -174,7 +185,7 @@ function TransactionFormBody({ transactionId, initial }: TransactionFormBodyProp
           </Text>
         ) : null}
         <Button
-          label={vm.isEditing ? 'Save changes' : 'Add transaction'}
+          label={vm.isEditing ? t('Save changes') : t('Add transaction')}
           fullWidth
           loading={vm.saving}
           onPress={() => void vm.save()}
@@ -183,7 +194,7 @@ function TransactionFormBody({ transactionId, initial }: TransactionFormBodyProp
 
       {creatingCategory ? (
         <NameColorSheet
-          title="New category"
+          title={t('New category')}
           initialName=""
           initialColor={ACCENT_COLORS[0]}
           onSave={async (name, color) => {

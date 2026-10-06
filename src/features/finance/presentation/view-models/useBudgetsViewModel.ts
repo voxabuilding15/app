@@ -3,15 +3,21 @@ import { useFinanceModule } from '../module';
 import type { Budget } from '../../domain/entities';
 
 import { useNotice, useUndoableDelete } from '@/hooks';
+import { useTranslator } from '@/i18n';
 
 export function useBudgetsViewModel() {
+  const { t } = useTranslator();
   const { budgets: useCases } = useFinanceModule();
   const invalidate = useInvalidateFinance();
   const { notice, show, dismiss } = useNotice();
   const query = useBudgets();
 
   const remove = useUndoableDelete<Budget>({
-    noun: 'Budget',
+    messages: {
+      deleted: t('Budget deleted'),
+      restoreFailed: t("Couldn't restore the budget"),
+      deleteFailed: t("Couldn't delete the budget"),
+    },
     remove: useCases.remove,
     restore: useCases.restore,
     onChanged: invalidate,

@@ -2,6 +2,8 @@ import type { IconName } from '@/components';
 import { DAY_MINUTES, MINUTE_MS, startOfDay } from '@/core';
 
 import type { AttachmentKind, NoteSummary } from '../domain/entities';
+import { msg } from '@/i18n/msg';
+import { currentTranslator } from '@/i18n/translate';
 
 export const ATTACHMENT_ICON: Record<AttachmentKind, IconName> = {
   image: 'image',
@@ -11,10 +13,10 @@ export const ATTACHMENT_ICON: Record<AttachmentKind, IconName> = {
 };
 
 export const ATTACHMENT_LABEL: Record<AttachmentKind, string> = {
-  image: 'Image',
+  image: msg('Image'),
   pdf: 'PDF',
-  audio: 'Voice recording',
-  drawing: 'Drawing',
+  audio: msg('Voice recording'),
+  drawing: msg('Drawing'),
 };
 
 export function formatTime(at: number): string {
@@ -23,17 +25,18 @@ export function formatTime(at: number): string {
 
 /** "Today", "Tomorrow", "Yesterday" or a short date. */
 export function formatDay(at: number, now: number): string {
+  const { t } = currentTranslator();
   const today = startOfDay(now);
   const day = startOfDay(at);
   const step = DAY_MINUTES * MINUTE_MS;
   if (day === today) {
-    return 'Today';
+    return t('Today');
   }
   if (Math.abs(day - today - step) < step / 2) {
-    return 'Tomorrow';
+    return t('Tomorrow');
   }
   if (Math.abs(today - day - step) < step / 2) {
-    return 'Yesterday';
+    return t('Yesterday');
   }
   const sameYear = new Date(at).getFullYear() === new Date(now).getFullYear();
   return new Date(at).toLocaleDateString(undefined, {
@@ -65,23 +68,34 @@ export function formatBytes(bytes: number): string {
 }
 
 export function displayTitle(title: string): string {
-  return title.trim() === '' ? 'Untitled' : title;
+  const { t } = currentTranslator();
+  return title.trim() === '' ? t('Untitled') : title;
 }
 
 /** Accessible one-sentence summary of a note for screen readers. */
 export function describeNote(note: NoteSummary, now: number): string {
+  const { t } = currentTranslator();
   const parts = [
     displayTitle(note.title),
     note.locked ? 'locked' : note.preview || null,
     note.pinned ? 'pinned' : null,
     note.favorite ? 'favorite' : null,
     note.folder ? `in ${note.folder.name}` : null,
-    note.tags.length > 0 ? `tags ${note.tags.map((tag) => tag.name).join(', ')}` : null,
-    note.checklistTotal > 0 ? `${note.checklistDone} of ${note.checklistTotal} tasks done` : null,
+    note.tags.length > 0
+      ? t('tags {join}', { join: note.tags.map((tag) => tag.name).join(', ') })
+      : null,
+    note.checklistTotal > 0
+      ? t('{checklistDone} of {checklistTotal} tasks done', {
+          checklistDone: note.checklistDone,
+          checklistTotal: note.checklistTotal,
+        })
+      : null,
     note.attachmentCount > 0
       ? `${note.attachmentCount} ${note.attachmentCount === 1 ? 'attachment' : 'attachments'}`
       : null,
-    note.reminderAt === null ? null : `reminder ${formatReminder(note.reminderAt, now)}`,
+    note.reminderAt === null
+      ? null
+      : t('reminder {reminder}', { reminder: formatReminder(note.reminderAt, now) }),
   ];
   return parts.filter(Boolean).join(', ');
 }

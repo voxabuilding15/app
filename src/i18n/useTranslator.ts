@@ -1,28 +1,25 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { fr } from './fr';
+import type { Language } from './languages';
 import { useLanguageStore } from './store';
-import { createTranslator, resolveLanguage, type Language, type Translator } from './translator';
+import { buildTranslator, type Translate, type Translator } from './translate';
 
-const DICTIONARIES = { fr } as const;
-
-function deviceLocale(): string {
-  return Intl.DateTimeFormat().resolvedOptions().locale;
-}
-
-/** The translator for the chosen language, and the setting itself. */
+/** The translator for the language being shown; screens using it update when the language changes. */
 export function useTranslator(): Translator & {
   preference: Language;
   setPreference: (language: Language) => void;
 } {
+  const { t, i18n: instance } = useTranslation();
   const preference = useLanguageStore((state) => state.preference);
   const setPreference = useLanguageStore((state) => state.setPreference);
+  const language = instance.language;
   return useMemo(
     () => ({
-      ...createTranslator(resolveLanguage(preference, deviceLocale()), DICTIONARIES),
+      ...buildTranslator(t as Translate, language),
       preference,
       setPreference,
     }),
-    [preference, setPreference],
+    [t, language, preference, setPreference],
   );
 }

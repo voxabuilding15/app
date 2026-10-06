@@ -4,12 +4,14 @@ import { Alert } from 'react-native';
 
 import type { DateKey } from '@/core';
 import { useOnAppForeground } from '@/hooks';
+import { useTranslator } from '@/i18n';
 
 import { createEvaluator } from '../../domain/progress';
 import { useHabitsModule } from '../module';
 import { useHabitDetail, useInvalidateHabits } from '../queries';
 
 export function useHabitDetailViewModel(habitId: string) {
+  const { t } = useTranslator();
   const router = useRouter();
   const { habits } = useHabitsModule();
   const invalidate = useInvalidateHabits();
@@ -39,22 +41,24 @@ export function useHabitDetailViewModel(habitId: string) {
 
   const confirmDelete = useCallback(() => {
     Alert.alert(
-      'Delete this habit?',
-      'This permanently deletes the habit and its whole history. Archive it instead to keep the history.',
+      t('Delete this habit?'),
+      t(
+        'This permanently deletes the habit and its whole history. Archive it instead to keep the history.',
+      ),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('Cancel'), style: 'cancel' },
         {
-          text: 'Delete',
+          text: t('Delete'),
           style: 'destructive',
           onPress: () =>
             void run(async () => {
               await habits.remove(habitId);
               router.back();
-            }, "Couldn't delete the habit"),
+            }, t("Couldn't delete the habit")),
         },
       ],
     );
-  }, [run, habits, habitId, router]);
+  }, [run, habits, habitId, router, t]);
 
   return {
     isLoading: detail.isPending,
@@ -70,14 +74,14 @@ export function useHabitDetailViewModel(habitId: string) {
     adjustDay: (day: DateKey, delta: number) => run(() => habits.adjust(habitId, day, delta)),
     setDayCount: (day: DateKey, count: number) => run(() => habits.setCount(habitId, day, count)),
     skipDay: (day: DateKey, skipped: boolean) => run(() => habits.skip(habitId, day, skipped)),
-    pause: () => run(() => habits.pause(habitId), "Couldn't pause the habit"),
-    resume: () => run(() => habits.resume(habitId), "Couldn't resume the habit"),
+    pause: () => run(() => habits.pause(habitId), t("Couldn't pause the habit")),
+    resume: () => run(() => habits.resume(habitId), t("Couldn't resume the habit")),
     archive: () =>
       run(async () => {
         await habits.archive(habitId);
         router.back();
-      }, "Couldn't archive the habit"),
-    restore: () => run(() => habits.restore(habitId), "Couldn't restore the habit"),
+      }, t("Couldn't archive the habit")),
+    restore: () => run(() => habits.restore(habitId), t("Couldn't restore the habit")),
     confirmDelete,
   };
 }

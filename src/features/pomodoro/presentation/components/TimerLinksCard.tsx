@@ -4,11 +4,13 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { TimerViewModel } from '../view-models/useTimerViewModel';
 
 import { SessionDetailsFields } from './SessionDetailsFields';
+import { useTranslator } from '@/i18n';
 
 const NOTE_SAVE_DELAY_MS = 600;
 
 /** Chooses what the current or next focus session is about; changes are kept as you make them. */
 export function TimerLinksCard({ vm }: { vm: TimerViewModel }) {
+  const { t } = useTranslator();
   const router = useRouter();
   const { setLinks } = vm;
   // While typing, the text on screen is the draft; once saved, the timer's own note shows again.
@@ -50,7 +52,7 @@ export function TimerLinksCard({ vm }: { vm: TimerViewModel }) {
 
   return (
     <SessionDetailsFields
-      title="This session"
+      title={t('This session')}
       details={{ ...vm.links, note: draft ?? vm.links.note }}
       tasks={vm.tasks}
       habits={vm.habits}

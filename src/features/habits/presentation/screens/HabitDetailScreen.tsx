@@ -3,6 +3,7 @@ import { ActivityIndicator, View, useWindowDimensions } from 'react-native';
 
 import { Card, EmptyState, IconButton, Screen, Snackbar, Text } from '@/components';
 import { spacing, useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import { DaySheet } from '../components/DaySheet';
 import { HabitChartsCard } from '../components/HabitChartsCard';
@@ -17,6 +18,7 @@ const WIDE_MIN_WIDTH = 900;
 const WIDE_MAX_WIDTH = 1100;
 
 export function HabitDetailScreen({ habitId }: { habitId: string }) {
+  const { t } = useTranslator();
   const { colors } = useTheme();
   const router = useRouter();
   const { width } = useWindowDimensions();
@@ -27,7 +29,7 @@ export function HabitDetailScreen({ habitId }: { habitId: string }) {
   if (vm.isLoading) {
     return (
       <>
-        <Stack.Screen options={{ title: 'Habit' }} />
+        <Stack.Screen options={{ title: t('Habit') }} />
         <View
           style={{
             flex: 1,
@@ -39,7 +41,7 @@ export function HabitDetailScreen({ habitId }: { habitId: string }) {
           <ActivityIndicator
             size="large"
             color={colors.primary}
-            accessibilityLabel="Loading habit"
+            accessibilityLabel={t('Loading habit')}
           />
         </View>
       </>
@@ -48,17 +50,17 @@ export function HabitDetailScreen({ habitId }: { habitId: string }) {
   if (vm.isError || vm.notFound || data === null || evaluator === null) {
     return (
       <>
-        <Stack.Screen options={{ title: 'Habit' }} />
+        <Stack.Screen options={{ title: t('Habit') }} />
         <Screen>
           <EmptyState
             icon="error-outline"
-            title={vm.notFound ? 'Habit not found' : "Couldn't load the habit"}
+            title={vm.notFound ? t('Habit not found') : t("Couldn't load the habit")}
             message={
               vm.notFound
-                ? 'This habit may have been deleted.'
-                : 'Your data is safe on this device. Try again.'
+                ? t('This habit may have been deleted.')
+                : t('Your data is safe on this device. Try again.')
             }
-            actionLabel={vm.notFound ? undefined : 'Try again'}
+            actionLabel={vm.notFound ? undefined : t('Try again')}
             onAction={vm.notFound ? undefined : vm.retry}
           />
         </Screen>
@@ -81,8 +83,12 @@ export function HabitDetailScreen({ habitId }: { habitId: string }) {
         <Text variant="labelSmall" tone="muted">
           {[
             habit.category?.name,
-            habit.reminderTime ? `Reminder ${formatReminderTime(habit.reminderTime)}` : null,
-            archived ? 'Archived' : null,
+            habit.reminderTime
+              ? t('Reminder {reminderTime}', {
+                  reminderTime: formatReminderTime(habit.reminderTime),
+                })
+              : null,
+            archived ? t('Archived') : null,
           ]
             .filter(Boolean)
             .join(' · ')}
@@ -102,7 +108,7 @@ export function HabitDetailScreen({ habitId }: { habitId: string }) {
       {habit.notes ? (
         <Card style={{ gap: spacing.sm }}>
           <Text variant="titleMedium" accessibilityRole="header">
-            Notes
+            {t('Notes')}
           </Text>
           <Text>{habit.notes}</Text>
         </Card>
@@ -132,7 +138,7 @@ export function HabitDetailScreen({ habitId }: { habitId: string }) {
             <View style={{ flexDirection: 'row' }}>
               <IconButton
                 icon="edit"
-                label="Edit habit"
+                label={t('Edit habit')}
                 onPress={() =>
                   router.push({ pathname: '/habits/[id]/edit', params: { id: habit.id } })
                 }
@@ -140,17 +146,17 @@ export function HabitDetailScreen({ habitId }: { habitId: string }) {
               {archived ? (
                 <IconButton
                   icon="unarchive"
-                  label="Restore habit"
+                  label={t('Restore habit')}
                   onPress={() => void vm.restore()}
                 />
               ) : (
                 <IconButton
                   icon="archive"
-                  label="Archive habit"
+                  label={t('Archive habit')}
                   onPress={() => void vm.archive()}
                 />
               )}
-              <IconButton icon="delete" label="Delete habit" onPress={vm.confirmDelete} />
+              <IconButton icon="delete" label={t('Delete habit')} onPress={vm.confirmDelete} />
             </View>
           ),
         }}

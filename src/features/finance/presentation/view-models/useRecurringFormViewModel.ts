@@ -13,6 +13,7 @@ import {
   type RecurrenceRule,
 } from '@/core';
 import { useDiscardGuard, useNow } from '@/hooks';
+import { useTranslator } from '@/i18n';
 
 import type { RecurringRecord, TransactionType } from '../../domain/entities';
 import type { RecurringDraft, RecurringErrors } from '../../domain/validation';
@@ -95,6 +96,7 @@ export function useRecurringLoader(
 
 /** Editing state for one recurring transaction. `recurringId` null creates a new rule. */
 export function useRecurringFormViewModel(recurringId: string | null, initial: RecurringDraft) {
+  const { t } = useTranslator();
   const router = useRouter();
   const { recurring } = useFinanceModule();
   const invalidate = useInvalidateFinance();
@@ -202,11 +204,11 @@ export function useRecurringFormViewModel(recurringId: string | null, initial: R
       await invalidate();
       finish();
     } catch {
-      setSaveError("Couldn't save. Please try again.");
+      setSaveError(t("Couldn't save. Please try again."));
     } finally {
       setSaving(false);
     }
-  }, [saving, recurring, draft, recurringId, invalidate, finish]);
+  }, [saving, recurring, draft, recurringId, invalidate, finish, t]);
 
   const remove = useCallback(async () => {
     if (recurringId === null) {
@@ -217,16 +219,20 @@ export function useRecurringFormViewModel(recurringId: string | null, initial: R
       await invalidate();
       finish();
     } catch {
-      setSaveError("Couldn't delete. Please try again.");
+      setSaveError(t("Couldn't delete. Please try again."));
     }
-  }, [recurringId, recurring, invalidate, finish]);
+  }, [recurringId, recurring, invalidate, finish, t]);
 
   const confirmDelete = useCallback(() => {
-    Alert.alert('Delete this recurring transaction?', 'Transactions it already added are kept.', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: () => void remove() },
-    ]);
-  }, [remove]);
+    Alert.alert(
+      t('Delete this recurring transaction?'),
+      t('Transactions it already added are kept.'),
+      [
+        { text: t('Cancel'), style: 'cancel' },
+        { text: t('Delete'), style: 'destructive', onPress: () => void remove() },
+      ],
+    );
+  }, [remove, t]);
 
   return {
     ...form,

@@ -89,7 +89,7 @@ export function FeedbackScreen() {
             {kinds.map((option) => (
               <Chip
                 key={option.value}
-                label={option.label}
+                label={t(option.label)}
                 selected={kind === option.value}
                 onPress={() => setKind(option.value)}
               />

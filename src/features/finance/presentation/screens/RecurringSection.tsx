@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router';
 import { useCallback } from 'react';
 
 import { EmptyState, ResponsiveList } from '@/components';
+import { useTranslator } from '@/i18n';
 
 import type { RecurringTransaction } from '../../domain/entities';
 import { RecurringRow } from '../components/RecurringRow';
@@ -10,6 +11,7 @@ import { useRecurringViewModel } from '../view-models/useRecurringViewModel';
 
 /** Rules that add income, bills and transfers automatically on a schedule. */
 export function RecurringSection() {
+  const { t } = useTranslator();
   const router = useRouter();
   const currency = useCurrency();
   const vm = useRecurringViewModel();
@@ -41,22 +43,25 @@ export function RecurringSection() {
         />
       )}
       extraData={currency}
-      noun="recurring transactions"
+      loadingLabel={t('Loading recurring transactions')}
+      errorTitle={t("Couldn't load recurring transactions")}
       isLoading={vm.isLoading}
       isError={vm.isError}
       onRetry={() => void vm.refetch()}
       empty={
         <EmptyState
           icon="repeat"
-          title="Nothing recurring yet"
-          message="Add a salary, rent or subscription once and it is recorded for you every time."
-          actionLabel="Add recurring transaction"
+          title={t('Nothing recurring yet')}
+          message={t(
+            'Add a salary, rent or subscription once and it is recorded for you every time.',
+          )}
+          actionLabel={t('Add recurring transaction')}
           onAction={openNew}
         />
       }
       isRefreshing={vm.isRefreshing}
       onRefresh={() => void vm.refetch()}
-      fab={{ label: 'Add recurring transaction', onPress: openNew }}
+      fab={{ label: t('Add recurring transaction'), onPress: openNew }}
       notice={vm.notice}
       onDismissNotice={vm.dismissNotice}
     />

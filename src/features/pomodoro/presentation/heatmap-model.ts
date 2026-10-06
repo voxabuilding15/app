@@ -4,6 +4,7 @@ import { monthOfKey, weekdayOfKey } from '@/core';
 import type { HeatDay } from '../domain/stats-usecases';
 
 import { formatDayLabel, formatFocusTime, shortMonth } from './format';
+import { currentTranslator } from '@/i18n/translate';
 
 export interface HeatmapModel {
   columns: (HeatmapCell | null)[][];
@@ -21,6 +22,7 @@ export const HEATMAP_ROW_LABELS = ['M', '', 'W', '', 'F', '', ''] as const;
  * columns and leaving the cells before the first day and after the last one blank.
  */
 export function buildHeatmapModel(days: readonly HeatDay[], weeks: number): HeatmapModel {
+  const { t } = currentTranslator();
   const columns: (HeatmapCell | null)[][] = [];
   let column: (HeatmapCell | null)[] = [];
   let labelled = '';
@@ -35,7 +37,7 @@ export function buildHeatmapModel(days: readonly HeatDay[], weeks: number): Heat
       key: day.date,
       level: day.level,
       label: `${formatDayLabel(day.date)}: ${
-        day.focusSeconds > 0 ? formatFocusTime(day.focusSeconds) : 'no focus'
+        day.focusSeconds > 0 ? formatFocusTime(day.focusSeconds) : t('no focus')
       }`,
     });
     if (column.length === DAYS_PER_WEEK || index === days.length - 1) {

@@ -4,16 +4,18 @@ import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-g
 
 import { Button, IconButton, PressableScale, Text } from '@/components';
 import { ACCENT_COLORS, MIN_TOUCH_TARGET, radius, spacing, useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import { thin, type Drawing, type Point, type Stroke } from '../../domain/drawing';
 
 import { CANVAS_SIZE, DrawingSvg, toDrawing } from './DrawingSvg';
+import { msg } from '@/i18n/msg';
 
 const PEN_COLORS = ['#000000', ...ACCENT_COLORS] as const;
 const PEN_WIDTHS = [
-  { label: 'Thin pen', width: 4 },
-  { label: 'Medium pen', width: 10 },
-  { label: 'Thick pen', width: 22 },
+  { label: msg('Thin pen'), width: 4 },
+  { label: msg('Medium pen'), width: 10 },
+  { label: msg('Thick pen'), width: 22 },
 ] as const;
 /** Points closer than this (in canvas units) are skipped, which keeps the saved file small. */
 const MIN_POINT_DISTANCE = 3;
@@ -28,6 +30,7 @@ interface DrawingModalProps {
 
 /** Full-screen sketch pad. Mount only while open so it starts fresh each time. */
 export function DrawingModal({ initial, onSave, onClose }: DrawingModalProps) {
+  const { t } = useTranslator();
   const { colors } = useTheme();
   const { width, height } = useWindowDimensions();
   const [strokes, setStrokes] = useState<Stroke[]>(initial?.strokes ?? []);
@@ -73,17 +76,17 @@ export function DrawingModal({ initial, onSave, onClose }: DrawingModalProps) {
         <View style={{ flex: 1, padding: spacing.lg, gap: spacing.md, paddingTop: spacing.xxl }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
             <Text variant="titleLarge" accessibilityRole="header" style={{ flex: 1 }}>
-              Drawing
+              {t('Drawing')}
             </Text>
             <IconButton
               icon="undo"
-              label="Undo last stroke"
+              label={t('Undo last stroke')}
               disabled={strokes.length === 0}
               onPress={() => setStrokes((all) => all.slice(0, -1))}
             />
             <IconButton
               icon="delete-sweep"
-              label="Clear drawing"
+              label={t('Clear drawing')}
               disabled={strokes.length === 0}
               onPress={() => setStrokes([])}
             />
@@ -93,7 +96,10 @@ export function DrawingModal({ initial, onSave, onClose }: DrawingModalProps) {
             <GestureDetector gesture={pan}>
               <View
                 accessible
-                accessibilityLabel={`Drawing canvas, ${strokes.length} ${strokes.length === 1 ? 'stroke' : 'strokes'}`}
+                accessibilityLabel={t('Drawing canvas, {length} {value}', {
+                  length: strokes.length,
+                  value: strokes.length === 1 ? 'stroke' : 'strokes',
+                })}
                 style={{
                   borderRadius: radius.md,
                   overflow: 'hidden',
@@ -112,7 +118,12 @@ export function DrawingModal({ initial, onSave, onClose }: DrawingModalProps) {
                 key={option}
                 accessibilityRole="radio"
                 accessibilityLabel={
-                  index === 0 ? 'Black pen' : `Pen color ${index} of ${ACCENT_COLORS.length}`
+                  index === 0
+                    ? t('Black pen')
+                    : t('Pen color {index} of {length}', {
+                        index: index,
+                        length: ACCENT_COLORS.length,
+                      })
                 }
                 accessibilityState={{ selected: option === color }}
                 onPress={() => setColor(option)}
@@ -138,7 +149,7 @@ export function DrawingModal({ initial, onSave, onClose }: DrawingModalProps) {
               <PressableScale
                 key={option.label}
                 accessibilityRole="radio"
-                accessibilityLabel={option.label}
+                accessibilityLabel={t(option.label)}
                 accessibilityState={{ selected: option.width === penWidth }}
                 onPress={() => setPenWidth(option.width)}
                 style={{ width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET }}
@@ -158,9 +169,9 @@ export function DrawingModal({ initial, onSave, onClose }: DrawingModalProps) {
           </View>
 
           <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.md }}>
-            <Button label="Cancel" variant="outlined" onPress={onClose} />
+            <Button label={t('Cancel')} variant="outlined" onPress={onClose} />
             <Button
-              label="Save drawing"
+              label={t('Save drawing')}
               disabled={strokes.length === 0}
               onPress={() => onSave(toDrawing(strokes))}
             />

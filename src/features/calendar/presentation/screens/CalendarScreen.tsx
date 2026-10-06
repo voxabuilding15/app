@@ -12,6 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { EmptyState, FAB, IconButton, ListControls, ScreenToolbar, Snackbar } from '@/components';
 import type { DateKey } from '@/core';
 import { useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { CalendarItem } from '../../domain/items';
 import { weekDays, type CalendarView } from '../../domain/views';
@@ -24,12 +25,13 @@ import { TimelineGrid } from '../components/TimelineGrid';
 import { periodTitle } from '../format';
 import { useInvalidateCalendar } from '../queries';
 import { useCalendarViewModel } from '../view-models/useCalendarViewModel';
+import { msg } from '@/i18n/msg';
 
 const VIEWS = [
-  { value: 'month', label: 'Month' },
-  { value: 'week', label: 'Week' },
-  { value: 'day', label: 'Day' },
-  { value: 'agenda', label: 'Agenda' },
+  { value: 'month', label: msg('Month') },
+  { value: 'week', label: msg('Week') },
+  { value: 'day', label: msg('Day') },
+  { value: 'agenda', label: msg('Agenda') },
 ] as const satisfies readonly { value: CalendarView; label: string }[];
 
 /** Month grid switches to dots below this width, and gains a side panel above the next one. */
@@ -37,6 +39,7 @@ const COMPACT_MONTH_WIDTH = 600;
 const SIDE_PANEL_MIN_WIDTH = 800;
 
 export function CalendarScreen() {
+  const { t } = useTranslator();
   const vm = useCalendarViewModel();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -98,12 +101,14 @@ export function CalendarScreen() {
           onPressDay={vm.openDay}
           emptyComponent={
             vm.isSearchLoading ? (
-              <ActivityIndicator color={colors.primary} accessibilityLabel="Searching" />
+              <ActivityIndicator color={colors.primary} accessibilityLabel={t('Searching')} />
             ) : (
               <EmptyState
                 icon="search-off"
-                title="No matches"
-                message="Nothing in the next year (or the last month) matches your search and filters."
+                title={t('No matches')}
+                message={t(
+                  'Nothing in the next year (or the last month) matches your search and filters.',
+                )}
               />
             )
           }
@@ -115,7 +120,7 @@ export function CalendarScreen() {
         <ActivityIndicator
           style={{ marginTop: 48 }}
           color={colors.primary}
-          accessibilityLabel="Loading calendar"
+          accessibilityLabel={t('Loading calendar')}
         />
       );
     }
@@ -123,9 +128,9 @@ export function CalendarScreen() {
       return (
         <EmptyState
           icon="error-outline"
-          title="Couldn't load the calendar"
-          message="Your data is safe on this device. Try again."
-          actionLabel="Try again"
+          title={t("Couldn't load the calendar")}
+          message={t('Your data is safe on this device. Try again.')}
+          actionLabel={t('Try again')}
           onAction={() => void vm.refetch()}
         />
       );
@@ -182,9 +187,9 @@ export function CalendarScreen() {
             emptyComponent={
               <EmptyState
                 icon="event-available"
-                title="Nothing planned"
-                message="Events, tasks with due dates and your habits will show up here."
-                actionLabel="Add event"
+                title={t('Nothing planned')}
+                message={t('Events, tasks with due dates and your habits will show up here.')}
+                actionLabel={t('Add event')}
                 onAction={() => addEvent(anchor)}
               />
             }
@@ -195,15 +200,15 @@ export function CalendarScreen() {
 
   return (
     <View style={{ flex: 1, paddingTop: insets.top, backgroundColor: colors.background }}>
-      <ScreenToolbar title="Calendar">
+      <ScreenToolbar title={t('Calendar')}>
         <IconButton
           icon={vm.searchOpen ? 'close' : 'search'}
-          label={vm.searchOpen ? 'Close search' : 'Search the calendar'}
+          label={vm.searchOpen ? t('Close search') : t('Search the calendar')}
           onPress={vm.toggleSearch}
         />
         <IconButton
           icon="palette"
-          label="Manage event categories"
+          label={t('Manage event categories')}
           onPress={() => router.push('/calendar/categories')}
         />
       </ScreenToolbar>
@@ -214,8 +219,8 @@ export function CalendarScreen() {
         searchOpen={vm.searchOpen}
         searchText={vm.searchText}
         onSearchText={vm.setSearchText}
-        searchLabel="Search the calendar"
-        searchPlaceholder="Events, tasks and habits"
+        searchLabel={t('Search the calendar')}
+        searchPlaceholder={t('Events, tasks and habits')}
         activeFilterCount={vm.activeFilterCount}
         isFiltering={vm.isFiltering}
         onOpenFilter={() => setFilterOpen(true)}
@@ -239,7 +244,7 @@ export function CalendarScreen() {
         {renderBody()}
       </View>
 
-      <FAB icon="add" label="Add event" onPress={() => addEvent(anchor)} />
+      <FAB icon="add" label={t('Add event')} onPress={() => addEvent(anchor)} />
       {vm.notice ? (
         <Snackbar message={vm.notice} onDismiss={vm.dismissNotice} bottomOffset={88} />
       ) : null}

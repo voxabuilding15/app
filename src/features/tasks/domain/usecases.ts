@@ -12,6 +12,7 @@ import type { ReminderScheduler, TaskRepository } from './ports';
 import { computeReminderAt } from './reminder';
 import { nextDueAfter } from './repeat';
 import { hasErrors, validateDraft, type DraftErrors, type TaskDraft } from './validation';
+import { currentTranslator } from '@/i18n/translate';
 
 export type ReminderStatus = 'none' | 'scheduled' | 'blocked' | 'past';
 
@@ -27,8 +28,9 @@ interface TaskUseCaseDeps {
 }
 
 function reminderBody(task: TaskDetail): string {
+  const { t } = currentTranslator();
   const firstLine = task.notes.trim().split('\n')[0];
-  return firstLine !== undefined && firstLine.length > 0 ? firstLine : 'This task is due.';
+  return firstLine !== undefined && firstLine.length > 0 ? firstLine : t('This task is due.');
 }
 
 function isOpen(task: TaskDetail): boolean {
@@ -57,6 +59,7 @@ function toRecord(task: TaskDetail): TaskRecord {
 }
 
 export function createTaskUseCases({ tasks, reminders, clock }: TaskUseCaseDeps) {
+  const { t } = currentTranslator();
   /** Brings the OS notification in line with the task's current state. */
   async function syncReminder(task: TaskDetail): Promise<ReminderStatus> {
     if (task.notificationId !== null) {
@@ -152,7 +155,7 @@ export function createTaskUseCases({ tasks, reminders, clock }: TaskUseCaseDeps)
       const now = clock.now();
       const existing = id === null ? null : await tasks.get(id);
       if (id !== null && existing === null) {
-        throw new Error('This task no longer exists.');
+        throw new Error(t('This task no longer exists.'));
       }
 
       const taskId = existing?.id ?? createId();

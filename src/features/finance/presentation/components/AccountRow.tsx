@@ -3,11 +3,13 @@ import { memo } from 'react';
 import { formatMoney } from '@/core';
 import type { SwipeAction } from '@/components';
 import { useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { AccountBalance } from '../../domain/entities';
 import { ACCOUNT_TYPE_ICON, ACCOUNT_TYPE_LABEL } from '../format';
 
 import { MoneyRow } from './MoneyRow';
+import { currentTranslator } from '@/i18n/translate';
 
 export interface AccountRowProps {
   account: AccountBalance;
@@ -19,10 +21,11 @@ export interface AccountRowProps {
 }
 
 function describe(account: AccountBalance, currency: string): string {
+  const { t } = currentTranslator();
   return [
     account.name,
     ACCOUNT_TYPE_LABEL[account.type],
-    `balance ${formatMoney(account.balanceMinor, currency)}`,
+    t('balance {money}', { money: formatMoney(account.balanceMinor, currency) }),
     account.archivedAt === null ? null : 'archived',
   ]
     .filter(Boolean)
@@ -37,19 +40,20 @@ function AccountRowComponent({
   onArchive,
   onDelete,
 }: AccountRowProps) {
+  const { t } = useTranslator();
   const { colors } = useTheme();
   const archived = account.archivedAt !== null;
 
   const rightActions: SwipeAction[] = [
     {
-      label: archived ? 'Restore' : 'Archive',
+      label: archived ? t('Restore') : t('Archive'),
       icon: archived ? 'unarchive' : 'archive',
       background: colors.secondaryContainer,
       foreground: colors.onSecondaryContainer,
       onPress: () => onArchive(account, !archived),
     },
     {
-      label: 'Delete',
+      label: t('Delete'),
       icon: 'delete',
       background: colors.error,
       foreground: colors.surface,
@@ -58,7 +62,7 @@ function AccountRowComponent({
   ];
   const leftActions: SwipeAction[] = [
     {
-      label: 'Activity',
+      label: t('Activity'),
       icon: 'receipt-long',
       background: colors.primary,
       foreground: colors.onPrimary,
@@ -75,7 +79,7 @@ function AccountRowComponent({
       subtitle={[
         ACCOUNT_TYPE_LABEL[account.type],
         `${count} ${count === 1 ? 'transaction' : 'transactions'}`,
-        archived ? 'Archived' : null,
+        archived ? t('Archived') : null,
       ]
         .filter(Boolean)
         .join(' · ')}
@@ -86,13 +90,13 @@ function AccountRowComponent({
       leftActions={leftActions}
       rightActions={rightActions}
       accessibilityActions={[
-        { name: 'activity', label: 'Show transactions', run: () => onShowTransactions(account) },
+        { name: 'activity', label: t('Show transactions'), run: () => onShowTransactions(account) },
         {
           name: 'archive',
-          label: archived ? 'Restore' : 'Archive',
+          label: archived ? t('Restore') : t('Archive'),
           run: () => onArchive(account, !archived),
         },
-        { name: 'delete', label: 'Delete', run: () => onDelete(account) },
+        { name: 'delete', label: t('Delete'), run: () => onDelete(account) },
       ]}
       onPress={() => onPress(account)}
     />

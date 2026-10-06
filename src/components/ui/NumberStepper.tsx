@@ -4,6 +4,7 @@ import { spacing } from '@/theme';
 
 import { IconButton } from './IconButton';
 import { Text } from './Text';
+import { useTranslator } from '@/i18n';
 
 interface NumberStepperProps {
   value: number;
@@ -25,6 +26,7 @@ export function NumberStepper({
   label,
   suffix,
 }: NumberStepperProps) {
+  const { t } = useTranslator();
   return (
     <View
       accessible
@@ -43,7 +45,7 @@ export function NumberStepper({
     >
       <IconButton
         icon="remove"
-        label={`Decrease ${label}`}
+        label={t('Decrease {name}', { name: label })}
         tinted
         disabled={value <= min}
         onPress={() => onChange(value - 1)}
@@ -53,7 +55,7 @@ export function NumberStepper({
       </Text>
       <IconButton
         icon="add"
-        label={`Increase ${label}`}
+        label={t('Increase {name}', { name: label })}
         tinted
         disabled={value >= max}
         onPress={() => onChange(value + 1)}

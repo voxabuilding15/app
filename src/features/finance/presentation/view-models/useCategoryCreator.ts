@@ -2,11 +2,13 @@ import { useCallback } from 'react';
 
 import { useFinanceModule } from '../module';
 import { useInvalidateFinance } from '../queries';
+import { useTranslator } from '@/i18n';
 
 export type CreatedCategory = { id: string } | { error: string };
 
 /** Creates an income or expense category from inside a form and refreshes the category lists. */
 export function useCategoryCreator(kind: 'expense' | 'income') {
+  const { t } = useTranslator();
   const { expenseCategories, incomeCategories } = useFinanceModule();
   const invalidate = useInvalidateFinance();
   const useCases = kind === 'income' ? incomeCategories : expenseCategories;
@@ -21,9 +23,9 @@ export function useCategoryCreator(kind: 'expense' | 'income') {
         await invalidate();
         return { id: result.id };
       } catch {
-        return { error: "Couldn't save. Please try again." };
+        return { error: t("Couldn't save. Please try again.") };
       }
     },
-    [useCases, invalidate],
+    [useCases, invalidate, t],
   );
 }

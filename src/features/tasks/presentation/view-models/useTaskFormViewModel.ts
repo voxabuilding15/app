@@ -12,6 +12,7 @@ import {
 } from '@/core';
 import { pickDate, pickTime, showRemindersBlockedAlert } from '@/components';
 import { useDiscardGuard } from '@/hooks';
+import { useTranslator } from '@/i18n';
 import type { DueDate, Priority, RepeatRule, TaskDetail } from '../../domain/entities';
 import { isValidReminderOffset } from '../../domain/reminder';
 import {
@@ -89,6 +90,7 @@ export function useTaskLoader(taskId: string | null): TaskLoadState {
 
 /** Editing state for one task. `taskId` null creates a new task; `initial` seeds the draft. */
 export function useTaskFormViewModel(taskId: string | null, initial: TaskDraft) {
+  const { t } = useTranslator();
   const router = useRouter();
   const { tasks: useCases, taxonomy: taxonomyCases } = useTasksModule();
   const invalidate = useInvalidateTasks();
@@ -294,10 +296,10 @@ export function useTaskFormViewModel(taskId: string | null, initial: TaskDraft) 
         );
         return null;
       } catch {
-        return "Couldn't save. Please try again.";
+        return t("Couldn't save. Please try again.");
       }
     },
-    [taxonomyCases, invalidate],
+    [taxonomyCases, invalidate, t],
   );
 
   const finish = useCallback(() => {
@@ -322,17 +324,19 @@ export function useTaskFormViewModel(taskId: string | null, initial: TaskDraft) 
         showRemindersBlockedAlert();
       } else if (result.reminder === 'past') {
         Alert.alert(
-          'Reminder time has passed',
-          'The task was saved without a notification because its reminder time is already in the past.',
+          t('Reminder time has passed'),
+          t(
+            'The task was saved without a notification because its reminder time is already in the past.',
+          ),
         );
       }
       finish();
     } catch {
-      setSaveError("Couldn't save the task. Please try again.");
+      setSaveError(t("Couldn't save the task. Please try again."));
     } finally {
       setSaving(false);
     }
-  }, [saving, useCases, draft, taskId, invalidate, finish]);
+  }, [saving, useCases, draft, taskId, invalidate, finish, t]);
 
   const changeStatus = useCallback(
     async (action: 'archive' | 'restore' | 'delete') => {
@@ -351,18 +355,18 @@ export function useTaskFormViewModel(taskId: string | null, initial: TaskDraft) 
         await invalidate();
         finish();
       } catch {
-        setSaveError("Couldn't update the task. Please try again.");
+        setSaveError(t("Couldn't update the task. Please try again."));
       }
     },
-    [taskId, useCases, invalidate, finish],
+    [taskId, useCases, invalidate, finish, t],
   );
 
   const confirmDelete = useCallback(() => {
-    Alert.alert('Delete this task?', 'This permanently removes the task and its subtasks.', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: () => void changeStatus('delete') },
+    Alert.alert(t('Delete this task?'), t('This permanently removes the task and its subtasks.'), [
+      { text: t('Cancel'), style: 'cancel' },
+      { text: t('Delete'), style: 'destructive', onPress: () => void changeStatus('delete') },
     ]);
-  }, [changeStatus]);
+  }, [changeStatus, t]);
 
   return {
     isEditing: taskId !== null,

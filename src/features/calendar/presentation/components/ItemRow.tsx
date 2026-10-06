@@ -2,6 +2,7 @@ import { View } from 'react-native';
 
 import { Icon, PressableScale, Text, type IconName } from '@/components';
 import { radius, spacing, useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { CalendarItem } from '../../domain/items';
 import { describeHabitStatus, describeItem, formatTime } from '../format';
@@ -21,9 +22,10 @@ interface ItemRowProps {
 
 /** One calendar item (event, task or habit) as a tappable row. */
 export function ItemRow({ item, onPress }: ItemRowProps) {
+  const { t } = useTranslator();
   const { colors } = useTheme();
   const accent = item.color ?? colors.primary;
-  const timeLabel = item.allDay ? 'All day' : formatTime(item.start);
+  const timeLabel = item.allDay ? t('All day') : formatTime(item.start);
   const done = item.kind === 'task' && item.done;
 
   return (
@@ -68,12 +70,12 @@ export function ItemRow({ item, onPress }: ItemRowProps) {
           ) : null}
           {item.kind === 'habit' ? (
             <Text variant="labelSmall" tone="muted">
-              {`Habit · ${describeHabitStatus(item)}`}
+              {t('Habit · {habitStatus}', { habitStatus: describeHabitStatus(item) })}
             </Text>
           ) : null}
           {item.kind === 'task' ? (
             <Text variant="labelSmall" tone="muted">
-              Task
+              {t('Task')}
             </Text>
           ) : null}
         </View>

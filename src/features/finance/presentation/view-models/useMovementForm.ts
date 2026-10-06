@@ -4,6 +4,7 @@ import { parseMoney, toAmountText, type Category } from '@/core';
 
 import type { AccountBalance, TransactionType } from '../../domain/entities';
 import { useAccounts, useCurrency, useFinanceCategories } from '../queries';
+import { msg } from '@/i18n/msg';
 
 /** Fields a transaction and a recurring rule have in common. */
 export interface MovementFields {
@@ -15,7 +16,7 @@ export interface MovementFields {
   note: string;
 }
 
-export const INVALID_AMOUNT = 'Enter a valid amount';
+export const INVALID_AMOUNT = msg('Enter a valid amount');
 
 /**
  * Editing state for the money fields shared by transactions and recurring rules: the amount as

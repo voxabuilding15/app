@@ -10,6 +10,7 @@ import {
   type CloudUseCases,
 } from '../domain/cloud';
 import { createBackupUseCases, type BackupUseCases } from '../domain/usecases';
+import { currentTranslator } from '@/i18n/translate';
 
 export interface BackupModule {
   backups: BackupUseCases;
@@ -20,7 +21,8 @@ const modules = new WeakMap<Container, BackupModule>();
 
 /** Online backup services, in the order they are offered. Google Drive is wired but not built yet. */
 function defaultProviders(): CloudBackupProvider[] {
-  return [new UnavailableCloudProvider('google-drive', 'Google Drive')];
+  const { t } = currentTranslator();
+  return [new UnavailableCloudProvider('google-drive', t('Google Drive'))];
 }
 
 export function getBackupModule(

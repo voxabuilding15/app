@@ -8,6 +8,7 @@ import {
 
 import { EmptyState, SegmentedControl } from '@/components';
 import { spacing, useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import { STATS_MONTH_OPTIONS, type StatsMonths } from '../../domain/stats-usecases';
 import { CashflowCard } from '../components/CashflowCard';
@@ -20,13 +21,17 @@ import { useStatsViewModel } from '../view-models/useStatsViewModel';
 const WIDE_MIN_WIDTH = 900;
 const CONTENT_MAX_WIDTH = 1100;
 
-const MONTH_OPTIONS = STATS_MONTH_OPTIONS.map((value) => ({
-  value: String(value),
-  label: `${value} months`,
-}));
+const MONTH_OPTIONS = STATS_MONTH_OPTIONS.map((value) => {
+  const { t } = useTranslator();
+  return {
+    value: String(value),
+    label: t('{value} months', { value: value }),
+  };
+});
 
 /** Income against expenses, spending by category, month on month and cashflow. */
 export function StatsSection() {
+  const { t } = useTranslator();
   const { colors } = useTheme();
   const { width } = useWindowDimensions();
   const currency = useCurrency();
@@ -39,16 +44,16 @@ export function StatsSection() {
       return vm.isError ? (
         <EmptyState
           icon="error-outline"
-          title="Couldn't load statistics"
-          message="Your data is safe on this device. Try again."
-          actionLabel="Try again"
+          title={t("Couldn't load statistics")}
+          message={t('Your data is safe on this device. Try again.')}
+          actionLabel={t('Try again')}
           onAction={() => void vm.refetch()}
         />
       ) : (
         <ActivityIndicator
           size="large"
           color={colors.primary}
-          accessibilityLabel="Loading statistics"
+          accessibilityLabel={t('Loading statistics')}
           style={{ marginTop: spacing.xxl }}
         />
       );

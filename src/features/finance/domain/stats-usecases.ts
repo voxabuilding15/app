@@ -11,6 +11,7 @@ import {
   type MonthTotals,
 } from './stats';
 import type { TransactionRepository } from './ports';
+import { currentTranslator } from '@/i18n/translate';
 
 export const STATS_MONTH_OPTIONS = [3, 6, 12] as const;
 export type StatsMonths = (typeof STATS_MONTH_OPTIONS)[number];
@@ -38,6 +39,7 @@ interface StatsUseCaseDeps {
 }
 
 export function createStatsUseCases({ transactions, clock }: StatsUseCaseDeps) {
+  const { t } = currentTranslator();
   return {
     /** Statistics over the last `monthCount` months, including the current one. */
     async overview(monthCount: StatsMonths, breakdown: Breakdown): Promise<FinanceStats> {
@@ -51,7 +53,7 @@ export function createStatsUseCases({ transactions, clock }: StatsUseCaseDeps) {
       const last = months[months.length - 1];
       const previous = months[months.length - 2];
       if (first === undefined || last === undefined || previous === undefined) {
-        throw new Error('Statistics need at least two months.');
+        throw new Error(t('Statistics need at least two months.'));
       }
 
       const [rangeTotals, currentTotals, previousTotals] = await Promise.all([

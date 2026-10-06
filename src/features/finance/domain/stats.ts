@@ -2,6 +2,7 @@ import { addMonthsToKey, firstDayOfMonthKey, lastDayOfMonthKey, type DateKey } f
 
 import type { CategoryTotal, FlowTotals } from './entities';
 import { dayRange, type TimeRange } from './filters';
+import { msg } from '@/i18n/msg';
 
 export interface MonthTotals extends FlowTotals {
   /** 'YYYY-MM'. */
@@ -9,9 +10,9 @@ export interface MonthTotals extends FlowTotals {
   range: TimeRange;
 }
 
-export const UNCATEGORIZED_NAME = 'Uncategorized';
+export const UNCATEGORIZED_NAME = msg('Uncategorized');
 export const UNCATEGORIZED_COLOR = '#79747E';
-const OTHER_NAME = 'Other';
+const OTHER_NAME = msg('Other');
 
 /** The `count` months ending with the month of `today`, oldest first, with their time ranges. */
 export function monthRanges(today: DateKey, count: number): { month: string; range: TimeRange }[] {

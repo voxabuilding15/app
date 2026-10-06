@@ -11,6 +11,7 @@ import {
 } from '@/components';
 import type { Category } from '@/core';
 import { spacing } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { AccountBalance, TransactionType } from '../../domain/entities';
 import { NOTE_MAX_LENGTH } from '../../domain/validation';
@@ -102,13 +103,14 @@ export function MovementSections({
   onNote,
   autoFocusAmount,
 }: MovementSectionsProps) {
+  const { t } = useTranslator();
   const transfer = values.type === 'transfer';
   return (
     <>
-      <FormSection title="Details">
+      <FormSection title={t('Details')}>
         <SegmentedControl options={TYPE_OPTIONS} value={values.type} onChange={onType} />
         <Input
-          label={`Amount (${currency})`}
+          label={t('Amount ({currency})', { currency: currency })}
           value={amountText}
           onChangeText={onAmountText}
           error={amountTextError ?? errors.amount}
@@ -117,7 +119,7 @@ export function MovementSections({
           returnKeyType="next"
         />
         <Input
-          label="Note"
+          label={t('Note')}
           value={values.note}
           onChangeText={onNote}
           error={errors.note}
@@ -126,7 +128,7 @@ export function MovementSections({
         />
       </FormSection>
       <AccountChoice
-        title={transfer ? 'From' : 'Account'}
+        title={transfer ? t('From') : t('Account')}
         accounts={accounts}
         selectedId={values.accountId}
         error={errors.account}
@@ -134,7 +136,7 @@ export function MovementSections({
       />
       {transfer ? (
         <AccountChoice
-          title="To"
+          title={t('To')}
           accounts={destinations}
           selectedId={values.toAccountId}
           error={errors.toAccount}
@@ -151,7 +153,7 @@ export function MovementSections({
       {transfer && destinations.length === 0 ? (
         <View style={{ paddingHorizontal: spacing.sm }}>
           <Text variant="labelSmall" tone="muted">
-            Add another account to move money between accounts.
+            {t('Add another account to move money between accounts.')}
           </Text>
         </View>
       ) : null}

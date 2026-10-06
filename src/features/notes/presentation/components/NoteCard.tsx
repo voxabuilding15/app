@@ -3,6 +3,7 @@ import { Pressable, View } from 'react-native';
 
 import { Icon, SwipeableRow, Text, type IconName, type SwipeAction } from '@/components';
 import { radius, spacing, useTheme, withAlpha } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { NoteSummary } from '../../domain/entities';
 import type { NoteScope } from '../../domain/filters';
@@ -39,6 +40,7 @@ function Meta({ icon, text, color }: { icon: IconName; text?: string; color: str
 }
 
 function NoteCardComponent({ note, now, scope, ...handlers }: NoteCardProps) {
+  const { t } = useTranslator();
   const { colors } = useTheme();
   const accent = note.color ?? colors.outlineVariant;
   const muted = colors.onSurfaceVariant;
@@ -60,26 +62,36 @@ function NoteCardComponent({ note, now, scope, ...handlers }: NoteCardProps) {
   let right: SwipeAction[];
   if (scope === 'trash') {
     left = [
-      action('Restore', 'restore-from-trash', colors.primary, colors.onPrimary, handlers.onRestore),
+      action(
+        t('Restore'),
+        'restore-from-trash',
+        colors.primary,
+        colors.onPrimary,
+        handlers.onRestore,
+      ),
     ];
-    right = [danger('Delete forever', 'delete-forever', handlers.onDeleteForever)];
+    right = [danger(t('Delete forever'), 'delete-forever', handlers.onDeleteForever)];
   } else if (scope === 'archived') {
     left = [
-      action('Unarchive', 'unarchive', colors.primary, colors.onPrimary, handlers.onUnarchive),
+      action(t('Unarchive'), 'unarchive', colors.primary, colors.onPrimary, handlers.onUnarchive),
     ];
-    right = [danger('Delete', 'delete', handlers.onTrash)];
+    right = [danger(t('Delete'), 'delete', handlers.onTrash)];
   } else {
     left = [
-      neutral(note.pinned ? 'Unpin' : 'Pin', note.pinned ? 'push-pin' : 'push-pin', handlers.onPin),
       neutral(
-        note.favorite ? 'Unfavorite' : 'Favorite',
+        note.pinned ? t('Unpin') : t('Pin'),
+        note.pinned ? 'push-pin' : 'push-pin',
+        handlers.onPin,
+      ),
+      neutral(
+        note.favorite ? t('Unfavorite') : t('Favorite'),
         note.favorite ? 'star' : 'star-border',
         handlers.onFavorite,
       ),
     ];
     right = [
-      neutral('Archive', 'archive', handlers.onArchive),
-      danger('Delete', 'delete', handlers.onTrash),
+      neutral(t('Archive'), 'archive', handlers.onArchive),
+      danger(t('Delete'), 'delete', handlers.onTrash),
     ];
   }
   const accessibilityActions = [...left, ...right].map((swipe) => ({
@@ -118,7 +130,7 @@ function NoteCardComponent({ note, now, scope, ...handlers }: NoteCardProps) {
             </View>
             {note.locked ? (
               <Text variant="bodyMedium" tone="muted">
-                Locked note
+                {t('Locked note')}
               </Text>
             ) : note.preview ? (
               <Text variant="bodyMedium" tone="muted" numberOfLines={3}>

@@ -2,6 +2,7 @@ import { View } from 'react-native';
 
 import { Card, ProgressRing, Text } from '@/components';
 import { spacing } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 interface TodayOverviewProps {
   due: number;
@@ -9,12 +10,13 @@ interface TodayOverviewProps {
 }
 
 export function TodayOverview({ due, done }: TodayOverviewProps) {
+  const { t } = useTranslator();
   const headline =
     due === 0
-      ? 'Nothing scheduled today'
+      ? t('Nothing scheduled today')
       : done === due
-        ? 'All habits done today'
-        : `${done} of ${due} habits done today`;
+        ? t('All habits done today')
+        : t('{done} of {due} habits done today', { done: done, due: due });
 
   return (
     <Card
@@ -25,7 +27,11 @@ export function TodayOverview({ due, done }: TodayOverviewProps) {
         progress={due === 0 ? 0 : done / due}
         size={64}
         strokeWidth={8}
-        label={due === 0 ? 'No habits scheduled today' : `${done} of ${due} habits done today`}
+        label={
+          due === 0
+            ? t('No habits scheduled today')
+            : t('{done} of {due} habits done today', { done: done, due: due })
+        }
       >
         <Text variant="titleMedium">{due === 0 ? '–' : `${done}/${due}`}</Text>
       </ProgressRing>
@@ -34,7 +40,7 @@ export function TodayOverview({ due, done }: TodayOverviewProps) {
           {headline}
         </Text>
         <Text tone="muted">
-          {due === 0 ? 'Enjoy the free day.' : 'Paused and skipped habits are not counted.'}
+          {due === 0 ? t('Enjoy the free day.') : t('Paused and skipped habits are not counted.')}
         </Text>
       </View>
     </Card>

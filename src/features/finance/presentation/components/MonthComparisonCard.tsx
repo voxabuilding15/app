@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { Card, Icon, Text } from '@/components';
 import { formatMoney } from '@/core';
 import { spacing, useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { CategoryChange, MonthTotals } from '../../domain/stats';
 import { percentChange } from '../../domain/stats';
@@ -37,6 +38,7 @@ interface TotalRowProps {
 }
 
 function TotalRow({ label, current, previous, currency, higherIsBetter }: TotalRowProps) {
+  const { t } = useTranslator();
   const { colors } = useTheme();
   const change = percentChange(current, previous);
   const better = current === previous ? null : current > previous === higherIsBetter;
@@ -45,7 +47,12 @@ function TotalRow({ label, current, previous, currency, higherIsBetter }: TotalR
   return (
     <View
       accessible
-      accessibilityLabel={`${label}: ${formatMoney(current, currency)} this month, ${formatMoney(previous, currency)} last month${change === null ? '' : `, ${describePercent(change)}`}`}
+      accessibilityLabel={t('{label}: {money} this month, {money2} last month{value}', {
+        label: label,
+        money: formatMoney(current, currency),
+        money2: formatMoney(previous, currency),
+        value: change === null ? '' : `, ${describePercent(change)}`,
+      })}
       style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md }}
     >
       <Text variant="bodyMedium" style={{ flex: 1 }}>
@@ -71,6 +78,7 @@ export function MonthComparisonCard({
   breakdown,
   currency,
 }: MonthComparisonCardProps) {
+  const { t } = useTranslator();
   const { colors } = useTheme();
   const visible = changes.filter((change) => change.deltaMinor !== 0).slice(0, MAX_CHANGES);
   const noun = breakdown === 'expense' ? 'spending' : 'income';
@@ -81,31 +89,31 @@ export function MonthComparisonCard({
         {`${formatMonth(current.month, 'short')} vs ${formatMonth(previous.month, 'short')}`}
       </Text>
       <TotalRow
-        label="Income"
+        label={t('Income')}
         current={current.incomeMinor}
         previous={previous.incomeMinor}
         currency={currency}
         higherIsBetter
       />
       <TotalRow
-        label="Expenses"
+        label={t('Expenses')}
         current={current.expenseMinor}
         previous={previous.expenseMinor}
         currency={currency}
         higherIsBetter={false}
       />
       <TotalRow
-        label="Net"
+        label={t('Net')}
         current={current.incomeMinor - current.expenseMinor}
         previous={previous.incomeMinor - previous.expenseMinor}
         currency={currency}
         higherIsBetter
       />
       <Text variant="labelLarge" accessibilityRole="header">
-        {`Biggest changes in ${noun}`}
+        {t('Biggest changes in {noun}', { noun: noun })}
       </Text>
       {visible.length === 0 ? (
-        <Text tone="muted">{`No change in ${noun} between these months.`}</Text>
+        <Text tone="muted">{t('No change in {noun} between these months.', { noun: noun })}</Text>
       ) : (
         visible.map((change) => {
           const up = change.deltaMinor > 0;

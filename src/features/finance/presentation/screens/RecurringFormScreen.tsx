@@ -13,6 +13,7 @@ import {
 } from '@/components';
 import { useHideTabBar } from '@/hooks';
 import { ACCENT_COLORS, spacing, useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { RecurringDraft } from '../../domain/validation';
 import { MovementSections } from '../components/MovementSections';
@@ -36,10 +37,12 @@ interface RecurringFormScreenProps {
 }
 
 export function RecurringFormScreen({ recurringId, defaults }: RecurringFormScreenProps) {
+  const { t } = useTranslator();
   useHideTabBar();
   const { colors } = useTheme();
   const load = useRecurringLoader(recurringId, defaults);
-  const title = recurringId === null ? 'New recurring transaction' : 'Edit recurring transaction';
+  const title =
+    recurringId === null ? t('New recurring transaction') : t('Edit recurring transaction');
 
   if (load.phase === 'ready') {
     return <RecurringFormBody recurringId={recurringId} initial={load.initial} />;
@@ -57,19 +60,23 @@ export function RecurringFormScreen({ recurringId, defaults }: RecurringFormScre
             backgroundColor: colors.background,
           }}
         >
-          <ActivityIndicator size="large" color={colors.primary} accessibilityLabel="Loading" />
+          <ActivityIndicator
+            size="large"
+            color={colors.primary}
+            accessibilityLabel={t('Loading')}
+          />
         </View>
       ) : (
         <Screen>
           <EmptyState
             icon="error-outline"
-            title={load.phase === 'notFound' ? 'Not found' : "Couldn't load this"}
+            title={load.phase === 'notFound' ? t('Not found') : t("Couldn't load this")}
             message={
               load.phase === 'notFound'
-                ? 'This recurring transaction may have been deleted.'
-                : 'Your data is safe on this device. Try again.'
+                ? t('This recurring transaction may have been deleted.')
+                : t('Your data is safe on this device. Try again.')
             }
-            actionLabel={load.phase === 'failed' ? 'Try again' : undefined}
+            actionLabel={load.phase === 'failed' ? t('Try again') : undefined}
             onAction={load.phase === 'failed' ? load.retry : undefined}
           />
         </Screen>
@@ -84,6 +91,7 @@ interface RecurringFormBodyProps {
 }
 
 function RecurringFormBody({ recurringId, initial }: RecurringFormBodyProps) {
+  const { t } = useTranslator();
   const { width } = useWindowDimensions();
   const vm = useRecurringFormViewModel(recurringId, initial);
   const activeAccounts = useAccounts(false);
@@ -94,12 +102,12 @@ function RecurringFormBody({ recurringId, initial }: RecurringFormBodyProps) {
   const options = (
     <Stack.Screen
       options={{
-        title: vm.isEditing ? 'Edit recurring transaction' : 'New recurring transaction',
+        title: vm.isEditing ? t('Edit recurring transaction') : t('New recurring transaction'),
         headerRight: vm.isEditing
           ? () => (
               <IconButton
                 icon="delete"
-                label="Delete recurring transaction"
+                label={t('Delete recurring transaction')}
                 onPress={vm.confirmDelete}
               />
             )
@@ -115,8 +123,10 @@ function RecurringFormBody({ recurringId, initial }: RecurringFormBodyProps) {
         <Screen>
           <EmptyState
             icon="account-balance-wallet"
-            title="Add an account first"
-            message="Recurring transactions belong to an account, such as Cash or a bank account."
+            title={t('Add an account first')}
+            message={t(
+              'Recurring transactions belong to an account, such as Cash or a bank account.',
+            )}
           />
         </Screen>
       </>
@@ -186,7 +196,7 @@ function RecurringFormBody({ recurringId, initial }: RecurringFormBodyProps) {
           </Text>
         ) : null}
         <Button
-          label={vm.isEditing ? 'Save changes' : 'Add recurring transaction'}
+          label={vm.isEditing ? t('Save changes') : t('Add recurring transaction')}
           fullWidth
           loading={vm.saving}
           onPress={() => void vm.save()}
@@ -195,7 +205,7 @@ function RecurringFormBody({ recurringId, initial }: RecurringFormBodyProps) {
 
       {creatingCategory ? (
         <NameColorSheet
-          title="New category"
+          title={t('New category')}
           initialName=""
           initialColor={ACCENT_COLORS[0]}
           onSave={async (name, color) => {

@@ -5,6 +5,7 @@ import { spacing, useTheme } from '@/theme';
 
 import type { Session } from '../../domain/entities';
 import { KIND_LABEL, OUTCOME_LABEL, formatFocusTime, formatStartTime } from '../format';
+import { useTranslator } from '@/i18n';
 
 interface SessionRowProps {
   session: Session;
@@ -14,6 +15,7 @@ interface SessionRowProps {
 
 /** One history entry: what ran, how long, how it ended, and what it was about. */
 export function SessionRow({ session, onOpen, onDelete }: SessionRowProps) {
+  const { t } = useTranslator();
   const { colors } = useTheme();
   const focus = session.kind === 'focus';
   const summary = `${KIND_LABEL[session.kind]}, ${formatFocusTime(session.durationSeconds)}, ${OUTCOME_LABEL[session.outcome].toLowerCase()}`;
@@ -63,7 +65,7 @@ export function SessionRow({ session, onOpen, onDelete }: SessionRowProps) {
       {focus ? (
         <PressableScale
           accessibilityRole="button"
-          accessibilityLabel={`${summary}. Edit details`}
+          accessibilityLabel={t('{summary}. Edit details', { summary: summary })}
           pressedScale={0.99}
           onPress={() => onOpen(session)}
           style={{ flex: 1 }}
@@ -77,7 +79,7 @@ export function SessionRow({ session, onOpen, onDelete }: SessionRowProps) {
       )}
       <IconButton
         icon="delete-outline"
-        label={`Delete ${summary}`}
+        label={t('Delete {summary}', { summary: summary })}
         onPress={() => onDelete(session)}
       />
     </Card>

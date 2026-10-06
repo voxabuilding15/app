@@ -9,6 +9,7 @@ import type {
   NoteRepository,
   PickedFile,
 } from './ports';
+import { currentTranslator } from '@/i18n/translate';
 
 export const MAX_ATTACHMENTS_PER_NOTE = 20;
 export const MAX_ATTACHMENT_BYTES = 25 * 1024 * 1024;
@@ -59,12 +60,15 @@ export function createAttachmentUseCases({
   onChanged,
   clock,
 }: AttachmentUseCaseDeps) {
+  const { t } = currentTranslator();
   async function ensureRoom(noteId: string): Promise<void> {
     if ((await notes.getRecord(noteId)) === null) {
-      throw new AttachmentError('This note no longer exists.');
+      throw new AttachmentError(t('This note no longer exists.'));
     }
     if ((await attachments.listFor(noteId)).length >= MAX_ATTACHMENTS_PER_NOTE) {
-      throw new AttachmentError(`A note can have up to ${MAX_ATTACHMENTS_PER_NOTE} attachments.`);
+      throw new AttachmentError(
+        t('A note can have up to {max} attachments.', { max: MAX_ATTACHMENTS_PER_NOTE }),
+      );
     }
   }
 
@@ -84,7 +88,7 @@ export function createAttachmentUseCases({
         : await storage.writeText(path, source.text);
     if (sizeBytes > MAX_ATTACHMENT_BYTES) {
       await storage.remove([path]);
-      throw new AttachmentError('This file is too large. Attachments can be up to 25 MB.');
+      throw new AttachmentError(t('This file is too large. Attachments can be up to 25 MB.'));
     }
     const attachment: Attachment = {
       id,
@@ -128,16 +132,16 @@ export function createAttachmentUseCases({
       const isImage = picked.mime.startsWith('image/');
       if ((kind === 'image' && !isImage) || (kind === 'pdf' && picked.mime !== 'application/pdf')) {
         throw new AttachmentError(
-          kind === 'image' ? 'Choose an image file.' : 'Choose a PDF file.',
+          kind === 'image' ? t('Choose an image file.') : t('Choose a PDF file.'),
         );
       }
       if (picked.sizeBytes > MAX_ATTACHMENT_BYTES) {
-        throw new AttachmentError('This file is too large. Attachments can be up to 25 MB.');
+        throw new AttachmentError(t('This file is too large. Attachments can be up to 25 MB.'));
       }
       return store(
         noteId,
         kind,
-        cleanName(picked.name, kind === 'image' ? 'Image' : 'Document.pdf'),
+        cleanName(picked.name, kind === 'image' ? t('Image') : 'Document.pdf'),
         picked.mime,
         { copyFrom: picked.uri },
         null,
@@ -158,7 +162,7 @@ export function createAttachmentUseCases({
       return store(
         noteId,
         'audio',
-        `Voice note ${stamp}`,
+        t('Voice note {stamp}', { stamp: stamp }),
         'audio/mp4',
         { copyFrom: recording.uri },
         Math.max(0, Math.round(recording.durationMs)),
@@ -175,7 +179,7 @@ export function createAttachmentUseCases({
       if (replaceId !== null) {
         const existing = await attachments.get(replaceId);
         if (existing === null || existing.noteId !== noteId || existing.kind !== 'drawing') {
-          throw new AttachmentError('This drawing no longer exists.');
+          throw new AttachmentError(t('This drawing no longer exists.'));
         }
         const sizeBytes = await storage.writeText(existing.path, text);
         await attachments.setSize(existing.id, sizeBytes);
@@ -183,7 +187,7 @@ export function createAttachmentUseCases({
         return { ...existing, sizeBytes };
       }
       await ensureRoom(noteId);
-      return store(noteId, 'drawing', 'Drawing', DRAWING_MIME, { text }, null);
+      return store(noteId, 'drawing', t('Drawing'), DRAWING_MIME, { text }, null);
     },
 
     async readDrawing(attachment: Attachment): Promise<Drawing | null> {

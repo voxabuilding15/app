@@ -3,6 +3,7 @@ import { View } from 'react-native';
 
 import { Chip, FormSection, Input, WRAP_ROW } from '@/components';
 import type { Category } from '@/core';
+import { useTranslator } from '@/i18n';
 
 import type { LinkTarget } from '../../domain/entities';
 import { MAX_TAGS_PER_SESSION, NOTE_MAX_LENGTH } from '../../domain/session-usecases';
@@ -39,6 +40,7 @@ export function SessionDetailsFields({
   onNoteBlur,
   onManageTags,
 }: SessionDetailsFieldsProps) {
+  const { t } = useTranslator();
   const [picker, setPicker] = useState<'task' | 'habit' | null>(null);
   const task = tasks.find((item) => item.id === details.taskId);
   const habit = habits.find((item) => item.id === details.habitId);
@@ -56,26 +58,30 @@ export function SessionDetailsFields({
   return (
     <FormSection title={title}>
       <Input
-        label="Note"
+        label={t('Note')}
         value={details.note}
         onChangeText={(note) => onChange({ note })}
         onBlur={onNoteBlur}
-        placeholder="What are you working on?"
+        placeholder={t('What are you working on?')}
         multiline
         maxLength={NOTE_MAX_LENGTH}
       />
       <View style={WRAP_ROW}>
         <Chip
           icon="check-circle"
-          label={task?.title ?? 'Link a task'}
-          accessibilityLabel={task ? `Task: ${task.title}. Change` : 'Link a task'}
+          label={task?.title ?? t('Link a task')}
+          accessibilityLabel={
+            task ? t('Task: {title}. Change', { title: task.title }) : t('Link a task')
+          }
           selected={task !== undefined}
           onPress={() => setPicker('task')}
         />
         <Chip
           icon="local-fire-department"
-          label={habit?.title ?? 'Link a habit'}
-          accessibilityLabel={habit ? `Habit: ${habit.title}. Change` : 'Link a habit'}
+          label={habit?.title ?? t('Link a habit')}
+          accessibilityLabel={
+            habit ? t('Habit: {title}. Change', { title: habit.title }) : t('Link a habit')
+          }
           selected={habit !== undefined}
           onPress={() => setPicker('habit')}
         />
@@ -92,15 +98,15 @@ export function SessionDetailsFields({
         ))}
         <Chip
           icon="sell"
-          label={tags.length === 0 ? 'Add tags' : 'Manage tags'}
+          label={tags.length === 0 ? t('Add tags') : t('Manage tags')}
           onPress={onManageTags}
         />
       </View>
       <LinkPickerSheet
         visible={picker === 'task'}
-        title="Link a task"
-        noneLabel="No task"
-        emptyMessage="You have no open tasks."
+        title={t('Link a task')}
+        noneLabel={t('No task')}
+        emptyMessage={t('You have no open tasks.')}
         options={tasks}
         selectedId={details.taskId}
         onSelect={(taskId) => onChange({ taskId })}
@@ -108,9 +114,9 @@ export function SessionDetailsFields({
       />
       <LinkPickerSheet
         visible={picker === 'habit'}
-        title="Link a habit"
-        noneLabel="No habit"
-        emptyMessage="You have no habits yet."
+        title={t('Link a habit')}
+        noneLabel={t('No habit')}
+        emptyMessage={t('You have no habits yet.')}
         options={habits}
         selectedId={details.habitId}
         onSelect={(habitId) => onChange({ habitId })}

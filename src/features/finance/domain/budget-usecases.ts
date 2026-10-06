@@ -4,6 +4,7 @@ import { budgetCovers, budgetDays, budgetProgress, budgetTimeRange } from './bud
 import type { Budget, BudgetProgress } from './entities';
 import type { BudgetRepository, TransactionRepository } from './ports';
 import { hasErrors, validateBudget, type BudgetDraft, type BudgetErrors } from './validation';
+import { currentTranslator } from '@/i18n/translate';
 
 export type SaveBudgetResult = { ok: true; id: string } | { ok: false; errors: BudgetErrors };
 
@@ -30,6 +31,7 @@ export function createBudgetUseCases({
   categories,
   clock,
 }: BudgetUseCaseDeps) {
+  const { t } = currentTranslator();
   return {
     /** Every budget with its progress for the period that covers today. */
     async list(): Promise<BudgetProgress[]> {
@@ -61,7 +63,7 @@ export function createBudgetUseCases({
         if (
           all.some((other) => other.id !== id && other.name.toLowerCase() === name.toLowerCase())
         ) {
-          errors.name = 'This name is already in use';
+          errors.name = t('This name is already in use');
         }
       }
       if (hasErrors(errors) || draft.amountMinor === null) {
@@ -71,7 +73,7 @@ export function createBudgetUseCases({
       const now = clock.now();
       const existing = id === null ? null : await budgets.get(id);
       if (id !== null && existing === null) {
-        throw new Error('This budget no longer exists.');
+        throw new Error(t('This budget no longer exists.'));
       }
       const custom = draft.period === 'custom';
       const budget: Budget = {
@@ -97,7 +99,7 @@ export function createBudgetUseCases({
     async remove(id: string): Promise<Budget> {
       const budget = await budgets.get(id);
       if (budget === null) {
-        throw new Error('This budget no longer exists.');
+        throw new Error(t('This budget no longer exists.'));
       }
       await budgets.delete(id);
       return budget;

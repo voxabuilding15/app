@@ -9,6 +9,7 @@ import type { CalendarItem } from '../../domain/items';
 import { formatDayLong, itemDay } from '../format';
 
 import { ItemRow } from './ItemRow';
+import { useTranslator } from '@/i18n';
 
 type Row =
   { type: 'header'; key: string; day: DateKey } | { type: 'item'; key: string; item: CalendarItem };
@@ -32,6 +33,7 @@ export function AgendaList({
   emptyComponent,
   headerComponent,
 }: AgendaListProps) {
+  const { t } = useTranslator();
   const rows = useMemo<Row[]>(() => {
     const result: Row[] = [];
     let current: DateKey | null = null;
@@ -67,7 +69,9 @@ export function AgendaList({
           >
             <View style={{ paddingTop: spacing.md }}>
               <Text variant="titleMedium">
-                {row.day === today ? `Today · ${formatDayLong(row.day)}` : formatDayLong(row.day)}
+                {row.day === today
+                  ? t('Today · {dayLong}', { dayLong: formatDayLong(row.day) })
+                  : formatDayLong(row.day)}
               </Text>
             </View>
           </PressableScale>

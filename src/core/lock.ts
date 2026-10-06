@@ -1,5 +1,6 @@
 import { constantTimeEquals, stretchedHash } from './hash';
 import type { Clock, KeyValueStorage } from './ports';
+import { currentTranslator } from '@/i18n/translate';
 
 export type LockMethod = 'none' | 'device' | 'pin';
 
@@ -96,11 +97,12 @@ interface LockUseCaseDeps {
 }
 
 export function validatePin(pin: string): string | null {
+  const { t } = currentTranslator();
   if (!/^\d+$/.test(pin)) {
-    return 'Use digits only';
+    return t('Use digits only');
   }
   return pin.length < PIN_MIN_LENGTH || pin.length > PIN_MAX_LENGTH
-    ? `Use ${PIN_MIN_LENGTH} to ${PIN_MAX_LENGTH} digits`
+    ? t('Use {min} to {max} digits', { min: PIN_MIN_LENGTH, max: PIN_MAX_LENGTH })
     : null;
 }
 
@@ -112,6 +114,7 @@ export function createLockUseCases({
   subject = 'notes',
   unlockWindowMs = UNLOCK_WINDOW_MS,
 }: LockUseCaseDeps) {
+  const { t } = currentTranslator();
   let unlockedUntil = 0;
   let failures = 0;
   let lockedOutUntil = 0;
@@ -143,7 +146,7 @@ export function createLockUseCases({
         if (!(await authenticator.isAvailable())) {
           return { ok: false, reason: 'unavailable' };
         }
-        if (!(await authenticator.authenticate(`Unlock your ${subject}`))) {
+        if (!(await authenticator.authenticate(t('Unlock your {subject}', { subject: subject })))) {
           return { ok: false, reason: 'cancelled' };
         }
         openFor();
@@ -175,17 +178,22 @@ export function createLockUseCases({
     /** Uses the phone's own fingerprint, face or screen lock. */
     async useDeviceAuth(): Promise<LockChangeResult> {
       if (method() !== 'none' && !isUnlocked()) {
-        return { ok: false, error: `Unlock your ${subject} first.` };
+        return { ok: false, error: t('Unlock your {subject} first.', { subject: subject }) };
       }
       if (!(await authenticator.isAvailable())) {
         return {
           ok: false,
-          error:
+          error: t(
             'Set up a fingerprint, face or screen lock in your phone settings first, or use a PIN.',
+          ),
         };
       }
-      if (!(await authenticator.authenticate(`Confirm to protect your ${subject}`))) {
-        return { ok: false, error: 'Authentication was cancelled.' };
+      if (
+        !(await authenticator.authenticate(
+          t('Confirm to protect your {subject}', { subject: subject }),
+        ))
+      ) {
+        return { ok: false, error: t('Authentication was cancelled.') };
       }
       store.write({ method: 'device', pinHash: null, pinSalt: null });
       openFor();
@@ -194,7 +202,7 @@ export function createLockUseCases({
 
     async usePin(pin: string): Promise<LockChangeResult> {
       if (method() !== 'none' && !isUnlocked()) {
-        return { ok: false, error: `Unlock your ${subject} first.` };
+        return { ok: false, error: t('Unlock your {subject} first.', { subject: subject }) };
       }
       const problem = validatePin(pin);
       if (problem !== null) {
@@ -219,7 +227,7 @@ export function createLockUseCases({
     /** Turns locking off. Notes marked as locked simply open normally afterwards. */
     turnOff(): LockChangeResult {
       if (method() !== 'none' && !isUnlocked()) {
-        return { ok: false, error: `Unlock your ${subject} first.` };
+        return { ok: false, error: t('Unlock your {subject} first.', { subject: subject }) };
       }
       store.write(NO_LOCK);
       unlockedUntil = 0;

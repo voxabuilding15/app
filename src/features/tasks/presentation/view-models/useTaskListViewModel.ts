@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BackHandler } from 'react-native';
 
 import { useDebouncedValue, type Notice } from '@/hooks';
+import { useTranslator } from '@/i18n';
 
 import type { Task } from '../../domain/entities';
 import {
@@ -14,15 +15,18 @@ import {
 } from '../../domain/filters';
 import { useTasksModule } from '../module';
 import { useInvalidateTasks, useTaskList, useTaskStats } from '../queries';
+import { currentTranslator } from '@/i18n/translate';
 
 const PAGE_SIZE = 100;
 const SEARCH_DEBOUNCE_MS = 250;
 
 function plural(count: number): string {
-  return count === 1 ? 'Task' : `${count} tasks`;
+  const { t } = currentTranslator();
+  return count === 1 ? t('Task') : t('{count} tasks', { count: count });
 }
 
 export function useTaskListViewModel() {
+  const { t } = useTranslator();
   const { tasks: useCases } = useTasksModule();
   const invalidate = useInvalidateTasks();
 
@@ -144,35 +148,35 @@ export function useTaskListViewModel() {
     (task: Task) =>
       run(
         () => useCases.setCompleted(task.id, task.completedAt === null),
-        "Couldn't update the task",
+        t("Couldn't update the task"),
       ),
-    [run, useCases],
+    [run, useCases, t],
   );
 
   const archive = useCallback(
     (ids: readonly string[]) =>
       run(async () => {
         await useCases.archive(ids);
-        setNotice({ message: `${plural(ids.length)} archived` });
-      }, "Couldn't archive"),
-    [run, useCases],
+        setNotice({ message: t('{plural} archived', { plural: plural(ids.length) }) });
+      }, t("Couldn't archive")),
+    [run, useCases, t],
   );
 
   const restore = useCallback(
     (ids: readonly string[]) =>
       run(async () => {
         await useCases.restore(ids);
-        setNotice({ message: `${plural(ids.length)} restored` });
-      }, "Couldn't restore"),
-    [run, useCases],
+        setNotice({ message: t('{plural} restored', { plural: plural(ids.length) }) });
+      }, t("Couldn't restore")),
+    [run, useCases, t],
   );
 
   const undoDelete = useCallback(async () => {
     const ids = pendingDelete.current;
     pendingDelete.current = [];
     setNotice(null);
-    await run(() => useCases.undoRemove(ids), "Couldn't undo the delete");
-  }, [run, useCases]);
+    await run(() => useCases.undoRemove(ids), t("Couldn't undo the delete"));
+  }, [run, useCases, t]);
 
   const remove = useCallback(
     (ids: readonly string[]) =>
@@ -181,12 +185,12 @@ export function useTaskListViewModel() {
         await useCases.remove(ids);
         pendingDelete.current = ids;
         setNotice({
-          message: `${plural(ids.length)} deleted`,
-          actionLabel: 'Undo',
+          message: t('{plural} deleted', { plural: plural(ids.length) }),
+          actionLabel: t('Undo'),
           onAction: () => void undoDelete(),
         });
-      }, "Couldn't delete"),
-    [run, useCases, finalizeDelete, undoDelete],
+      }, t("Couldn't delete")),
+    [run, useCases, finalizeDelete, undoDelete, t],
   );
 
   const toggleSelected = useCallback((id: string) => {

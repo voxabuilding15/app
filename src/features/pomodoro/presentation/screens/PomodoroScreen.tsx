@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IconButton, SegmentedControl, Snackbar, ScreenToolbar } from '@/components';
 import { useIsTablet } from '@/hooks';
 import { CONTENT_MAX_WIDTH, spacing, useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import { HistoryPanel } from '../components/HistoryPanel';
 import { StatsPanel } from '../components/StatsPanel';
@@ -15,13 +16,14 @@ import { TodayGoal } from '../components/TodayGoal';
 import { useHistoryViewModel } from '../view-models/useHistoryViewModel';
 import { useStatsViewModel } from '../view-models/useStatsViewModel';
 import { useTimerViewModel } from '../view-models/useTimerViewModel';
+import { msg } from '@/i18n/msg';
 
 type Section = 'timer' | 'stats' | 'history';
 
 const PHONE_SECTIONS = [
-  { value: 'timer', label: 'Timer' },
-  { value: 'stats', label: 'Stats' },
-  { value: 'history', label: 'History' },
+  { value: 'timer', label: msg('Timer') },
+  { value: 'stats', label: msg('Stats') },
+  { value: 'history', label: msg('History') },
 ] as const;
 const TABLET_SECTIONS = PHONE_SECTIONS.filter((section) => section.value !== 'timer');
 
@@ -32,6 +34,7 @@ const TABLET_TIMER_WIDTH = 420;
  * the timer on the left and show statistics or history beside it.
  */
 export function PomodoroScreen() {
+  const { t } = useTranslator();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
@@ -56,10 +59,10 @@ export function PomodoroScreen() {
 
   return (
     <View style={{ flex: 1, paddingTop: insets.top, backgroundColor: colors.background }}>
-      <ScreenToolbar title="Pomodoro">
+      <ScreenToolbar title={t('Pomodoro')}>
         <IconButton
           icon="settings"
-          label="Pomodoro settings"
+          label={t('Pomodoro settings')}
           onPress={() => router.push('/pomodoro/settings')}
         />
       </ScreenToolbar>

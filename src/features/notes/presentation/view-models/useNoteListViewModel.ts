@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
 
 import { useDebouncedValue, useNotice, useUndoableDelete } from '@/hooks';
+import { useTranslator } from '@/i18n';
 
 import type { NoteSummary } from '../../domain/entities';
 import {
@@ -19,6 +20,7 @@ const PAGE_SIZE = 60;
 const SEARCH_DEBOUNCE_MS = 250;
 
 export function useNoteListViewModel() {
+  const { t } = useTranslator();
   const { notes: useCases } = useNotesModule();
   const invalidate = useInvalidateNotes();
   const { notice, show, dismiss } = useNotice();
@@ -92,18 +94,21 @@ export function useNoteListViewModel() {
 
   const togglePinned = useCallback(
     (note: NoteSummary) =>
-      run(() => useCases.setPinned(note.id, !note.pinned), "Couldn't update the note"),
-    [run, useCases],
+      run(() => useCases.setPinned(note.id, !note.pinned), t("Couldn't update the note")),
+    [run, useCases, t],
   );
   const toggleFavorite = useCallback(
     (note: NoteSummary) =>
-      run(() => useCases.setFavorite(note.id, !note.favorite), "Couldn't update the note"),
-    [run, useCases],
+      run(() => useCases.setFavorite(note.id, !note.favorite), t("Couldn't update the note")),
+    [run, useCases, t],
   );
 
   const trash = useUndoableDelete<string>({
-    noun: 'Note',
-    deletedMessage: 'Note moved to the trash',
+    messages: {
+      deleted: t('Note moved to the trash'),
+      restoreFailed: t("Couldn't restore the note"),
+      deleteFailed: t("Couldn't delete the note"),
+    },
     remove: async (id) => {
       await useCases.trash([id]);
       return id;
@@ -113,8 +118,11 @@ export function useNoteListViewModel() {
     show,
   });
   const archive = useUndoableDelete<string>({
-    noun: 'Note',
-    deletedMessage: 'Note archived',
+    messages: {
+      deleted: t('Note archived'),
+      restoreFailed: t("Couldn't restore the note"),
+      deleteFailed: t("Couldn't delete the note"),
+    },
     remove: async (id) => {
       await useCases.archive([id]);
       return id;
@@ -128,48 +136,51 @@ export function useNoteListViewModel() {
     (note: NoteSummary) =>
       run(async () => {
         await useCases.unarchive([note.id]);
-        show({ message: 'Note restored to your notes' });
-      }, "Couldn't restore the note"),
-    [run, useCases, show],
+        show({ message: t('Note restored to your notes') });
+      }, t("Couldn't restore the note")),
+    [run, useCases, show, t],
   );
   const restore = useCallback(
     (note: NoteSummary) =>
       run(async () => {
         await useCases.restore([note.id]);
-        show({ message: 'Note restored' });
-      }, "Couldn't restore the note"),
-    [run, useCases, show],
+        show({ message: t('Note restored') });
+      }, t("Couldn't restore the note")),
+    [run, useCases, show, t],
   );
 
   const deleteForever = useCallback(
     (note: NoteSummary) =>
-      Alert.alert('Delete forever?', 'This note and its attachments cannot be recovered.', [
-        { text: 'Cancel', style: 'cancel' },
+      Alert.alert(t('Delete forever?'), t('This note and its attachments cannot be recovered.'), [
+        { text: t('Cancel'), style: 'cancel' },
         {
-          text: 'Delete forever',
+          text: t('Delete forever'),
           style: 'destructive',
           onPress: () =>
-            void run(() => useCases.deleteForever([note.id]), "Couldn't delete the note"),
+            void run(() => useCases.deleteForever([note.id]), t("Couldn't delete the note")),
         },
       ]),
-    [run, useCases],
+    [run, useCases, t],
   );
 
   const emptyTrash = useCallback(
     () =>
-      Alert.alert('Empty the trash?', 'Every note in the trash is deleted for good.', [
-        { text: 'Cancel', style: 'cancel' },
+      Alert.alert(t('Empty the trash?'), t('Every note in the trash is deleted for good.'), [
+        { text: t('Cancel'), style: 'cancel' },
         {
-          text: 'Empty trash',
+          text: t('Empty trash'),
           style: 'destructive',
           onPress: () =>
             void run(async () => {
               const count = await useCases.emptyTrash();
-              show({ message: count === 1 ? '1 note deleted' : `${count} notes deleted` });
-            }, "Couldn't empty the trash"),
+              show({
+                message:
+                  count === 1 ? t('1 note deleted') : t('{count} notes deleted', { count: count }),
+              });
+            }, t("Couldn't empty the trash")),
         },
       ]),
-    [run, useCases, show],
+    [run, useCases, show, t],
   );
 
   return {

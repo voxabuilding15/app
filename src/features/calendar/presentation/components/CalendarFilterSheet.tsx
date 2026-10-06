@@ -3,13 +3,15 @@ import { View } from 'react-native';
 import { Button, Chip, ChipGroup, Sheet } from '@/components';
 import { NO_CATEGORY, type Category } from '@/core';
 import { spacing } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { CalendarFilter, ItemKind } from '../../domain/filters';
+import { msg } from '@/i18n/msg';
 
 const KIND_OPTIONS: readonly { kind: ItemKind; label: string }[] = [
-  { kind: 'event', label: 'Events' },
-  { kind: 'task', label: 'Tasks' },
-  { kind: 'habit', label: 'Habits' },
+  { kind: 'event', label: msg('Events') },
+  { kind: 'task', label: msg('Tasks') },
+  { kind: 'habit', label: msg('Habits') },
 ];
 
 interface CalendarFilterSheetProps {
@@ -31,22 +33,27 @@ export function CalendarFilterSheet({
   onReset,
   onClose,
 }: CalendarFilterSheetProps) {
+  const { t } = useTranslator();
   return (
-    <Sheet visible={visible} title="Filter calendar" onClose={onClose}>
-      <ChipGroup title="Show">
+    <Sheet visible={visible} title={t('Filter calendar')} onClose={onClose}>
+      <ChipGroup title={t('Show')}>
         {KIND_OPTIONS.map((option) => (
           <Chip
             key={option.kind}
-            label={option.label}
+            label={t(option.label)}
             selected={filter.kinds[option.kind]}
             onPress={() => onToggleKind(option.kind)}
           />
         ))}
       </ChipGroup>
-      <ChipGroup title="Event category">
-        <Chip label="All" selected={filter.categoryId === null} onPress={() => onCategory(null)} />
+      <ChipGroup title={t('Event category')}>
         <Chip
-          label="No category"
+          label={t('All')}
+          selected={filter.categoryId === null}
+          onPress={() => onCategory(null)}
+        />
+        <Chip
+          label={t('No category')}
           selected={filter.categoryId === NO_CATEGORY}
           onPress={() => onCategory(NO_CATEGORY)}
         />
@@ -61,8 +68,8 @@ export function CalendarFilterSheet({
         ))}
       </ChipGroup>
       <View style={{ flexDirection: 'row', gap: spacing.md, justifyContent: 'flex-end' }}>
-        <Button label="Reset" variant="outlined" onPress={onReset} />
-        <Button label="Done" onPress={onClose} />
+        <Button label={t('Reset')} variant="outlined" onPress={onReset} />
+        <Button label={t('Done')} onPress={onClose} />
       </View>
     </Sheet>
   );

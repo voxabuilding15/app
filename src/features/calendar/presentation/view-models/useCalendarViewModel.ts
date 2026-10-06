@@ -20,11 +20,13 @@ import {
   useInvalidateCalendar,
 } from '../queries';
 import { askScope } from '../scope-prompt';
+import { useTranslator } from '@/i18n';
 
 const SEARCH_DEBOUNCE_MS = 250;
 const NO_ITEMS: readonly CalendarItem[] = [];
 
 export function useCalendarViewModel() {
+  const { t } = useTranslator();
   const { calendar } = useCalendarModule();
   const invalidate = useInvalidateCalendar();
   const now = useNow();
@@ -75,8 +77,8 @@ export function useCalendarViewModel() {
     async (item: EventItem, shift: TimeShift) => {
       const scope = item.recurring
         ? await askScope(
-            'Move recurring event',
-            'Move just this event, or all events in the series?',
+            t('Move recurring event'),
+            t('Move just this event, or all events in the series?'),
           )
         : 'all';
       if (scope === null) {
@@ -85,10 +87,10 @@ export function useCalendarViewModel() {
       }
       await run(async () => {
         await calendar.move(item.eventId, item.occurrenceDate, shift, scope);
-        setNotice('Event moved');
-      }, "Couldn't move the event");
+        setNotice(t('Event moved'));
+      }, t("Couldn't move the event"));
     },
-    [calendar, invalidate, run],
+    [calendar, invalidate, run, t],
   );
 
   const setView = useCallback((next: CalendarView) => setViewState(next), []);

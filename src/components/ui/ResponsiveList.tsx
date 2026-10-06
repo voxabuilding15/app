@@ -8,6 +8,7 @@ import { FAB } from './FAB';
 import { Snackbar } from './Snackbar';
 
 import type { Notice } from '@/hooks';
+import { useTranslator } from '@/i18n';
 
 const TWO_COLUMN_MIN_WIDTH = 900;
 
@@ -26,8 +27,10 @@ interface ResponsiveListProps<T> {
   data: readonly T[];
   keyExtractor: (item: T) => string;
   renderItem: (item: T) => ReactElement;
-  /** Spoken name of what is loading, e.g. "transactions". */
-  noun: string;
+  /** Spoken while loading, e.g. "Loading transactions" (already translated). */
+  loadingLabel: string;
+  /** Shown when loading fails, e.g. "Couldn't load transactions" (already translated). */
+  errorTitle: string;
   isLoading: boolean;
   isError: boolean;
   onRetry: () => void;
@@ -50,7 +53,8 @@ export function ResponsiveList<T>({
   data,
   keyExtractor,
   renderItem,
-  noun,
+  loadingLabel,
+  errorTitle,
   isLoading,
   isError,
   onRetry,
@@ -65,24 +69,21 @@ export function ResponsiveList<T>({
   onDismissNotice,
   columnsFor = defaultColumns,
 }: ResponsiveListProps<T>) {
+  const { t } = useTranslator();
   const { colors } = useTheme();
   const { width } = useWindowDimensions();
   const columns = columnsFor(width);
 
   const placeholder = isLoading ? (
     <View style={{ paddingVertical: spacing.xxl }}>
-      <ActivityIndicator
-        size="large"
-        color={colors.primary}
-        accessibilityLabel={`Loading ${noun}`}
-      />
+      <ActivityIndicator size="large" color={colors.primary} accessibilityLabel={loadingLabel} />
     </View>
   ) : isError ? (
     <EmptyState
       icon="error-outline"
-      title={`Couldn't load ${noun}`}
-      message="Your data is safe on this device. Try loading the list again."
-      actionLabel="Try again"
+      title={errorTitle}
+      message={t('Your data is safe on this device. Try loading the list again.')}
+      actionLabel={t('Try again')}
       onAction={onRetry}
     />
   ) : (

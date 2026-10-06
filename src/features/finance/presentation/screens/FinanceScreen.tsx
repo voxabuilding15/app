@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 
 import { ChipTabs, IconButton, ScreenToolbar } from '@/components';
 import { useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import { CurrencySheet } from '../components/CurrencySheet';
 
@@ -13,19 +14,21 @@ import { ActivitySection } from './ActivitySection';
 import { BudgetsSection } from './BudgetsSection';
 import { RecurringSection } from './RecurringSection';
 import { StatsSection } from './StatsSection';
+import { msg } from '@/i18n/msg';
 
 type Section = 'activity' | 'accounts' | 'budgets' | 'recurring' | 'stats';
 
 const SECTIONS = [
-  { value: 'activity', label: 'Activity' },
-  { value: 'accounts', label: 'Accounts' },
-  { value: 'budgets', label: 'Budgets' },
-  { value: 'recurring', label: 'Recurring' },
-  { value: 'stats', label: 'Stats' },
+  { value: 'activity', label: msg('Activity') },
+  { value: 'accounts', label: msg('Accounts') },
+  { value: 'budgets', label: msg('Budgets') },
+  { value: 'recurring', label: msg('Recurring') },
+  { value: 'stats', label: msg('Stats') },
 ] as const satisfies readonly { value: Section; label: string }[];
 
 /** Money tab: transactions, accounts, budgets, recurring transactions and statistics. */
 export function FinanceScreen() {
+  const { t } = useTranslator();
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { colors } = useTheme();
@@ -53,15 +56,24 @@ export function FinanceScreen() {
 
   return (
     <View style={{ flex: 1, paddingTop: insets.top, backgroundColor: colors.background }}>
-      <ScreenToolbar title="Finance">
-        <IconButton icon="payments" label="Change currency" onPress={() => setCurrencyOpen(true)} />
+      <ScreenToolbar title={t('Finance')}>
+        <IconButton
+          icon="payments"
+          label={t('Change currency')}
+          onPress={() => setCurrencyOpen(true)}
+        />
         <IconButton
           icon="label"
-          label="Manage categories"
+          label={t('Manage categories')}
           onPress={() => router.push('/finance/categories')}
         />
       </ScreenToolbar>
-      <ChipTabs label="Finance sections" tabs={SECTIONS} value={section} onChange={changeSection} />
+      <ChipTabs
+        label={t('Finance sections')}
+        tabs={SECTIONS}
+        value={section}
+        onChange={changeSection}
+      />
 
       <View style={{ flex: 1 }}>
         {section === 'activity' ? (

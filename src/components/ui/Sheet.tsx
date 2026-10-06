@@ -2,6 +2,7 @@ import type { PropsWithChildren } from 'react';
 import { KeyboardAvoidingView, Modal, Pressable, ScrollView, View } from 'react-native';
 
 import { CONTENT_MAX_WIDTH, radius, spacing, useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import { Text } from './Text';
 
@@ -13,6 +14,7 @@ export interface SheetProps extends PropsWithChildren {
 
 /** Bottom sheet that becomes a centered, width-capped panel on tablets. */
 export function Sheet({ visible, title, onClose, children }: SheetProps) {
+  const { t } = useTranslator();
   const { colors } = useTheme();
 
   return (
@@ -27,7 +29,7 @@ export function Sheet({ visible, title, onClose, children }: SheetProps) {
       <KeyboardAvoidingView behavior="padding" style={{ flex: 1, justifyContent: 'flex-end' }}>
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel="Close"
+          accessibilityLabel={t('Close')}
           onPress={onClose}
           style={{
             position: 'absolute',

@@ -3,13 +3,15 @@ import { View } from 'react-native';
 import { Card, DonutChart, SegmentedControl, Text } from '@/components';
 import { formatMoney } from '@/core';
 import { spacing } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { CategorySlice } from '../../domain/stats';
 import type { Breakdown } from '../../domain/stats-usecases';
+import { msg } from '@/i18n/msg';
 
 const BREAKDOWN_OPTIONS = [
-  { value: 'expense', label: 'Spending' },
-  { value: 'income', label: 'Income' },
+  { value: 'expense', label: msg('Spending') },
+  { value: 'income', label: msg('Income') },
 ] as const satisfies readonly { value: Breakdown; label: string }[];
 
 interface CategoryBreakdownCardProps {
@@ -32,16 +34,19 @@ export function CategoryBreakdownCard({
   totalMinor,
   currency,
 }: CategoryBreakdownCardProps) {
-  const noun = breakdown === 'expense' ? 'Spending' : 'Income';
+  const { t } = useTranslator();
+  const noun = breakdown === 'expense' ? t('Spending') : t('Income');
 
   return (
     <Card style={{ gap: spacing.md }}>
       <Text variant="titleMedium" accessibilityRole="header">
-        By category
+        {t('By category')}
       </Text>
       <SegmentedControl options={BREAKDOWN_OPTIONS} value={breakdown} onChange={onBreakdown} />
       {slices.length === 0 ? (
-        <Text tone="muted">{`No ${noun.toLowerCase()} in this period.`}</Text>
+        <Text tone="muted">
+          {t('No {lowerCase} in this period.', { lowerCase: noun.toLowerCase() })}
+        </Text>
       ) : (
         <View
           style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: spacing.xl }}
@@ -52,12 +57,13 @@ export function CategoryBreakdownCard({
               value: slice.totalMinor,
               color: slice.color,
             }))}
-            label={`${noun} by category: ${slices
-              .map((slice) => `${slice.name} ${percent(slice.share)}`)
-              .join(', ')}`}
+            label={t('{noun} by category: {join}', {
+              noun: noun,
+              join: slices.map((slice) => `${slice.name} ${percent(slice.share)}`).join(', '),
+            })}
           >
             <Text variant="labelSmall" tone="muted">
-              Total
+              {t('Total')}
             </Text>
             <Text variant="titleMedium">{formatMoney(totalMinor, currency)}</Text>
           </DonutChart>

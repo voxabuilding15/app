@@ -20,6 +20,7 @@ import {
 } from '@/components';
 import { useHideTabBar } from '@/hooks';
 import { ACCENT_COLORS, spacing, useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { NoteDetail } from '../../domain/entities';
 import { folderPath, flattenFolderTree } from '../../domain/folders';
@@ -39,14 +40,15 @@ import {
   useNoteLoader,
   type NewNoteDefaults,
 } from '../view-models/useNoteEditorViewModel';
+import { msg } from '@/i18n/msg';
 
 const WIDE_MIN_WIDTH = 900;
 const WIDE_MAX_WIDTH = 1200;
 const BODY_MIN_HEIGHT = 280;
 
 const MODES = [
-  { value: 'edit', label: 'Edit' },
-  { value: 'preview', label: 'Preview' },
+  { value: 'edit', label: msg('Edit') },
+  { value: 'preview', label: msg('Preview') },
 ] as const;
 
 interface NoteEditorScreenProps {
@@ -56,23 +58,24 @@ interface NoteEditorScreenProps {
 }
 
 export function NoteEditorScreen({ noteId, defaults }: NoteEditorScreenProps) {
+  const { t } = useTranslator();
   useHideTabBar();
   const { colors } = useTheme();
   const lock = useLock();
   const load = useNoteLoader(noteId, defaults);
-  const title = noteId === null ? 'New note' : 'Edit note';
+  const title = noteId === null ? t('New note') : t('Edit note');
 
   if (load.phase === 'ready') {
     const gated = load.note?.locked === true && lock.method !== 'none' && !lock.unlocked;
     if (gated) {
       return (
         <>
-          <Stack.Screen options={{ title: 'Locked note' }} />
+          <Stack.Screen options={{ title: t('Locked note') }} />
           <Screen>
             <LockGate
               method={lock.method as 'device' | 'pin'}
               unlock={lock.unlock}
-              subject="This note"
+              subject={t('This note')}
             />
           </Screen>
         </>
@@ -96,20 +99,20 @@ export function NoteEditorScreen({ noteId, defaults }: NoteEditorScreenProps) {
           <ActivityIndicator
             size="large"
             color={colors.primary}
-            accessibilityLabel="Loading note"
+            accessibilityLabel={t('Loading note')}
           />
         </View>
       ) : (
         <Screen>
           <EmptyState
             icon="error-outline"
-            title={load.phase === 'notFound' ? 'Note not found' : "Couldn't load the note"}
+            title={load.phase === 'notFound' ? t('Note not found') : t("Couldn't load the note")}
             message={
               load.phase === 'notFound'
-                ? 'This note may have been deleted.'
-                : 'Your notes are safe on this device. Try again.'
+                ? t('This note may have been deleted.')
+                : t('Your notes are safe on this device. Try again.')
             }
-            actionLabel={load.phase === 'failed' ? 'Try again' : undefined}
+            actionLabel={load.phase === 'failed' ? t('Try again') : undefined}
             onAction={load.phase === 'failed' ? load.retry : undefined}
           />
         </Screen>
@@ -125,6 +128,7 @@ interface NoteEditorBodyProps {
 }
 
 function NoteEditorBody({ noteId, initial, note }: NoteEditorBodyProps) {
+  const { t } = useTranslator();
   const { width } = useWindowDimensions();
   const router = useRouter();
   const vm = useNoteEditorViewModel(noteId, initial);
@@ -135,17 +139,18 @@ function NoteEditorBody({ noteId, initial, note }: NoteEditorBodyProps) {
   const { draft, errors } = vm;
 
   const folders = flattenFolderTree(tree.data ?? []);
-  const folderLabel = draft.folderId === null ? 'No folder' : folderPath(folders, draft.folderId);
+  const folderLabel =
+    draft.folderId === null ? t('No folder') : folderPath(folders, draft.folderId);
   const inactive = note?.deletedAt != null || note?.archivedAt != null;
 
   const toggleLock = (locked: boolean) => {
     if (!vm.setLocked(locked)) {
       Alert.alert(
-        'Set up a lock first',
-        'Choose a PIN or use your phone’s screen lock to protect notes.',
+        t('Set up a lock first'),
+        t('Choose a PIN or use your phone’s screen lock to protect notes.'),
         [
-          { text: 'Not now', style: 'cancel' },
-          { text: 'Set up lock', onPress: () => router.push('/notes/lock') },
+          { text: t('Not now'), style: 'cancel' },
+          { text: t('Set up lock'), onPress: () => router.push('/notes/lock') },
         ],
       );
     }
@@ -154,18 +159,18 @@ function NoteEditorBody({ noteId, initial, note }: NoteEditorBodyProps) {
   const header = (
     <Stack.Screen
       options={{
-        title: vm.isEditing ? 'Edit note' : 'New note',
+        title: vm.isEditing ? t('Edit note') : t('New note'),
         headerRight: () => (
           <View style={{ flexDirection: 'row' }}>
             <IconButton
               icon="push-pin"
-              label={draft.pinned ? 'Unpin note' : 'Pin note'}
+              label={draft.pinned ? t('Unpin note') : t('Pin note')}
               tinted={draft.pinned}
               onPress={() => vm.setPinned(!draft.pinned)}
             />
             <IconButton
               icon={draft.favorite ? 'star' : 'star-border'}
-              label={draft.favorite ? 'Remove from favorites' : 'Add to favorites'}
+              label={draft.favorite ? t('Remove from favorites') : t('Add to favorites')}
               tinted={draft.favorite}
               onPress={() => vm.setFavorite(!draft.favorite)}
             />
@@ -178,7 +183,7 @@ function NoteEditorBody({ noteId, initial, note }: NoteEditorBodyProps) {
   const writing = (
     <>
       <Input
-        label="Title"
+        label={t('Title')}
         value={draft.title}
         onChangeText={vm.setTitle}
         error={errors.title}
@@ -191,7 +196,7 @@ function NoteEditorBody({ noteId, initial, note }: NoteEditorBodyProps) {
         <>
           <FormatToolbar onInline={vm.formatInline} onBlock={vm.formatBlock} />
           <Input
-            label="Note text"
+            label={t('Note text')}
             labelHidden
             value={draft.body}
             onChangeText={vm.setBody}
@@ -199,15 +204,15 @@ function NoteEditorBody({ noteId, initial, note }: NoteEditorBodyProps) {
             onSelectionChange={(event) => vm.setSelection(event.nativeEvent.selection)}
             error={errors.body ?? errors.content}
             maxLength={BODY_MAX_LENGTH}
-            placeholder="Write something… Markdown works: **bold**, # headings, - [ ] tasks"
+            placeholder={t('Write something… Markdown works: **bold**, # headings, - [ ] tasks')}
             multiline
             style={{ minHeight: BODY_MIN_HEIGHT }}
           />
         </>
       ) : (
-        <View accessibilityLabel="Note preview" style={{ minHeight: BODY_MIN_HEIGHT }}>
+        <View accessibilityLabel={t('Note preview')} style={{ minHeight: BODY_MIN_HEIGHT }}>
           {draft.body.trim() === '' ? (
-            <Text tone="muted">Nothing to preview yet.</Text>
+            <Text tone="muted">{t('Nothing to preview yet.')}</Text>
           ) : (
             <MarkdownView source={draft.body} onToggleTask={vm.tickTask} />
           )}
@@ -218,12 +223,12 @@ function NoteEditorBody({ noteId, initial, note }: NoteEditorBodyProps) {
 
   const details = (
     <>
-      <FormSection title="Folder" error={errors.folder}>
+      <FormSection title={t('Folder')} error={errors.folder}>
         <View style={WRAP_ROW}>
           <Chip
             icon="folder"
             label={folderLabel}
-            accessibilityLabel={`Folder ${folderLabel}. Change`}
+            accessibilityLabel={t('Folder {folderLabel}. Change', { folderLabel: folderLabel })}
             onPress={() => setPickingFolder(true)}
           />
         </View>
@@ -236,8 +241,8 @@ function NoteEditorBody({ noteId, initial, note }: NoteEditorBodyProps) {
       />
       <ColorSection color={draft.color} error={errors.color} onChange={vm.setColor} />
       <DateTimeSection
-        title="Reminder"
-        emptyLabel="Add reminder"
+        title={t('Reminder')}
+        emptyLabel={t('Add reminder')}
         dayLabel={draft.reminderAt === null ? null : formatDay(draft.reminderAt, vm.now)}
         timeLabel={draft.reminderAt === null ? null : formatTime(draft.reminderAt)}
         error={errors.reminder}
@@ -245,10 +250,10 @@ function NoteEditorBody({ noteId, initial, note }: NoteEditorBodyProps) {
         onPickTime={() => void vm.pickReminderTime()}
         onClear={vm.clearReminder}
       />
-      <FormSection title="Protection">
+      <FormSection title={t('Protection')}>
         <SwitchRow
-          title="Lock this note"
-          subtitle="Needs your PIN, fingerprint or screen lock to open"
+          title={t('Lock this note')}
+          subtitle={t('Needs your PIN, fingerprint or screen lock to open')}
           value={draft.locked}
           onChange={toggleLock}
         />
@@ -273,9 +278,11 @@ function NoteEditorBody({ noteId, initial, note }: NoteEditorBodyProps) {
         {inactive ? (
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md }}>
             <Text tone="muted" accessibilityRole="alert" style={{ flex: 1 }}>
-              {note?.deletedAt != null ? 'This note is in the trash.' : 'This note is archived.'}
+              {note?.deletedAt != null
+                ? t('This note is in the trash.')
+                : t('This note is archived.')}
             </Text>
-            <Button label="Restore" variant="tonal" onPress={() => void vm.restore()} />
+            <Button label={t('Restore')} variant="tonal" onPress={() => void vm.restore()} />
           </View>
         ) : null}
         {wide ? (
@@ -295,7 +302,7 @@ function NoteEditorBody({ noteId, initial, note }: NoteEditorBodyProps) {
           </Text>
         ) : null}
         <Button
-          label={vm.isEditing ? 'Save changes' : 'Save note'}
+          label={vm.isEditing ? t('Save changes') : t('Save note')}
           fullWidth
           loading={vm.saving}
           onPress={() => void vm.save()}
@@ -303,13 +310,13 @@ function NoteEditorBody({ noteId, initial, note }: NoteEditorBodyProps) {
         {vm.isEditing && !inactive ? (
           <View style={{ flexDirection: 'row', gap: spacing.md }}>
             <Button
-              label="Archive"
+              label={t('Archive')}
               variant="outlined"
               icon="archive"
               onPress={() => void vm.archive()}
             />
             <Button
-              label="Move to trash"
+              label={t('Move to trash')}
               variant="outlined"
               icon="delete"
               onPress={vm.confirmTrash}
@@ -320,17 +327,17 @@ function NoteEditorBody({ noteId, initial, note }: NoteEditorBodyProps) {
 
       {pickingFolder ? (
         <FolderPickerSheet
-          title="Move to folder"
+          title={t('Move to folder')}
           tree={tree.data ?? []}
           selected={draft.folderId}
-          noneLabel="No folder"
+          noneLabel={t('No folder')}
           onSelect={vm.setFolder}
           onClose={() => setPickingFolder(false)}
         />
       ) : null}
       {creatingTag ? (
         <NameColorSheet
-          title="New tag"
+          title={t('New tag')}
           initialName=""
           initialColor={ACCENT_COLORS[0]}
           onSave={async (name, color) => {

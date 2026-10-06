@@ -22,7 +22,7 @@ export function NotificationsSection() {
 
   const sendTest = async () => {
     await notifications.present({
-      title: 'FocusFlow',
+      title: t('FocusFlow'),
       body: t('Notifications are working'),
       channelId: 'default',
     });

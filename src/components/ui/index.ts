@@ -38,6 +38,6 @@ export { ReminderOffsetSection } from './ReminderOffsetSection';
 export { RepeatSection, describeRecurrence } from './RepeatSection';
 export { ScreenToolbar } from './ScreenToolbar';
 export { SortSheet } from './SortSheet';
-export { WEEKDAY_DISPLAY_ORDER, WEEKDAY_LABELS, WeekdayChips } from './WeekdayChips';
+export { WEEKDAY_DISPLAY_ORDER, WeekdayChips } from './WeekdayChips';
 export { LockGate } from './LockGate';
 export { LockSettingsPanel } from './LockSettingsPanel';

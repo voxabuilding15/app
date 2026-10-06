@@ -1,4 +1,5 @@
 import * as Notifications from 'expo-notifications';
+import { currentTranslator } from '@/i18n/translate';
 
 const NOTIFICATION_CATEGORIES = {
   reminder: 'reminder',
@@ -19,28 +20,29 @@ const NOTIFICATION_ACTIONS = {
 } as const;
 
 export async function registerNotificationCategories(): Promise<void> {
+  const { t } = currentTranslator();
   await Promise.all([
     Notifications.setNotificationCategoryAsync(NOTIFICATION_CATEGORIES.reminder, [
       {
         identifier: NOTIFICATION_ACTIONS.complete,
-        buttonTitle: 'Complete',
+        buttonTitle: t('Complete'),
         options: { opensAppToForeground: false },
       },
       {
         identifier: NOTIFICATION_ACTIONS.snooze,
-        buttonTitle: 'Snooze',
+        buttonTitle: t('Snooze'),
         options: { opensAppToForeground: false },
       },
     ]),
     Notifications.setNotificationCategoryAsync(NOTIFICATION_CATEGORIES.habit, [
       {
         identifier: NOTIFICATION_ACTIONS.complete,
-        buttonTitle: 'Done',
+        buttonTitle: t('Done'),
         options: { opensAppToForeground: false },
       },
       {
         identifier: NOTIFICATION_ACTIONS.skip,
-        buttonTitle: 'Skip today',
+        buttonTitle: t('Skip today'),
         options: { opensAppToForeground: false },
       },
     ]),
@@ -49,46 +51,46 @@ export async function registerNotificationCategories(): Promise<void> {
     Notifications.setNotificationCategoryAsync(NOTIFICATION_CATEGORIES.timerRunning, [
       {
         identifier: NOTIFICATION_ACTIONS.pause,
-        buttonTitle: 'Pause',
+        buttonTitle: t('Pause'),
         options: { opensAppToForeground: true },
       },
       {
         identifier: NOTIFICATION_ACTIONS.skip,
-        buttonTitle: 'Skip',
+        buttonTitle: t('Skip'),
         options: { opensAppToForeground: true },
       },
       {
         identifier: NOTIFICATION_ACTIONS.stop,
-        buttonTitle: 'Stop',
+        buttonTitle: t('Stop'),
         options: { opensAppToForeground: true },
       },
     ]),
     Notifications.setNotificationCategoryAsync(NOTIFICATION_CATEGORIES.timerPaused, [
       {
         identifier: NOTIFICATION_ACTIONS.resume,
-        buttonTitle: 'Resume',
+        buttonTitle: t('Resume'),
         options: { opensAppToForeground: true },
       },
       {
         identifier: NOTIFICATION_ACTIONS.stop,
-        buttonTitle: 'Stop',
+        buttonTitle: t('Stop'),
         options: { opensAppToForeground: true },
       },
     ]),
     Notifications.setNotificationCategoryAsync(NOTIFICATION_CATEGORIES.alarm, [
       {
         identifier: NOTIFICATION_ACTIONS.complete,
-        buttonTitle: 'Complete',
+        buttonTitle: t('Complete'),
         options: { opensAppToForeground: false },
       },
       {
         identifier: NOTIFICATION_ACTIONS.snooze,
-        buttonTitle: 'Snooze',
+        buttonTitle: t('Snooze'),
         options: { opensAppToForeground: false },
       },
       {
         identifier: NOTIFICATION_ACTIONS.dismiss,
-        buttonTitle: 'Dismiss',
+        buttonTitle: t('Dismiss'),
         options: { opensAppToForeground: false },
       },
     ]),

@@ -3,6 +3,7 @@ import { View } from 'react-native';
 
 import { NAME_MAX_LENGTH } from '@/core';
 import { spacing } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import { Button } from './Button';
 import { ColorSwatches } from './ColorSwatches';
@@ -27,6 +28,7 @@ export function NameColorSheet({
   onSave,
   onClose,
 }: NameColorSheetProps) {
+  const { t } = useTranslator();
   const [name, setName] = useState(initialName);
   const [color, setColor] = useState(initialColor);
   const [error, setError] = useState<string | null>(null);
@@ -41,7 +43,7 @@ export function NameColorSheet({
   return (
     <Sheet visible title={title} onClose={onClose}>
       <Input
-        label="Name"
+        label={t('Name')}
         value={name}
         onChangeText={(text) => {
           setName(text);
@@ -55,13 +57,13 @@ export function NameColorSheet({
       />
       <View style={{ gap: spacing.sm }}>
         <Text variant="labelSmall" tone="muted">
-          Color
+          {t('Color')}
         </Text>
         <ColorSwatches value={color} onChange={setColor} />
       </View>
       <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.md }}>
-        <Button label="Cancel" variant="outlined" onPress={onClose} />
-        <Button label="Save" loading={busy} onPress={() => void submit()} />
+        <Button label={t('Cancel')} variant="outlined" onPress={onClose} />
+        <Button label={t('Save')} loading={busy} onPress={() => void submit()} />
       </View>
     </Sheet>
   );

@@ -1,6 +1,7 @@
 import { MAX_MINOR, MAX_RECURRENCE_INTERVAL, type DateKey, type RecurrenceRule } from '@/core';
 
 import type { AccountType, BudgetPeriod, TransactionType } from './entities';
+import { currentTranslator } from '@/i18n/translate';
 
 export const NOTE_MAX_LENGTH = 500;
 export const NAME_MAX_LENGTH = 40;
@@ -11,10 +12,11 @@ function isDateKey(value: string | null): value is DateKey {
 }
 
 function amountError(amountMinor: number | null): string | undefined {
+  const { t } = currentTranslator();
   if (amountMinor === null || !Number.isInteger(amountMinor) || amountMinor <= 0) {
-    return 'Enter an amount greater than zero';
+    return t('Enter an amount greater than zero');
   }
-  return amountMinor > MAX_MINOR ? 'This amount is too large' : undefined;
+  return amountMinor > MAX_MINOR ? t('This amount is too large') : undefined;
 }
 
 // --- Money movements (transactions and the recurring rules that post them) -----------------------
@@ -35,6 +37,7 @@ interface MovementErrors {
 }
 
 function validateMovement(fields: MovementFields): MovementErrors {
+  const { t } = currentTranslator();
   const errors: MovementErrors = {};
   const amount = amountError(fields.amountMinor);
   if (amount) {
@@ -42,17 +45,19 @@ function validateMovement(fields: MovementFields): MovementErrors {
   }
   if (fields.accountId === null) {
     errors.account =
-      fields.type === 'transfer' ? 'Choose the account to move money from' : 'Choose an account';
+      fields.type === 'transfer'
+        ? t('Choose the account to move money from')
+        : t('Choose an account');
   }
   if (fields.type === 'transfer') {
     if (fields.toAccountId === null) {
-      errors.toAccount = 'Choose the account to move money to';
+      errors.toAccount = t('Choose the account to move money to');
     } else if (fields.toAccountId === fields.accountId) {
-      errors.toAccount = 'Choose a different account';
+      errors.toAccount = t('Choose a different account');
     }
   }
   if (fields.note.length > NOTE_MAX_LENGTH) {
-    errors.note = `Notes must be ${NOTE_MAX_LENGTH} characters or fewer`;
+    errors.note = t('Notes must be {max} characters or fewer', { max: NOTE_MAX_LENGTH });
   }
   return errors;
 }
@@ -72,9 +77,10 @@ export interface TransactionDraft {
 export type TransactionErrors = MovementErrors & { date?: string };
 
 export function validateTransaction(draft: TransactionDraft): TransactionErrors {
+  const { t } = currentTranslator();
   const errors: TransactionErrors = validateMovement(draft);
   if (!Number.isFinite(draft.occurredAt)) {
-    errors.date = 'Choose a date';
+    errors.date = t('Choose a date');
   }
   return errors;
 }
@@ -94,19 +100,20 @@ export interface AccountErrors {
 }
 
 export function validateAccount(draft: AccountDraft): AccountErrors {
+  const { t } = currentTranslator();
   const errors: AccountErrors = {};
   const name = draft.name.trim();
   if (name.length === 0) {
-    errors.name = 'Enter a name';
+    errors.name = t('Enter a name');
   } else if (name.length > NAME_MAX_LENGTH) {
-    errors.name = `Use ${NAME_MAX_LENGTH} characters or fewer`;
+    errors.name = t('Use {max} characters or fewer', { max: NAME_MAX_LENGTH });
   }
   if (
     draft.initialBalanceMinor === null ||
     !Number.isInteger(draft.initialBalanceMinor) ||
     Math.abs(draft.initialBalanceMinor) > MAX_MINOR
   ) {
-    errors.balance = 'Enter a valid balance';
+    errors.balance = t('Enter a valid balance');
   }
   return errors;
 }
@@ -129,12 +136,13 @@ export interface BudgetErrors {
 }
 
 export function validateBudget(draft: BudgetDraft): BudgetErrors {
+  const { t } = currentTranslator();
   const errors: BudgetErrors = {};
   const name = draft.name.trim();
   if (name.length === 0) {
-    errors.name = 'Enter a name';
+    errors.name = t('Enter a name');
   } else if (name.length > NAME_MAX_LENGTH) {
-    errors.name = `Use ${NAME_MAX_LENGTH} characters or fewer`;
+    errors.name = t('Use {max} characters or fewer', { max: NAME_MAX_LENGTH });
   }
   const amount = amountError(draft.amountMinor);
   if (amount) {
@@ -142,9 +150,9 @@ export function validateBudget(draft: BudgetDraft): BudgetErrors {
   }
   if (draft.period === 'custom') {
     if (!isDateKey(draft.startDate) || !isDateKey(draft.endDate)) {
-      errors.dates = 'Choose when the budget starts and ends';
+      errors.dates = t('Choose when the budget starts and ends');
     } else if (draft.endDate < draft.startDate) {
-      errors.dates = 'The end date cannot be before the start date';
+      errors.dates = t('The end date cannot be before the start date');
     }
   }
   return errors;
@@ -167,6 +175,7 @@ export interface RecurringDraft {
 export type RecurringErrors = MovementErrors & { repeat?: string; dates?: string };
 
 export function validateRecurring(draft: RecurringDraft): RecurringErrors {
+  const { t } = currentTranslator();
   const errors: RecurringErrors = validateMovement(draft);
   const { rule } = draft;
 
@@ -175,17 +184,17 @@ export function validateRecurring(draft: RecurringDraft): RecurringErrors {
     rule.interval < 1 ||
     rule.interval > MAX_RECURRENCE_INTERVAL
   ) {
-    errors.repeat = `Repeat every 1 to ${MAX_RECURRENCE_INTERVAL}`;
+    errors.repeat = t('Repeat every 1 to {max}', { max: MAX_RECURRENCE_INTERVAL });
   } else if (!Number.isInteger(rule.weekdays) || rule.weekdays < 0 || rule.weekdays > 127) {
-    errors.repeat = 'Choose valid weekdays';
+    errors.repeat = t('Choose valid weekdays');
   }
   if (!isDateKey(draft.startDate)) {
-    errors.dates = 'Choose a start date';
+    errors.dates = t('Choose a start date');
   } else if (
     draft.endDate !== null &&
     (!isDateKey(draft.endDate) || draft.endDate < draft.startDate)
   ) {
-    errors.dates = 'The end date cannot be before the start date';
+    errors.dates = t('The end date cannot be before the start date');
   }
   return errors;
 }

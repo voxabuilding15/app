@@ -3,25 +3,27 @@ import { dateKeyToNoon, type DateKey } from '@/core';
 
 import type { SessionOutcome, TimerKind } from '../domain/timer';
 import type { AmbientSound } from '../domain/settings';
+import { msg } from '@/i18n/msg';
+import { currentTranslator } from '@/i18n/translate';
 
 export const KIND_LABEL: Record<TimerKind, string> = {
-  focus: 'Focus',
-  short_break: 'Short break',
-  long_break: 'Long break',
+  focus: msg('Focus'),
+  short_break: msg('Short break'),
+  long_break: msg('Long break'),
 };
 
 export const OUTCOME_LABEL: Record<SessionOutcome, string> = {
-  completed: 'Completed',
-  stopped: 'Stopped early',
-  skipped: 'Skipped',
+  completed: msg('Completed'),
+  stopped: msg('Stopped early'),
+  skipped: msg('Skipped'),
 };
 
 export const SOUND_LABEL: Record<AmbientSound, string> = {
-  none: 'Off',
-  'white-noise': 'White noise',
-  rain: 'Rain',
-  forest: 'Forest',
-  'coffee-shop': 'Coffee shop',
+  none: msg('Off'),
+  'white-noise': msg('White noise'),
+  rain: msg('Rain'),
+  forest: msg('Forest'),
+  'coffee-shop': msg('Coffee shop'),
 };
 
 export const SOUND_ICON: Record<AmbientSound, IconName> = {
@@ -109,11 +111,15 @@ export function formatBucketDescription(
   from: DateKey,
   to: DateKey,
 ): string {
+  const { t } = currentTranslator();
   if (period === 'day') {
     return formatDayLabel(from);
   }
   if (period === 'week') {
-    return `Week of ${formatDayLabel(from)} to ${formatDayLabel(to)}`;
+    return t('Week of {dayLabel} to {dayLabel2}', {
+      dayLabel: formatDayLabel(from),
+      dayLabel2: formatDayLabel(to),
+    });
   }
   return new Date(dateKeyToNoon(from)).toLocaleDateString(undefined, {
     month: 'long',

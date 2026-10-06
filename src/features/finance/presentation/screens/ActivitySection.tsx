@@ -4,6 +4,7 @@ import { View } from 'react-native';
 
 import { EmptyState, ListControls, SortSheet, ResponsiveList } from '@/components';
 import { useNow } from '@/hooks';
+import { useTranslator } from '@/i18n';
 
 import type { Transaction } from '../../domain/entities';
 import { SummaryTiles } from '../components/SummaryTiles';
@@ -23,6 +24,7 @@ interface ActivitySectionProps {
 
 /** Transactions with search, filters and sorting, plus this month at a glance. */
 export function ActivitySection({ initialAccountId, onShowAccounts }: ActivitySectionProps) {
+  const { t } = useTranslator();
   const router = useRouter();
   const now = useNow();
   const currency = useCurrency();
@@ -57,25 +59,25 @@ export function ActivitySection({ initialAccountId, onShowAccounts }: ActivitySe
   const empty = !vm.hasAccounts ? (
     <EmptyState
       icon="account-balance-wallet"
-      title="Add an account first"
-      message="Transactions belong to an account, such as Cash or a bank account."
-      actionLabel="Add account"
+      title={t('Add an account first')}
+      message={t('Transactions belong to an account, such as Cash or a bank account.')}
+      actionLabel={t('Add account')}
       onAction={onShowAccounts}
     />
   ) : vm.isFiltering ? (
     <EmptyState
       icon="search-off"
-      title="No matching transactions"
-      message="Nothing matches your search and filters."
-      actionLabel="Clear search and filters"
+      title={t('No matching transactions')}
+      message={t('Nothing matches your search and filters.')}
+      actionLabel={t('Clear search and filters')}
       onAction={vm.clearFilters}
     />
   ) : (
     <EmptyState
       icon="receipt-long"
-      title="No transactions yet"
-      message="Record income, expenses and transfers between your accounts."
-      actionLabel="Add transaction"
+      title={t('No transactions yet')}
+      message={t('Record income, expenses and transfers between your accounts.')}
+      actionLabel={t('Add transaction')}
       onAction={addTransaction}
     />
   );
@@ -87,8 +89,8 @@ export function ActivitySection({ initialAccountId, onShowAccounts }: ActivitySe
         onToggleSearch={vm.toggleSearch}
         searchText={vm.searchText}
         onSearchText={vm.setSearchText}
-        searchLabel="Search transactions"
-        searchPlaceholder="Note, category or account"
+        searchLabel={t('Search transactions')}
+        searchPlaceholder={t('Note, category or account')}
         activeFilterCount={vm.activeFilterCount}
         isFiltering={vm.isFiltering}
         onOpenFilter={() => setFilterOpen(true)}
@@ -111,7 +113,8 @@ export function ActivitySection({ initialAccountId, onShowAccounts }: ActivitySe
           />
         )}
         extraData={currency}
-        noun="transactions"
+        loadingLabel={t('Loading transactions')}
+        errorTitle={t("Couldn't load transactions")}
         isLoading={vm.isLoading}
         isError={vm.isError}
         onRetry={() => void vm.refetch()}
@@ -128,7 +131,7 @@ export function ActivitySection({ initialAccountId, onShowAccounts }: ActivitySe
         isRefreshing={vm.isRefreshing}
         onRefresh={() => void vm.refetch()}
         onEndReached={vm.loadMore}
-        fab={{ label: 'Add transaction', onPress: addTransaction }}
+        fab={{ label: t('Add transaction'), onPress: addTransaction }}
         notice={vm.notice}
         onDismissNotice={vm.dismissNotice}
       />
@@ -144,7 +147,7 @@ export function ActivitySection({ initialAccountId, onShowAccounts }: ActivitySe
       />
       <SortSheet
         visible={sortOpen}
-        title="Sort transactions"
+        title={t('Sort transactions')}
         fields={SORT_FIELDS.map((value) => ({ value, label: sortLabel(value) }))}
         sort={vm.sort}
         onChange={vm.changeSort}

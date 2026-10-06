@@ -11,15 +11,18 @@ import {
   Snackbar,
 } from '@/components';
 import { ACCENT_COLORS, useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import { useManageViewModel, type ManageKind } from '../view-models/useManageViewModel';
+import { msg } from '@/i18n/msg';
 
 const KIND_OPTIONS = [
-  { value: 'category', label: 'Categories' },
-  { value: 'label', label: 'Labels' },
+  { value: 'category', label: msg('Categories') },
+  { value: 'label', label: msg('Labels') },
 ] as const satisfies readonly { value: ManageKind; label: string }[];
 
 export function ManageScreen() {
+  const { t } = useTranslator();
   const { colors } = useTheme();
   const vm = useManageViewModel();
   const noun = vm.kind === 'category' ? 'category' : 'label';
@@ -27,43 +30,47 @@ export function ManageScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Categories & labels' }} />
+      <Stack.Screen options={{ title: t('Categories & labels') }} />
       <View style={{ flex: 1, backgroundColor: colors.background }}>
         <Screen>
           <SegmentedControl options={KIND_OPTIONS} value={vm.kind} onChange={vm.setKind} />
           {vm.isLoading ? (
-            <ActivityIndicator color={colors.primary} accessibilityLabel="Loading" />
+            <ActivityIndicator color={colors.primary} accessibilityLabel={t('Loading')} />
           ) : vm.isError ? (
             <EmptyState
               icon="error-outline"
-              title={`Couldn't load ${plural}`}
-              message="Your data is safe on this device. Try again."
-              actionLabel="Try again"
+              title={t("Couldn't load {plural}", { plural: plural })}
+              message={t('Your data is safe on this device. Try again.')}
+              actionLabel={t('Try again')}
               onAction={() => void vm.refetch()}
             />
           ) : vm.items.length === 0 ? (
             <EmptyState
               icon={vm.kind === 'category' ? 'folder' : 'label'}
-              title={`No ${plural} yet`}
+              title={t('No {plural} yet', { plural: plural })}
               message={
                 vm.kind === 'category'
-                  ? 'Categories group tasks, like Work or Home.'
-                  : 'Labels tag tasks across categories, like Errand or Waiting.'
+                  ? t('Categories group tasks, like Work or Home.')
+                  : t('Labels tag tasks across categories, like Errand or Waiting.')
               }
-              actionLabel={`Add ${noun}`}
+              actionLabel={t('Add {noun}', { noun: noun })}
               onAction={() => vm.startEditing(null)}
             />
           ) : (
             <NamedItemList items={vm.items} onEdit={vm.startEditing} onDelete={vm.remove} />
           )}
         </Screen>
-        <FAB icon="add" label={`Add ${noun}`} onPress={() => vm.startEditing(null)} />
+        <FAB
+          icon="add"
+          label={t('Add {noun}', { noun: noun })}
+          onPress={() => vm.startEditing(null)}
+        />
         {vm.failure ? <Snackbar message={vm.failure} onDismiss={vm.dismissFailure} /> : null}
       </View>
 
       {vm.editing ? (
         <NameColorSheet
-          title={`${vm.editing.item ? 'Edit' : 'New'} ${noun}`}
+          title={`${vm.editing.item ? t('Edit') : t('New')} ${noun}`}
           initialName={vm.editing.item?.name ?? ''}
           initialColor={vm.editing.item?.color ?? ACCENT_COLORS[0]}
           onSave={vm.save}

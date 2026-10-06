@@ -12,6 +12,7 @@ import {
   type SwipeAction,
 } from '@/components';
 import { radius, spacing, useTheme, type ColorScheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { Priority, Task } from '../../domain/entities';
 import { PRIORITY_LABEL, describeTask, formatDue, isOverdue } from '../format';
@@ -73,6 +74,7 @@ function TaskRowComponent({
   onRestore,
   onDelete,
 }: TaskRowProps) {
+  const { t } = useTranslator();
   const { colors } = useTheme();
   const done = task.completedAt !== null;
   const archived = task.archivedAt !== null;
@@ -80,7 +82,7 @@ function TaskRowComponent({
   const muted = colors.onSurfaceVariant;
 
   const deleteAction: SwipeAction = {
-    label: 'Delete',
+    label: t('Delete'),
     icon: 'delete',
     background: colors.error,
     foreground: colors.surface,
@@ -89,7 +91,7 @@ function TaskRowComponent({
   const rightActions: SwipeAction[] = archived
     ? [
         {
-          label: 'Restore',
+          label: t('Restore'),
           icon: 'unarchive',
           background: colors.primary,
           foreground: colors.onPrimary,
@@ -99,7 +101,7 @@ function TaskRowComponent({
       ]
     : [
         {
-          label: 'Archive',
+          label: t('Archive'),
           icon: 'archive',
           background: colors.secondaryContainer,
           foreground: colors.onSecondaryContainer,
@@ -111,7 +113,7 @@ function TaskRowComponent({
     ? []
     : [
         {
-          label: done ? 'Reopen' : 'Complete',
+          label: done ? t('Reopen') : t('Complete'),
           icon: done ? 'undo' : 'check',
           background: colors.success,
           foreground: colors.surface,
@@ -131,12 +133,12 @@ function TaskRowComponent({
           accessibilityLabel={describeTask(task, now)}
           accessibilityState={{ selected, checked: done }}
           accessibilityActions={[
-            { name: 'toggle', label: done ? 'Mark as not done' : 'Mark as done' },
+            { name: 'toggle', label: done ? t('Mark as not done') : t('Mark as done') },
             archived
-              ? { name: 'restore', label: 'Restore' }
-              : { name: 'archive', label: 'Archive' },
-            { name: 'delete', label: 'Delete' },
-            { name: 'select', label: 'Select' },
+              ? { name: 'restore', label: t('Restore') }
+              : { name: 'archive', label: t('Archive') },
+            { name: 'delete', label: t('Delete') },
+            { name: 'select', label: t('Select') },
           ]}
           onAccessibilityAction={({ nativeEvent }) => {
             switch (nativeEvent.actionName) {
@@ -173,14 +175,18 @@ function TaskRowComponent({
             {selecting ? (
               <Checkbox
                 checked={selected}
-                label={`Select ${task.title}`}
+                label={t('Select {title}', { title: task.title })}
                 onChange={() => onPress(task)}
               />
             ) : (
               <Checkbox
                 checked={done}
                 disabled={archived}
-                label={done ? `Mark ${task.title} as not done` : `Mark ${task.title} as done`}
+                label={
+                  done
+                    ? t('Mark {title} as not done', { title: task.title })
+                    : t('Mark {title} as done', { title: task.title })
+                }
                 onChange={() => onToggleComplete(task)}
               />
             )}
@@ -222,7 +228,7 @@ function TaskRowComponent({
               {task.reminderOffsetMinutes !== null ? (
                 <Meta
                   icon={task.isAlarm ? 'alarm' : 'notifications-none'}
-                  text={task.isAlarm ? 'Alarm' : 'Reminder'}
+                  text={task.isAlarm ? t('Alarm') : t('Reminder')}
                   color={muted}
                 />
               ) : null}
@@ -269,7 +275,10 @@ function TaskRowComponent({
                   <ProgressBar
                     height={4}
                     progress={task.subtaskDone / task.subtaskTotal}
-                    label={`${task.subtaskDone} of ${task.subtaskTotal} subtasks done`}
+                    label={t('{subtaskDone} of {subtaskTotal} subtasks done', {
+                      subtaskDone: task.subtaskDone,
+                      subtaskTotal: task.subtaskTotal,
+                    })}
                   />
                 </View>
                 <Text

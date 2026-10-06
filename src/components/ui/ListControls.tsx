@@ -1,6 +1,7 @@
 import { ScrollView, View } from 'react-native';
 
 import { spacing } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import { Chip } from './Chip';
 import { Input } from './Input';
@@ -52,6 +53,7 @@ export function ListControls<S extends string>({
   onOpenSort,
   onClear,
 }: ListControlsProps<S>) {
+  const { t } = useTranslator();
   return (
     <View style={{ gap: spacing.md, paddingHorizontal: spacing.lg, paddingTop: spacing.sm }}>
       {scopes !== undefined && scope !== undefined && onScope !== undefined ? (
@@ -78,14 +80,18 @@ export function ListControls<S extends string>({
         {onToggleSearch !== undefined ? (
           <Chip
             icon={searchOpen ? 'close' : 'search'}
-            label={searchOpen ? 'Close search' : 'Search'}
+            label={searchOpen ? t('Close search') : t('Search')}
             selected={searchOpen}
             onPress={onToggleSearch}
           />
         ) : null}
         <Chip
           icon="filter-list"
-          label={activeFilterCount > 0 ? `Filter (${activeFilterCount})` : 'Filter'}
+          label={
+            activeFilterCount > 0
+              ? t('Filter ({count})', { count: activeFilterCount })
+              : t('Filter')
+          }
           selected={activeFilterCount > 0}
           onPress={onOpenFilter}
         />
@@ -93,11 +99,14 @@ export function ListControls<S extends string>({
           <Chip
             icon={sortAscending ? 'arrow-upward' : 'arrow-downward'}
             label={sortLabel}
-            accessibilityLabel={`Sort by ${sortLabel}, ${sortAscending ? 'ascending' : 'descending'}`}
+            accessibilityLabel={t(
+              sortAscending ? 'Sort by {field}, ascending' : 'Sort by {field}, descending',
+              { field: sortLabel },
+            )}
             onPress={onOpenSort}
           />
         ) : null}
-        {isFiltering ? <Chip icon="clear" label="Clear" onPress={onClear} /> : null}
+        {isFiltering ? <Chip icon="clear" label={t('Clear')} onPress={onClear} /> : null}
       </ScrollView>
     </View>
   );

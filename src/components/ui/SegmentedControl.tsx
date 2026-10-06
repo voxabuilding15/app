@@ -1,6 +1,7 @@
 import { View } from 'react-native';
 
 import { MIN_TOUCH_TARGET, radius, useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import { PressableScale } from './PressableScale';
 import { Text } from './Text';
@@ -23,6 +24,7 @@ export function SegmentedControl<T extends string>({
   value,
   onChange,
 }: SegmentedControlProps<T>) {
+  const { t } = useTranslator();
   const { colors } = useTheme();
 
   return (
@@ -42,7 +44,7 @@ export function SegmentedControl<T extends string>({
           <PressableScale
             key={option.value}
             accessibilityRole="radio"
-            accessibilityLabel={option.label}
+            accessibilityLabel={t(option.label)}
             accessibilityState={{ selected }}
             haptic="selection"
             pressedScale={0.99}
@@ -59,7 +61,7 @@ export function SegmentedControl<T extends string>({
                 variant="labelLarge"
                 style={{ color: selected ? colors.onSecondaryContainer : colors.onSurface }}
               >
-                {option.label}
+                {t(option.label)}
               </Text>
             </View>
           </PressableScale>

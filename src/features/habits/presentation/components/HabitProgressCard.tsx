@@ -2,6 +2,7 @@ import { View } from 'react-native';
 
 import { Button, Card, NumberStepper, ProgressRing, Text } from '@/components';
 import { spacing } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import { progressFraction, type HabitSummary } from '../../domain/progress';
 import { describeProgress, describeState } from '../format';
@@ -20,9 +21,10 @@ export function HabitProgressCard({
   onSkipToday,
   onTogglePause,
 }: HabitProgressCardProps) {
+  const { t } = useTranslator();
   const { habit, current, todayCount, skippedToday, scheduledToday } = summary;
   const archived = habit.archivedAt !== null;
-  const status = habit.paused ? 'Paused' : describeState(current.state);
+  const status = habit.paused ? t('Paused') : describeState(current.state);
 
   return (
     <Card variant="elevated" style={{ gap: spacing.lg }}>
@@ -55,9 +57,9 @@ export function HabitProgressCard({
                 gap: spacing.md,
               }}
             >
-              <Text>Logged today</Text>
+              <Text>{t('Logged today')}</Text>
               <NumberStepper
-                label="Completions today"
+                label={t('Completions today')}
                 value={todayCount}
                 max={999}
                 onChange={(value) => onAdjustToday(value - todayCount)}
@@ -67,26 +69,26 @@ export function HabitProgressCard({
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
             {habit.paused ? null : (
               <Button
-                label={skippedToday ? 'Unskip today' : 'Skip today'}
+                label={skippedToday ? t('Unskip today') : t('Skip today')}
                 icon={skippedToday ? 'undo' : 'skip-next'}
                 variant="tonal"
                 onPress={onSkipToday}
                 accessibilityHint={
                   scheduledToday
-                    ? 'Excuses today so it does not break your streak'
-                    : 'Today is not a scheduled day'
+                    ? t('Excuses today so it does not break your streak')
+                    : t('Today is not a scheduled day')
                 }
               />
             )}
             <Button
-              label={habit.paused ? 'Resume habit' : 'Pause habit'}
+              label={habit.paused ? t('Resume habit') : t('Pause habit')}
               icon={habit.paused ? 'play-arrow' : 'pause'}
               variant="outlined"
               onPress={onTogglePause}
               accessibilityHint={
                 habit.paused
-                  ? 'Resumes tracking and reminders'
-                  : 'Stops tracking and reminders without breaking your streak'
+                  ? t('Resumes tracking and reminders')
+                  : t('Stops tracking and reminders without breaking your streak')
               }
             />
           </View>

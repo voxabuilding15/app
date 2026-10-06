@@ -2,6 +2,7 @@ import { View } from 'react-native';
 
 import { Button, Card, ProgressRing, SegmentedControl, Text } from '@/components';
 import { spacing, useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { TimerKind } from '../../domain/timer';
 import { KIND_LABEL, formatClockFace, speakClock } from '../format';
@@ -20,14 +21,17 @@ interface TimerCardProps {
 
 /** The countdown with its phase picker and the start, pause, resume, skip and stop controls. */
 export function TimerCard({ vm }: TimerCardProps) {
+  const { t } = useTranslator();
   const { colors } = useTheme();
   const { state } = vm;
   const { remaining, progress, position } = useCountdown(state);
   const kind = state.kind;
   const accent = kind === 'focus' ? colors.primary : colors.success;
-  const description = `${KIND_LABEL[kind]}, ${speakClock(remaining)} left${
-    state.status === 'paused' ? ', paused' : ''
-  }`;
+  const kindLabel = t(KIND_LABEL[kind]);
+  const description =
+    state.status === 'paused'
+      ? t('{kind}, {time} left, paused', { kind: kindLabel, time: speakClock(remaining) })
+      : t('{kind}, {time} left', { kind: kindLabel, time: speakClock(remaining) });
 
   return (
     <Card style={{ alignItems: 'center', gap: spacing.xl }}>
@@ -42,7 +46,7 @@ export function TimerCard({ vm }: TimerCardProps) {
       ) : (
         <Text variant="titleMedium" tone="muted" accessibilityRole="header">
           {KIND_LABEL[kind]}
-          {state.status === 'paused' ? ' · Paused' : ''}
+          {state.status === 'paused' ? t(' · Paused') : ''}
         </Text>
       )}
 
@@ -74,19 +78,29 @@ export function TimerCard({ vm }: TimerCardProps) {
       >
         {state.status === 'idle' ? (
           <Button
-            label={kind === 'focus' ? 'Start focus' : 'Start break'}
+            label={kind === 'focus' ? t('Start focus') : t('Start break')}
             icon="play-arrow"
             onPress={() => void vm.start()}
           />
         ) : (
           <>
             {state.status === 'running' ? (
-              <Button label="Pause" icon="pause" onPress={() => void vm.pause()} />
+              <Button label={t('Pause')} icon="pause" onPress={() => void vm.pause()} />
             ) : (
-              <Button label="Resume" icon="play-arrow" onPress={() => void vm.resume()} />
+              <Button label={t('Resume')} icon="play-arrow" onPress={() => void vm.resume()} />
             )}
-            <Button label="Skip" icon="skip-next" variant="tonal" onPress={() => void vm.skip()} />
-            <Button label="Stop" icon="stop" variant="outlined" onPress={() => void vm.stop()} />
+            <Button
+              label={t('Skip')}
+              icon="skip-next"
+              variant="tonal"
+              onPress={() => void vm.skip()}
+            />
+            <Button
+              label={t('Stop')}
+              icon="stop"
+              variant="outlined"
+              onPress={() => void vm.stop()}
+            />
           </>
         )}
       </View>

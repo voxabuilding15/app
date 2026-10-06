@@ -5,9 +5,11 @@ import { useNow } from '@/hooks';
 import { spacing } from '@/theme';
 
 import { addDays, startOfDay } from '@/core';
+import { useTranslator } from '@/i18n';
 import type { DueDate } from '../../domain/entities';
 import { formatDate, formatTime } from '../format';
 import type { QuickDate } from '../view-models/useTaskFormViewModel';
+import { msg } from '@/i18n/msg';
 
 interface DueSectionProps {
   due: DueDate | null;
@@ -20,9 +22,9 @@ interface DueSectionProps {
 }
 
 const QUICK: readonly { kind: QuickDate; label: string; days: number }[] = [
-  { kind: 'today', label: 'Today', days: 0 },
-  { kind: 'tomorrow', label: 'Tomorrow', days: 1 },
-  { kind: 'nextWeek', label: 'Next week', days: 7 },
+  { kind: 'today', label: msg('Today'), days: 0 },
+  { kind: 'tomorrow', label: msg('Tomorrow'), days: 1 },
+  { kind: 'nextWeek', label: msg('Next week'), days: 7 },
 ];
 
 export function DueSection({
@@ -34,12 +36,13 @@ export function DueSection({
   onClearTime,
   onClear,
 }: DueSectionProps) {
+  const { t } = useTranslator();
   const now = useNow();
   const selectedDay = due === null ? null : startOfDay(due.at);
   const isQuick = QUICK.some((q) => selectedDay === addDays(startOfDay(now), q.days));
 
   return (
-    <FormSection title="Due" error={error}>
+    <FormSection title={t('Due')} error={error}>
       <View style={WRAP_ROW}>
         {QUICK.map((q) => (
           <Chip
@@ -51,7 +54,7 @@ export function DueSection({
         ))}
         <Chip
           icon="event"
-          label={due !== null && !isQuick ? formatDate(due.at, now, true) : 'Pick date'}
+          label={due !== null && !isQuick ? formatDate(due.at, now, true) : t('Pick date')}
           selected={due !== null && !isQuick}
           onPress={onChooseDate}
         />
@@ -61,19 +64,23 @@ export function DueSection({
           <View style={WRAP_ROW}>
             <Chip
               icon="schedule"
-              label={due.hasTime ? formatTime(due.at) : 'Add time'}
+              label={due.hasTime ? formatTime(due.at) : t('Add time')}
               selected={due.hasTime}
               accessibilityLabel={
-                due.hasTime ? `Due time ${formatTime(due.at)}. Change` : 'Add due time'
+                due.hasTime
+                  ? t('Due time {time}. Change', { time: formatTime(due.at) })
+                  : t('Add due time')
               }
               onPress={onChooseTime}
             />
-            {due.hasTime ? <Chip icon="clear" label="Remove time" onPress={onClearTime} /> : null}
+            {due.hasTime ? (
+              <Chip icon="clear" label={t('Remove time')} onPress={onClearTime} />
+            ) : null}
           </View>
           <Text variant="labelSmall" tone="muted">
-            {due.hasTime ? 'Due at a specific time.' : 'Due any time that day.'}
+            {due.hasTime ? t('Due at a specific time.') : t('Due any time that day.')}
           </Text>
-          <Button label="Remove due date" variant="text" icon="clear" onPress={onClear} />
+          <Button label={t('Remove due date')} variant="text" icon="clear" onPress={onClear} />
         </View>
       ) : null}
     </FormSection>

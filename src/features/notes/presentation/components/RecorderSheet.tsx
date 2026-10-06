@@ -9,6 +9,7 @@ import { View } from 'react-native';
 
 import { Button, Sheet, Text } from '@/components';
 import { spacing } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import { formatDuration } from '../format';
 
@@ -24,6 +25,7 @@ interface RecorderSheetProps {
 
 /** Sheet that records a voice note. Mount only while open: closing it stops any recording. */
 export function RecorderSheet({ onRecorded, onClose }: RecorderSheetProps) {
+  const { t } = useTranslator();
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const [phase, setPhase] = useState<Phase>('idle');
   const [elapsed, setElapsed] = useState(0);
@@ -77,30 +79,30 @@ export function RecorderSheet({ onRecorded, onClose }: RecorderSheetProps) {
   };
 
   return (
-    <Sheet visible title="Voice recording" onClose={() => void cancel()}>
+    <Sheet visible title={t('Voice recording')} onClose={() => void cancel()}>
       <View accessibilityLiveRegion="polite" style={{ alignItems: 'center', gap: spacing.sm }}>
         <Text
           variant="headlineSmall"
-          accessibilityLabel={`Recording time ${formatDuration(elapsed)}`}
+          accessibilityLabel={t('Recording time {duration}', { duration: formatDuration(elapsed) })}
         >
           {formatDuration(elapsed)}
         </Text>
         <Text tone={phase === 'denied' || phase === 'failed' ? 'error' : 'muted'}>
           {phase === 'idle'
-            ? 'Tap Record to start.'
+            ? t('Tap Record to start.')
             : phase === 'recording'
-              ? 'Recording…'
+              ? t('Recording…')
               : phase === 'denied'
-                ? 'Allow microphone access in your phone settings to record.'
-                : "Couldn't record. Please try again."}
+                ? t('Allow microphone access in your phone settings to record.')
+                : t("Couldn't record. Please try again.")}
         </Text>
       </View>
       <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.md }}>
-        <Button label="Cancel" variant="outlined" onPress={() => void cancel()} />
+        <Button label={t('Cancel')} variant="outlined" onPress={() => void cancel()} />
         {phase === 'recording' ? (
-          <Button label="Stop and save" icon="stop" onPress={() => void finish()} />
+          <Button label={t('Stop and save')} icon="stop" onPress={() => void finish()} />
         ) : (
-          <Button label="Record" icon="mic" onPress={() => void start()} />
+          <Button label={t('Record')} icon="mic" onPress={() => void start()} />
         )}
       </View>
     </Sheet>

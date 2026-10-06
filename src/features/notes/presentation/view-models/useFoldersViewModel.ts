@@ -5,10 +5,12 @@ import type { FolderNode } from '../../domain/entities';
 import type { FolderErrors } from '../../domain/validation';
 import { useNotesModule } from '../module';
 import { useFolderTree, useInvalidateNotes } from '../queries';
+import { useTranslator } from '@/i18n';
 
 export type FolderEditing = { folder: FolderNode | null; parentId: string | null } | undefined;
 
 export function useFoldersViewModel() {
+  const { t } = useTranslator();
   const { folders: useCases } = useNotesModule();
   const invalidate = useInvalidateNotes();
   const tree = useFolderTree();
@@ -21,26 +23,26 @@ export function useFoldersViewModel() {
     async (folder: FolderNode) => {
       try {
         await useCases.remove(folder.id);
-        setNotice(`"${folder.name}" deleted. Its notes moved up one level.`);
+        setNotice(t('"{name}" deleted. Its notes moved up one level.', { name: folder.name }));
       } catch (error) {
-        setNotice(error instanceof Error ? error.message : "Couldn't delete the folder.");
+        setNotice(error instanceof Error ? error.message : t("Couldn't delete the folder."));
       }
       await invalidate();
     },
-    [useCases, invalidate],
+    [useCases, invalidate, t],
   );
 
   const confirmRemove = useCallback(
     (folder: FolderNode) =>
       Alert.alert(
-        `Delete "${folder.name}"?`,
-        'The notes and folders inside move up one level. Nothing else is deleted.',
+        t('Delete "{name}"?', { name: folder.name }),
+        t('The notes and folders inside move up one level. Nothing else is deleted.'),
         [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Delete folder', style: 'destructive', onPress: () => void remove(folder) },
+          { text: t('Cancel'), style: 'cancel' },
+          { text: t('Delete folder'), style: 'destructive', onPress: () => void remove(folder) },
         ],
       ),
-    [remove],
+    [remove, t],
   );
 
   return {
@@ -64,6 +66,7 @@ export function useFolderEditor(
   initialParentId: string | null,
   onSaved: () => void,
 ) {
+  const { t } = useTranslator();
   const { folders } = useNotesModule();
   const invalidate = useInvalidateNotes();
 
@@ -85,11 +88,11 @@ export function useFolderEditor(
       await invalidate();
       onSaved();
     } catch {
-      setFailure("Couldn't save the folder. Please try again.");
+      setFailure(t("Couldn't save the folder. Please try again."));
     } finally {
       setSaving(false);
     }
-  }, [folders, name, parentId, folder, invalidate, onSaved]);
+  }, [folders, name, parentId, folder, invalidate, onSaved, t]);
 
   return {
     name,

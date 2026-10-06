@@ -3,6 +3,7 @@ import { ActivityIndicator, ScrollView, View } from 'react-native';
 
 import { EmptyState, FAB, IconButton, Icon, Screen, Snackbar, Text } from '@/components';
 import { MIN_TOUCH_TARGET, spacing, useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { FolderNode } from '../../domain/entities';
 import { flattenFolderTree } from '../../domain/folders';
@@ -20,6 +21,7 @@ function FolderRow({
   onAddInside: () => void;
   onDelete: () => void;
 }) {
+  const { t } = useTranslator();
   const { colors } = useTheme();
   return (
     <View
@@ -46,39 +48,44 @@ function FolderRow({
       </View>
       <IconButton
         icon="create-new-folder"
-        label={`New folder inside ${folder.name}`}
+        label={t('New folder inside {name}', { name: folder.name })}
         onPress={onAddInside}
       />
-      <IconButton icon="edit" label={`Edit ${folder.name}`} onPress={onEdit} />
-      <IconButton icon="delete" label={`Delete ${folder.name}`} onPress={onDelete} />
+      <IconButton icon="edit" label={t('Edit {name}', { name: folder.name })} onPress={onEdit} />
+      <IconButton
+        icon="delete"
+        label={t('Delete {name}', { name: folder.name })}
+        onPress={onDelete}
+      />
     </View>
   );
 }
 
 /** Create, rename, move and delete folders, which can be nested. */
 export function FoldersScreen() {
+  const { t } = useTranslator();
   const { colors } = useTheme();
   const vm = useFoldersViewModel();
   const rows = flattenFolderTree(vm.tree);
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Folders' }} />
+      <Stack.Screen options={{ title: t('Folders') }} />
       <View style={{ flex: 1 }}>
         {vm.isLoading ? (
           <ActivityIndicator
             size="large"
             color={colors.primary}
-            accessibilityLabel="Loading folders"
+            accessibilityLabel={t('Loading folders')}
             style={{ marginTop: spacing.xxl }}
           />
         ) : vm.isError ? (
           <Screen>
             <EmptyState
               icon="error-outline"
-              title="Couldn't load folders"
-              message="Your notes are safe on this device. Try again."
-              actionLabel="Try again"
+              title={t("Couldn't load folders")}
+              message={t('Your notes are safe on this device. Try again.')}
+              actionLabel={t('Try again')}
               onAction={() => void vm.refetch()}
             />
           </Screen>
@@ -86,9 +93,9 @@ export function FoldersScreen() {
           <Screen>
             <EmptyState
               icon="folder-open"
-              title="No folders yet"
-              message="Folders keep related notes together, and can be nested."
-              actionLabel="Add folder"
+              title={t('No folders yet')}
+              message={t('Folders keep related notes together, and can be nested.')}
+              actionLabel={t('Add folder')}
               onAction={() => vm.startEditing(null, null)}
             />
           </Screen>
@@ -107,7 +114,7 @@ export function FoldersScreen() {
         )}
         <FAB
           icon="create-new-folder"
-          label="Add folder"
+          label={t('Add folder')}
           onPress={() => vm.startEditing(null, null)}
         />
         {vm.notice ? (

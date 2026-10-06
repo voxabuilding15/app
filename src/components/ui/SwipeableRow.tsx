@@ -5,6 +5,7 @@ import ReanimatedSwipeable, {
 } from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 import { MIN_TOUCH_TARGET, spacing } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import { Icon, type IconName } from './Icon';
 import { PressableScale } from './PressableScale';
@@ -34,13 +35,14 @@ interface ActionPanelProps {
 }
 
 function ActionPanel({ actions, onActionPress }: ActionPanelProps) {
+  const { t } = useTranslator();
   return (
     <View style={{ flexDirection: 'row' }}>
       {actions.map((action) => (
         <PressableScale
           key={action.label}
           accessibilityRole="button"
-          accessibilityLabel={action.label}
+          accessibilityLabel={t(action.label)}
           pressedScale={0.97}
           onPress={() => {
             onActionPress();

@@ -9,43 +9,61 @@ import {
   type RecurrenceUnit,
 } from '@/core';
 import { spacing } from '@/theme';
+import { useTranslator } from '@/i18n';
+import { weekdayName } from '@/i18n/formatting';
+import { msg } from '@/i18n/msg';
+import { currentTranslator } from '@/i18n/translate';
 
 import { Chip } from './Chip';
 import { WRAP_ROW } from './ChipGroup';
 import { FormSection } from './FormSection';
 import { Input } from './Input';
 import { Text } from './Text';
-import { WEEKDAY_DISPLAY_ORDER, WEEKDAY_LABELS, WeekdayChips } from './WeekdayChips';
+import { WEEKDAY_DISPLAY_ORDER, WeekdayChips } from './WeekdayChips';
 
 const PRESET_LABEL: Record<RecurrencePreset, string> = {
-  none: 'Never',
-  daily: 'Daily',
-  weekly: 'Weekly',
-  monthly: 'Monthly',
-  yearly: 'Yearly',
-  custom: 'Custom',
+  none: msg('Never'),
+  daily: msg('Daily'),
+  weekly: msg('Weekly'),
+  monthly: msg('Monthly'),
+  yearly: msg('Yearly'),
+  custom: msg('Custom'),
 };
 
 const UNIT_LABEL: Record<RecurrenceUnit, string> = {
-  day: 'Days',
-  week: 'Weeks',
-  month: 'Months',
-  year: 'Years',
+  day: msg('Days'),
+  week: msg('Weeks'),
+  month: msg('Months'),
+  year: msg('Years'),
 };
 
 /** Plain-language description such as "Daily", "Every 2 weeks on Mon, Wed" or "Yearly". */
 export function describeRecurrence(rule: RecurrenceRule): string {
+  const { t, tn } = currentTranslator();
   const { unit, interval, weekdays } = rule;
   if (unit === 'week' && weekdays !== 0) {
     const days = WEEKDAY_DISPLAY_ORDER.filter((day) => hasWeekday(weekdays, day))
-      .map((day) => WEEKDAY_LABELS[day])
-      .join(', ');
-    return interval === 1 ? `Weekly on ${days}` : `Every ${interval} weeks on ${days}`;
+      .map((day) => weekdayName(day))
+      .join(t(', '));
+    return interval === 1
+      ? t('Weekly on {days}', { days })
+      : tn(interval, 'Every {count} week on {days}', 'Every {count} weeks on {days}', { days });
   }
   if (interval === 1) {
-    return { day: 'Daily', week: 'Weekly', month: 'Monthly', year: 'Yearly' }[unit];
+    return t(
+      { day: msg('Daily'), week: msg('Weekly'), month: msg('Monthly'), year: msg('Yearly') }[unit],
+    );
   }
-  return `Every ${interval} ${unit}s`;
+  switch (unit) {
+    case 'day':
+      return tn(interval, 'Every {count} day', 'Every {count} days');
+    case 'week':
+      return tn(interval, 'Every {count} week', 'Every {count} weeks');
+    case 'month':
+      return tn(interval, 'Every {count} month', 'Every {count} months');
+    default:
+      return tn(interval, 'Every {count} year', 'Every {count} years');
+  }
 }
 
 interface CustomRecurrenceProps {
@@ -55,6 +73,7 @@ interface CustomRecurrenceProps {
 }
 
 function CustomRecurrence({ rule, units, onChange }: CustomRecurrenceProps) {
+  const { t } = useTranslator();
   const [text, setText] = useState(String(rule.interval));
 
   return (
@@ -62,7 +81,7 @@ function CustomRecurrence({ rule, units, onChange }: CustomRecurrenceProps) {
       <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: spacing.md }}>
         <View style={{ width: 96 }}>
           <Input
-            label="Every"
+            label={t('Every')}
             value={text}
             keyboardType="number-pad"
             maxLength={3}
@@ -80,7 +99,7 @@ function CustomRecurrence({ rule, units, onChange }: CustomRecurrenceProps) {
           {units.map((unit) => (
             <Chip
               key={unit}
-              label={UNIT_LABEL[unit]}
+              label={t(UNIT_LABEL[unit])}
               selected={rule.unit === unit}
               onPress={() => onChange({ unit })}
             />
@@ -90,7 +109,7 @@ function CustomRecurrence({ rule, units, onChange }: CustomRecurrenceProps) {
       {rule.unit === 'week' ? (
         <View style={{ gap: spacing.sm }}>
           <Text variant="labelSmall" tone="muted">
-            On these days (leave empty to repeat on the start date’s weekday)
+            {t('On these days (leave empty to repeat on the start date’s weekday)')}
           </Text>
           <WeekdayChips mask={rule.weekdays} onChange={(weekdays) => onChange({ weekdays })} />
         </View>
@@ -125,15 +144,16 @@ export function RepeatSection({
   hint,
   children,
 }: RepeatSectionProps) {
+  const { t } = useTranslator();
   const preset = recurrencePresetOf(rule);
 
   return (
-    <FormSection title="Repeat" error={error}>
+    <FormSection title={t('Repeat')} error={error}>
       <View style={WRAP_ROW}>
         {presets.map((option) => (
           <Chip
             key={option}
-            label={PRESET_LABEL[option]}
+            label={t(PRESET_LABEL[option])}
             selected={preset === option}
             onPress={() => onPreset(option)}
           />

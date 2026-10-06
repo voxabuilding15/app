@@ -4,6 +4,7 @@ import { Pressable, View } from 'react-native';
 import { Icon, ProgressBar, SwipeableRow, Text, type SwipeAction } from '@/components';
 import { formatMoney } from '@/core';
 import { radius, spacing, useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { BudgetProgress } from '../../domain/entities';
 import { BUDGET_PERIOD_LABEL, describeBudget, formatDayRange } from '../format';
@@ -16,6 +17,7 @@ export interface BudgetCardProps {
 }
 
 function BudgetCardComponent({ progress, currency, onPress, onDelete }: BudgetCardProps) {
+  const { t } = useTranslator();
   const { colors } = useTheme();
   const { budget, spentMinor, remainingMinor, fraction, state, phase } = progress;
 
@@ -23,7 +25,7 @@ function BudgetCardComponent({ progress, currency, onPress, onDelete }: BudgetCa
     state === 'over' ? colors.error : state === 'warning' ? colors.warning : colors.primary;
   const rightActions: SwipeAction[] = [
     {
-      label: 'Delete',
+      label: t('Delete'),
       icon: 'delete',
       background: colors.error,
       foreground: colors.surface,
@@ -33,9 +35,9 @@ function BudgetCardComponent({ progress, currency, onPress, onDelete }: BudgetCa
 
   const standing =
     remainingMinor < 0
-      ? `Over by ${formatMoney(-remainingMinor, currency)}`
-      : `${formatMoney(remainingMinor, currency)} left`;
-  const phaseNote = phase === 'upcoming' ? 'Not started' : phase === 'ended' ? 'Ended' : null;
+      ? t('Over by {money}', { money: formatMoney(-remainingMinor, currency) })
+      : t('{money} left', { money: formatMoney(remainingMinor, currency) });
+  const phaseNote = phase === 'upcoming' ? t('Not started') : phase === 'ended' ? t('Ended') : null;
 
   return (
     <View style={{ borderRadius: radius.lg, overflow: 'hidden' }}>
@@ -44,7 +46,7 @@ function BudgetCardComponent({ progress, currency, onPress, onDelete }: BudgetCa
           accessible
           accessibilityRole="button"
           accessibilityLabel={describeBudget(progress, currency)}
-          accessibilityActions={[{ name: 'delete', label: 'Delete' }]}
+          accessibilityActions={[{ name: 'delete', label: t('Delete') }]}
           onAccessibilityAction={() => onDelete(progress)}
           onPress={() => onPress(progress)}
           android_ripple={{ color: colors.outlineVariant }}
@@ -68,7 +70,7 @@ function BudgetCardComponent({ progress, currency, onPress, onDelete }: BudgetCa
             progress={fraction}
             color={barColor}
             height={10}
-            label={`${Math.round(fraction * 100)}% of the budget spent`}
+            label={t('{round}% of the budget spent', { round: Math.round(fraction * 100) })}
           />
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: spacing.md }}>
             <Text variant="bodyMedium">
@@ -94,7 +96,7 @@ function BudgetCardComponent({ progress, currency, onPress, onDelete }: BudgetCa
             </Text>
             {progress.categories.length === 0 ? (
               <Text variant="labelSmall" tone="muted">
-                All spending
+                {t('All spending')}
               </Text>
             ) : (
               progress.categories.map((category) => (

@@ -5,6 +5,7 @@ import { Alert } from 'react-native';
 import { pickDate, pickTime, showRemindersBlockedAlert } from '@/components';
 import { combineDayAndTime, startOfDay } from '@/core';
 import { useDiscardGuard, useNow } from '@/hooks';
+import { useTranslator } from '@/i18n';
 
 import { AttachmentError } from '../../domain/attachment-usecases';
 import type { Drawing } from '../../domain/drawing';
@@ -82,6 +83,7 @@ export type EditorOverlay =
 
 /** Editing state for one note. `noteId` null creates a new one on first save. */
 export function useNoteEditorViewModel(noteId: string | null, initial: NoteDraft) {
+  const { t } = useTranslator();
   const router = useRouter();
   const { notes, attachments: attachmentCases, lock, tags: tagCases } = useNotesModule();
   const invalidate = useInvalidateNotes();
@@ -184,10 +186,10 @@ export function useNoteEditorViewModel(noteId: string | null, initial: NoteDraft
         update({ tagIds: [...draft.tagIds, result.id] });
         return null;
       } catch {
-        return "Couldn't save. Please try again.";
+        return t("Couldn't save. Please try again.");
       }
     },
-    [tagCases, invalidate, update, draft.tagIds],
+    [tagCases, invalidate, update, draft.tagIds, t],
   );
 
   const pickReminderDay = useCallback(async () => {
@@ -249,13 +251,13 @@ export function useNoteEditorViewModel(noteId: string | null, initial: NoteDraft
         }
         return result.id;
       } catch {
-        setSaveError("Couldn't save the note. Please try again.");
+        setSaveError(t("Couldn't save the note. Please try again."));
         return null;
       } finally {
         setSaving(false);
       }
     },
-    [saving, notes, draft, id, invalidate, finish],
+    [saving, notes, draft, id, invalidate, finish, t],
   );
 
   /** Attachments belong to a saved note, so a brand-new note is saved first. */
@@ -264,17 +266,17 @@ export function useNoteEditorViewModel(noteId: string | null, initial: NoteDraft
       return id;
     }
     if (draft.title.trim() === '' && draft.body.trim() === '') {
-      update({ title: 'Untitled' });
-      const result = await notes.save({ ...draft, title: 'Untitled' }, null);
+      update({ title: t('Untitled') });
+      const result = await notes.save({ ...draft, title: t('Untitled') }, null);
       if (!result.ok) {
         return null;
       }
       setId(result.id);
-      setBaseline(JSON.stringify({ ...draft, title: 'Untitled' }));
+      setBaseline(JSON.stringify({ ...draft, title: t('Untitled') }));
       return result.id;
     }
     return save(false);
-  }, [id, draft, notes, save, update]);
+  }, [id, draft, notes, save, update, t]);
 
   // --- Attachments -----------------------------------------------------------------------------
 
@@ -289,14 +291,14 @@ export function useNoteEditorViewModel(noteId: string | null, initial: NoteDraft
         }
       } catch (error) {
         setAttachmentError(
-          error instanceof AttachmentError ? error.message : "Couldn't add the attachment.",
+          error instanceof AttachmentError ? error.message : t("Couldn't add the attachment."),
         );
       } finally {
         setAttaching(false);
         await invalidate();
       }
     },
-    [ensureSaved, invalidate],
+    [ensureSaved, invalidate, t],
   );
 
   const addAttachment = useCallback(
@@ -354,19 +356,23 @@ export function useNoteEditorViewModel(noteId: string | null, initial: NoteDraft
 
   const removeAttachment = useCallback(
     (attachment: Attachment) =>
-      Alert.alert(`Remove ${attachment.name}?`, 'The file is deleted from this note.', [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Remove',
-          style: 'destructive',
-          onPress: () =>
-            void attachmentCases
-              .remove(attachment.id)
-              .catch(() => setAttachmentError("Couldn't remove the attachment."))
-              .finally(() => void invalidate()),
-        },
-      ]),
-    [attachmentCases, invalidate],
+      Alert.alert(
+        t('Remove {name}?', { name: attachment.name }),
+        t('The file is deleted from this note.'),
+        [
+          { text: t('Cancel'), style: 'cancel' },
+          {
+            text: t('Remove'),
+            style: 'destructive',
+            onPress: () =>
+              void attachmentCases
+                .remove(attachment.id)
+                .catch(() => setAttachmentError(t("Couldn't remove the attachment.")))
+                .finally(() => void invalidate()),
+          },
+        ],
+      ),
+    [attachmentCases, invalidate, t],
   );
 
   // --- Note actions ----------------------------------------------------------------------------
@@ -380,9 +386,9 @@ export function useNoteEditorViewModel(noteId: string | null, initial: NoteDraft
       await invalidate();
       finish();
     } catch {
-      setSaveError("Couldn't archive the note.");
+      setSaveError(t("Couldn't archive the note."));
     }
-  }, [id, notes, invalidate, finish]);
+  }, [id, notes, invalidate, finish, t]);
 
   const trash = useCallback(async () => {
     if (id === null) {
@@ -393,9 +399,9 @@ export function useNoteEditorViewModel(noteId: string | null, initial: NoteDraft
       await invalidate();
       finish();
     } catch {
-      setSaveError("Couldn't move the note to the trash.");
+      setSaveError(t("Couldn't move the note to the trash."));
     }
-  }, [id, notes, invalidate, finish]);
+  }, [id, notes, invalidate, finish, t]);
 
   const restore = useCallback(async () => {
     if (id === null) {
@@ -407,17 +413,17 @@ export function useNoteEditorViewModel(noteId: string | null, initial: NoteDraft
       await invalidate();
       finish();
     } catch {
-      setSaveError("Couldn't restore the note.");
+      setSaveError(t("Couldn't restore the note."));
     }
-  }, [id, notes, invalidate, finish]);
+  }, [id, notes, invalidate, finish, t]);
 
   const confirmTrash = useCallback(
     () =>
-      Alert.alert('Move to the trash?', 'You can restore it from the trash for 30 days.', [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Move to trash', style: 'destructive', onPress: () => void trash() },
+      Alert.alert(t('Move to the trash?'), t('You can restore it from the trash for 30 days.'), [
+        { text: t('Cancel'), style: 'cancel' },
+        { text: t('Move to trash'), style: 'destructive', onPress: () => void trash() },
       ]),
-    [trash],
+    [trash, t],
   );
 
   return {

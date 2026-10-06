@@ -29,6 +29,7 @@ import {
   type EventDraft,
   type EventDraftErrors,
 } from './validation';
+import { currentTranslator } from '@/i18n/translate';
 
 export type ReminderStatus = 'none' | 'scheduled' | 'blocked';
 
@@ -109,6 +110,7 @@ export function createCalendarUseCases({
   reminders,
   clock,
 }: CalendarUseCaseDeps) {
+  const { t } = currentTranslator();
   /** Brings the scheduled notifications in line with an event's upcoming occurrences. */
   async function syncReminders(entry: EventEntry): Promise<ReminderStatus> {
     await reminders.cancel(entry.notificationIds);
@@ -141,7 +143,7 @@ export function createCalendarUseCases({
         eventId: event.id,
         occurrenceDate: occurrence.occurrenceDate,
         title: event.title,
-        body: event.location || (offset === 0 ? 'Starting now' : 'Coming up'),
+        body: event.location || (offset === 0 ? t('Starting now') : t('Coming up')),
         fireAt,
       })),
     );
@@ -161,7 +163,7 @@ export function createCalendarUseCases({
   async function requireEntry(id: string): Promise<EventEntry> {
     const entry = await events.get(id);
     if (entry === null) {
-      throw new Error('This event no longer exists.');
+      throw new Error(t('This event no longer exists.'));
     }
     return entry;
   }
@@ -191,7 +193,7 @@ export function createCalendarUseCases({
   ): Promise<string> {
     const occurrence = occurrenceForDay(entry, occurrenceDate);
     if (occurrence === null) {
-      throw new Error('This occurrence no longer exists.');
+      throw new Error(t('This occurrence no longer exists.'));
     }
     await events.addException(entry.event.id, occurrenceDate);
     const id = createId();
@@ -295,7 +297,7 @@ export function createCalendarUseCases({
           // Editing every occurrence: apply the change in day and time to the whole series.
           const occurrence = occurrenceForDay(entry, target.occurrenceDate);
           if (occurrence === null) {
-            throw new Error('This occurrence no longer exists.');
+            throw new Error(t('This occurrence no longer exists.'));
           }
           const shift: TimeShift = {
             days: daysBetweenKeys(target.occurrenceDate, toDateKey(normalized.start)),
@@ -338,7 +340,7 @@ export function createCalendarUseCases({
       if (entry.event.recurrence !== null && scope === 'this') {
         const occurrence = occurrenceForDay(entry, occurrenceDate);
         if (occurrence === null) {
-          throw new Error('This occurrence no longer exists.');
+          throw new Error(t('This occurrence no longer exists.'));
         }
         const start = shiftTime(occurrence.start, shift);
         touched.push(

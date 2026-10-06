@@ -3,6 +3,7 @@ import { createContext, useContext, type PropsWithChildren } from 'react';
 import type { Authenticator } from '../lock';
 import type { Clock, Database, FileService, KeyValueStorage, NotificationService } from '../ports';
 import type { CategoryKind, CategoryRepository } from '../taxonomy';
+import { useTranslator } from '@/i18n';
 
 export interface Container {
   clock: Clock;
@@ -26,9 +27,10 @@ export function ContainerProvider({ container, children }: ContainerProviderProp
 }
 
 export function useContainer(): Container {
+  const { t } = useTranslator();
   const container = useContext(ContainerContext);
   if (container === null) {
-    throw new Error('useContainer must be used inside ContainerProvider');
+    throw new Error(t('useContainer must be used inside ContainerProvider'));
   }
   return container;
 }

@@ -15,6 +15,7 @@ import {
 } from '@/components';
 import { useNow } from '@/hooks';
 import { spacing, useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { NoteSummary } from '../../domain/entities';
 import { NO_FOLDER } from '../../domain/filters';
@@ -31,13 +32,14 @@ function columnsFor(width: number): number {
 }
 
 function EmptyNotes({ vm, onAdd }: { vm: NoteListViewModel; onAdd: () => void }) {
+  const { t } = useTranslator();
   if (vm.isFiltering) {
     return (
       <EmptyState
         icon="search-off"
-        title="No matching notes"
-        message="Nothing matches your search and filters."
-        actionLabel="Clear search and filters"
+        title={t('No matching notes')}
+        message={t('Nothing matches your search and filters.')}
+        actionLabel={t('Clear search and filters')}
         onAction={vm.clearFilters}
       />
     );
@@ -47,33 +49,35 @@ function EmptyNotes({ vm, onAdd }: { vm: NoteListViewModel; onAdd: () => void })
       return (
         <EmptyState
           icon="star-border"
-          title="No favorites yet"
-          message="Star a note to find it here quickly."
+          title={t('No favorites yet')}
+          message={t('Star a note to find it here quickly.')}
         />
       );
     case 'archived':
       return (
         <EmptyState
           icon="inventory-2"
-          title="Nothing archived"
-          message="Archive notes you want out of the way but don't want to delete."
+          title={t('Nothing archived')}
+          message={t("Archive notes you want out of the way but don't want to delete.")}
         />
       );
     case 'trash':
       return (
         <EmptyState
           icon="delete-outline"
-          title="The trash is empty"
-          message="Deleted notes stay here for 30 days before they are removed for good."
+          title={t('The trash is empty')}
+          message={t('Deleted notes stay here for 30 days before they are removed for good.')}
         />
       );
     default:
       return (
         <EmptyState
           icon="sticky-note-2"
-          title="No notes yet"
-          message="Write a note, make a checklist, or attach an image, a PDF or a voice recording."
-          actionLabel="Add note"
+          title={t('No notes yet')}
+          message={t(
+            'Write a note, make a checklist, or attach an image, a PDF or a voice recording.',
+          )}
+          actionLabel={t('Add note')}
           onAction={onAdd}
         />
       );
@@ -82,6 +86,7 @@ function EmptyNotes({ vm, onAdd }: { vm: NoteListViewModel; onAdd: () => void })
 
 /** The notes list: scopes, search, filters, sorting, and quick actions on every note. */
 export function NotesScreen() {
+  const { t } = useTranslator();
   const vm = useNoteListViewModel();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -137,14 +142,22 @@ export function NotesScreen() {
 
   return (
     <View style={{ flex: 1, paddingTop: insets.top, backgroundColor: colors.background }}>
-      <ScreenToolbar title="Notes">
+      <ScreenToolbar title={t('Notes')}>
         <IconButton
           icon="folder"
-          label="Manage folders"
+          label={t('Manage folders')}
           onPress={() => router.push('/notes/folders')}
         />
-        <IconButton icon="label" label="Manage tags" onPress={() => router.push('/notes/tags')} />
-        <IconButton icon="lock" label="Lock settings" onPress={() => router.push('/notes/lock')} />
+        <IconButton
+          icon="label"
+          label={t('Manage tags')}
+          onPress={() => router.push('/notes/tags')}
+        />
+        <IconButton
+          icon="lock"
+          label={t('Lock settings')}
+          onPress={() => router.push('/notes/lock')}
+        />
       </ScreenToolbar>
       <ListControls
         scopes={SCOPES}
@@ -154,8 +167,8 @@ export function NotesScreen() {
         onToggleSearch={vm.toggleSearch}
         searchText={vm.searchText}
         onSearchText={vm.setSearchText}
-        searchLabel="Search notes"
-        searchPlaceholder="Title, text or tag"
+        searchLabel={t('Search notes')}
+        searchPlaceholder={t('Title, text or tag')}
         activeFilterCount={vm.activeFilterCount}
         isFiltering={vm.isFiltering}
         onOpenFilter={() => setFilterOpen(true)}
@@ -170,7 +183,8 @@ export function NotesScreen() {
         renderItem={renderNote}
         extraData={scope}
         columnsFor={columnsFor}
-        noun="notes"
+        loadingLabel={t('Loading notes')}
+        errorTitle={t("Couldn't load notes")}
         isLoading={vm.isLoading}
         isError={vm.isError}
         onRetry={() => void vm.refetch()}
@@ -179,16 +193,16 @@ export function NotesScreen() {
           scope === 'trash' && vm.notes.length > 0 ? (
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md }}>
               <Text variant="bodyMedium" tone="muted" style={{ flex: 1 }}>
-                Notes in the trash are deleted for good after 30 days.
+                {t('Notes in the trash are deleted for good after 30 days.')}
               </Text>
-              <Button label="Empty trash" variant="outlined" onPress={vm.emptyTrash} />
+              <Button label={t('Empty trash')} variant="outlined" onPress={vm.emptyTrash} />
             </View>
           ) : null
         }
         isRefreshing={vm.isRefreshing}
         onRefresh={() => void vm.refetch()}
         onEndReached={vm.loadMore}
-        fab={scope === 'trash' ? undefined : { label: 'Add note', onPress: openNew }}
+        fab={scope === 'trash' ? undefined : { label: t('Add note'), onPress: openNew }}
         notice={vm.notice}
         onDismissNotice={vm.dismissNotice}
       />
@@ -204,7 +218,7 @@ export function NotesScreen() {
       />
       <SortSheet
         visible={sortOpen}
-        title="Sort notes"
+        title={t('Sort notes')}
         fields={SORT_FIELDS.map((value) => ({ value, label: sortLabel(value) }))}
         sort={vm.sort}
         onChange={vm.changeSort}

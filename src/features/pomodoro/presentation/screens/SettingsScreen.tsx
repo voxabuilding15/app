@@ -11,6 +11,7 @@ import {
   SwitchRow,
   Text,
 } from '@/components';
+import { useTranslator } from '@/i18n';
 
 import { AMBIENT_SOUNDS, SETTING_RANGES } from '../../domain/settings';
 import { MinutesField } from '../components/MinutesField';
@@ -44,6 +45,7 @@ function StepperRow({
 
 /** Durations, automation, sounds, alerts and goals. Changes apply as they are made. */
 export function SettingsScreen() {
+  const { t } = useTranslator();
   const router = useRouter();
   const { settings, errors, update, notifications } = useSettingsViewModel();
   const { focusMinutes, shortBreakMinutes, longBreakMinutes, sessionsUntilLongBreak } =
@@ -51,59 +53,59 @@ export function SettingsScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Pomodoro settings' }} />
+      <Stack.Screen options={{ title: t('Pomodoro settings') }} />
       <Screen>
-        <FormSection title="Durations">
+        <FormSection title={t('Durations')}>
           <StepperRow
-            title="Focus"
-            label="Focus minutes"
+            title={t('Focus')}
+            label={t('Focus minutes')}
             value={settings.focusMinutes}
             {...focusMinutes}
             onChange={(value) => void update({ focusMinutes: value })}
           />
           <StepperRow
-            title="Short break"
-            label="Short break minutes"
+            title={t('Short break')}
+            label={t('Short break minutes')}
             value={settings.shortBreakMinutes}
             {...shortBreakMinutes}
             onChange={(value) => void update({ shortBreakMinutes: value })}
           />
           <StepperRow
-            title="Long break"
-            label="Long break minutes"
+            title={t('Long break')}
+            label={t('Long break minutes')}
             value={settings.longBreakMinutes}
             {...longBreakMinutes}
             onChange={(value) => void update({ longBreakMinutes: value })}
           />
           <StepperRow
-            title="Sessions before a long break"
-            label="Sessions before a long break"
+            title={t('Sessions before a long break')}
+            label={t('Sessions before a long break')}
             value={settings.sessionsUntilLongBreak}
             {...sessionsUntilLongBreak}
             onChange={(value) => void update({ sessionsUntilLongBreak: value })}
           />
           <Text variant="labelSmall" tone="muted">
-            Durations are in minutes. A running session keeps the length it started with.
+            {t('Durations are in minutes. A running session keeps the length it started with.')}
           </Text>
         </FormSection>
 
-        <FormSection title="Automation">
+        <FormSection title={t('Automation')}>
           <SwitchRow
-            title="Start breaks automatically"
-            subtitle="A break begins as soon as a focus session ends"
+            title={t('Start breaks automatically')}
+            subtitle={t('A break begins as soon as a focus session ends')}
             value={settings.autoStartBreaks}
             onChange={(value) => void update({ autoStartBreaks: value })}
           />
           <SwitchRow
-            title="Start focus automatically"
-            subtitle="The next focus session begins as soon as a break ends"
+            title={t('Start focus automatically')}
+            subtitle={t('The next focus session begins as soon as a break ends')}
             value={settings.autoStartFocus}
             onChange={(value) => void update({ autoStartFocus: value })}
           />
         </FormSection>
 
-        <FormSection title="Sounds and alerts">
-          <ChipGroup title="Ambient sound during focus">
+        <FormSection title={t('Sounds and alerts')}>
+          <ChipGroup title={t('Ambient sound during focus')}>
             {AMBIENT_SOUNDS.map((sound) => (
               <Chip
                 key={sound}
@@ -115,31 +117,36 @@ export function SettingsScreen() {
             ))}
           </ChipGroup>
           <SwitchRow
-            title="Tick sound"
-            subtitle="A soft tick every second while you focus"
+            title={t('Tick sound')}
+            subtitle={t('A soft tick every second while you focus')}
             value={settings.tickSound}
             onChange={(value) => void update({ tickSound: value })}
           />
           <SwitchRow
-            title="Vibrate"
-            subtitle="Vibrate when a phase ends while the app is open"
+            title={t('Vibrate')}
+            subtitle={t('Vibrate when a phase ends while the app is open')}
             value={settings.vibrate}
             onChange={(value) => void update({ vibrate: value })}
           />
           <SwitchRow
-            title="Exact alarm"
-            subtitle="Ring through the alarm channel at the exact moment a phase ends, even in Do Not Disturb"
+            title={t('Exact alarm')}
+            subtitle={t(
+              'Ring through the alarm channel at the exact moment a phase ends, even in Do Not Disturb',
+            )}
             value={settings.exactAlarm}
             onChange={(value) => void update({ exactAlarm: value })}
           />
           {notifications.state === 'granted' ? null : (
             <>
               <Text variant="bodyMedium" tone="error">
-                Notifications are off, so the timer cannot alert you or show its controls when the
-                app is closed.
+                {t(
+                  'Notifications are off, so the timer cannot alert you or show its controls when the app is closed.',
+                )}
               </Text>
               <Button
-                label={notifications.state === 'denied' ? 'Open settings' : 'Allow notifications'}
+                label={
+                  notifications.state === 'denied' ? t('Open settings') : t('Allow notifications')
+                }
                 variant="tonal"
                 onPress={() => void notifications.request()}
               />
@@ -147,35 +154,35 @@ export function SettingsScreen() {
           )}
         </FormSection>
 
-        <FormSection title="Goals">
+        <FormSection title={t('Goals')}>
           <MinutesField
-            label="Daily goal (minutes of focus)"
+            label={t('Daily goal (minutes of focus)')}
             value={settings.dailyGoalMinutes}
             error={errors.dailyGoalMinutes}
             onCommit={(value) => void update({ dailyGoalMinutes: value })}
           />
           <MinutesField
-            label="Weekly goal (minutes of focus)"
+            label={t('Weekly goal (minutes of focus)')}
             value={settings.weeklyGoalMinutes}
             error={errors.weeklyGoalMinutes}
             onCommit={(value) => void update({ weeklyGoalMinutes: value })}
           />
           <MinutesField
-            label="Monthly goal (minutes of focus)"
+            label={t('Monthly goal (minutes of focus)')}
             value={settings.monthlyGoalMinutes}
             error={errors.monthlyGoalMinutes}
             onCommit={(value) => void update({ monthlyGoalMinutes: value })}
           />
           <Text variant="labelSmall" tone="muted">
-            Use 0 to turn a goal off.
+            {t('Use 0 to turn a goal off.')}
           </Text>
         </FormSection>
 
-        <FormSection title="Tags">
+        <FormSection title={t('Tags')}>
           <ListItem
             icon="sell"
-            title="Session tags"
-            subtitle="Create the tags you can add to focus sessions"
+            title={t('Session tags')}
+            subtitle={t('Create the tags you can add to focus sessions')}
             onPress={() => router.push('/pomodoro/tags')}
           />
         </FormSection>

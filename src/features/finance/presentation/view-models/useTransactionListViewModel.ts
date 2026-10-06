@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import { useDebouncedValue, useNotice, useUndoableDelete } from '@/hooks';
+import { useTranslator } from '@/i18n';
 
 import type { Transaction } from '../../domain/entities';
 import {
@@ -30,6 +31,7 @@ interface TransactionListOptions {
 }
 
 export function useTransactionListViewModel({ initialAccountId, onOpen }: TransactionListOptions) {
+  const { t } = useTranslator();
   const { transactions: useCases } = useFinanceModule();
   const invalidate = useInvalidateFinance();
   const { notice, show, dismiss } = useNotice();
@@ -90,7 +92,11 @@ export function useTransactionListViewModel({ initialAccountId, onOpen }: Transa
   }, [list.isFetching, items.length, limit]);
 
   const remove = useUndoableDelete({
-    noun: 'Transaction',
+    messages: {
+      deleted: t('Transaction deleted'),
+      restoreFailed: t("Couldn't restore the transaction"),
+      deleteFailed: t("Couldn't delete the transaction"),
+    },
     remove: useCases.remove,
     restore: useCases.restore,
     onChanged: invalidate,
@@ -102,19 +108,19 @@ export function useTransactionListViewModel({ initialAccountId, onOpen }: Transa
       try {
         const id = await useCases.duplicate(item.id);
         show({
-          message: 'Transaction duplicated',
-          actionLabel: 'Edit',
+          message: t('Transaction duplicated'),
+          actionLabel: t('Edit'),
           onAction: () => {
             show(null);
             onOpen(id);
           },
         });
       } catch {
-        show({ message: "Couldn't duplicate the transaction" });
+        show({ message: t("Couldn't duplicate the transaction") });
       }
       await invalidate();
     },
-    [useCases, show, onOpen, invalidate],
+    [useCases, show, onOpen, invalidate, t],
   );
 
   return {

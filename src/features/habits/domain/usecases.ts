@@ -20,6 +20,7 @@ import {
   type HabitDraft,
   type HabitDraftErrors,
 } from './validation';
+import { currentTranslator } from '@/i18n/translate';
 
 export type ReminderStatus = 'none' | 'scheduled' | 'blocked';
 
@@ -46,6 +47,7 @@ function parseTime(time: string): { hour: number; minute: number } {
 }
 
 export function createHabitUseCases({ habits, categories, reminders, clock }: HabitUseCaseDeps) {
+  const { t } = currentTranslator();
   const today = (): DateKey => toDateKey(clock.now());
 
   /** Brings the scheduled notifications in line with the habit's current state. */
@@ -60,7 +62,7 @@ export function createHabitUseCases({ habits, categories, reminders, clock }: Ha
     const outcome = await reminders.schedule({
       habitId: habit.id,
       title: habit.name,
-      body: 'Time for your habit. Keep your streak going.',
+      body: t('Time for your habit. Keep your streak going.'),
       ...parseTime(habit.reminderTime),
       weekdays: reminderWeekdays(habit),
     });
@@ -135,7 +137,7 @@ export function createHabitUseCases({ habits, categories, reminders, clock }: Ha
 
       const existing = id === null ? null : await habits.get(id);
       if (id !== null && existing === null) {
-        throw new Error('This habit no longer exists.');
+        throw new Error(t('This habit no longer exists.'));
       }
 
       const habitId = existing?.habit.id ?? createId();

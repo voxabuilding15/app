@@ -1,4 +1,4 @@
-/** XP needed to reach `level`: 100, 300, 600, 1000 ... (50 × (level − 1) × level). */
+import { msg } from '@/i18n/msg'; /** XP needed to reach `level`: 100, 300, 600, 1000 ... (50 × (level − 1) × level). */
 export function xpForLevel(level: number): number {
   return 50 * (level - 1) * level;
 }
@@ -31,12 +31,12 @@ export function levelForXp(xp: number): LevelProgress {
 
 /** Rank names for ranges of levels. */
 const TITLES: readonly { from: number; title: string }[] = [
-  { from: 1, title: 'Beginner' },
-  { from: 5, title: 'Apprentice' },
-  { from: 10, title: 'Achiever' },
-  { from: 20, title: 'Expert' },
-  { from: 35, title: 'Master' },
-  { from: 50, title: 'Legend' },
+  { from: 1, title: msg('Beginner') },
+  { from: 5, title: msg('Apprentice') },
+  { from: 10, title: msg('Achiever') },
+  { from: 20, title: msg('Expert') },
+  { from: 35, title: msg('Master') },
+  { from: 50, title: msg('Legend') },
 ];
 
 export function levelTitle(level: number): string {

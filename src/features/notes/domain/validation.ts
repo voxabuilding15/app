@@ -1,3 +1,4 @@
+import { currentTranslator } from '@/i18n/translate';
 export const TITLE_MAX_LENGTH = 200;
 export const BODY_MAX_LENGTH = 100_000;
 export const FOLDER_NAME_MAX_LENGTH = 40;
@@ -36,18 +37,21 @@ export function emptyNoteDraft(folderId: string | null = null): NoteDraft {
 }
 
 export function validateNote(draft: NoteDraft): NoteErrors {
+  const { t } = currentTranslator();
   const errors: NoteErrors = {};
   if (draft.title.length > TITLE_MAX_LENGTH) {
-    errors.title = `Titles can have up to ${TITLE_MAX_LENGTH} characters`;
+    errors.title = t('Titles can have up to {max} characters', { max: TITLE_MAX_LENGTH });
   }
   if (draft.body.length > BODY_MAX_LENGTH) {
-    errors.body = `Notes can have up to ${BODY_MAX_LENGTH.toLocaleString('en-US')} characters`;
+    errors.body = t('Notes can have up to {localeString} characters', {
+      localeString: BODY_MAX_LENGTH.toLocaleString('en-US'),
+    });
   }
   if (draft.color !== null && !COLOR.test(draft.color)) {
-    errors.color = 'Choose a valid color';
+    errors.color = t('Choose a valid color');
   }
   if (draft.reminderAt !== null && !Number.isFinite(draft.reminderAt)) {
-    errors.reminder = 'Choose a valid time';
+    errors.reminder = t('Choose a valid time');
   }
   return errors;
 }
@@ -63,12 +67,13 @@ export interface FolderErrors {
 }
 
 export function validateFolder(draft: FolderDraft): FolderErrors {
+  const { t } = currentTranslator();
   const errors: FolderErrors = {};
   const name = draft.name.trim();
   if (name.length === 0) {
-    errors.name = 'Enter a name';
+    errors.name = t('Enter a name');
   } else if (name.length > FOLDER_NAME_MAX_LENGTH) {
-    errors.name = `Use ${FOLDER_NAME_MAX_LENGTH} characters or fewer`;
+    errors.name = t('Use {max} characters or fewer', { max: FOLDER_NAME_MAX_LENGTH });
   }
   return errors;
 }

@@ -1,11 +1,13 @@
 import { addDays, startOfDay } from '@/core';
 import type { DueDate, Priority, Task } from '../domain/entities';
 import { describeRecurrence } from '@/components';
+import { msg } from '@/i18n/msg';
+import { currentTranslator } from '@/i18n/translate';
 
 export const PRIORITY_LABEL: Record<Priority, string> = {
-  low: 'Low',
-  medium: 'Medium',
-  high: 'High',
+  low: msg('Low'),
+  medium: msg('Medium'),
+  high: msg('High'),
 };
 
 export function formatTime(at: number): string {
@@ -13,16 +15,17 @@ export function formatTime(at: number): string {
 }
 
 export function formatDate(at: number, now: number, withYear = false): string {
+  const { t } = currentTranslator();
   const today = startOfDay(now);
   const day = startOfDay(at);
   if (day === today) {
-    return 'Today';
+    return t('Today');
   }
   if (day === addDays(today, 1)) {
-    return 'Tomorrow';
+    return t('Tomorrow');
   }
   if (day === addDays(today, -1)) {
-    return 'Yesterday';
+    return t('Yesterday');
   }
   const sameYear = new Date(at).getFullYear() === new Date(now).getFullYear();
   return new Date(at).toLocaleDateString(undefined, {

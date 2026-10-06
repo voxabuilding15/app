@@ -11,6 +11,7 @@ import {
 } from '@/components';
 import { toDateKey } from '@/core';
 import { spacing } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { EventRecurrence } from '../../domain/entities';
 import { MAX_OCCURRENCE_COUNT, type EventDraft } from '../../domain/validation';
@@ -39,6 +40,7 @@ function TimeRow({
   onPickDay: () => void;
   onPickTime: () => void;
 }) {
+  const { t } = useTranslator();
   return (
     <View style={{ gap: spacing.xs }}>
       <Text variant="labelSmall" tone="muted">
@@ -49,7 +51,10 @@ function TimeRow({
           icon="event"
           label={dayLabel}
           selected
-          accessibilityLabel={`${label} date ${dayLabel}. Change`}
+          accessibilityLabel={t('{label} date {dayLabel}. Change', {
+            label: label,
+            dayLabel: dayLabel,
+          })}
           onPress={onPickDay}
         />
         {timeLabel !== null ? (
@@ -57,7 +62,10 @@ function TimeRow({
             icon="schedule"
             label={timeLabel}
             selected
-            accessibilityLabel={`${label} time ${timeLabel}. Change`}
+            accessibilityLabel={t('{label} time {timeLabel}. Change', {
+              label: label,
+              timeLabel: timeLabel,
+            })}
             onPress={onPickTime}
           />
         ) : null}
@@ -67,21 +75,22 @@ function TimeRow({
 }
 
 export function EventTimeSection({ draft, error, onAllDay, onPick }: EventTimeSectionProps) {
+  const { t } = useTranslator();
   // An all-day event's stored end is midnight after its last day, so show the last day itself.
   const endMs = draft.allDay ? draft.end - 1 : draft.end;
 
   return (
-    <FormSection title="When" error={error}>
-      <SwitchRow title="All day" value={draft.allDay} onChange={onAllDay} />
+    <FormSection title={t('When')} error={error}>
+      <SwitchRow title={t('All day')} value={draft.allDay} onChange={onAllDay} />
       <TimeRow
-        label="Starts"
+        label={t('Starts')}
         dayLabel={formatDayShort(toDateKey(draft.start))}
         timeLabel={draft.allDay ? null : formatTime(draft.start)}
         onPickDay={() => onPick('startDay')}
         onPickTime={() => onPick('startTime')}
       />
       <TimeRow
-        label="Ends"
+        label={t('Ends')}
         dayLabel={formatDayShort(toDateKey(endMs))}
         timeLabel={draft.allDay ? null : formatTime(draft.end)}
         onPickDay={() => onPick('endDay')}
@@ -107,12 +116,17 @@ export function RepeatEndControls({
   onChooseUntil,
   onCount,
 }: RepeatEndControlsProps) {
+  const { t } = useTranslator();
   return (
-    <ChipGroup title="Ends">
-      <Chip label="Never" selected={repeatEnd === 'never'} onPress={() => onEnd('never')} />
-      <Chip label="On a date" selected={repeatEnd === 'until'} onPress={() => onEnd('until')} />
+    <ChipGroup title={t('Ends')}>
+      <Chip label={t('Never')} selected={repeatEnd === 'never'} onPress={() => onEnd('never')} />
       <Chip
-        label="After a number"
+        label={t('On a date')}
+        selected={repeatEnd === 'until'}
+        onPress={() => onEnd('until')}
+      />
+      <Chip
+        label={t('After a number')}
         selected={repeatEnd === 'count'}
         onPress={() => onEnd('count')}
       />
@@ -121,13 +135,15 @@ export function RepeatEndControls({
           icon="event"
           label={formatDayShort(rule.until)}
           selected
-          accessibilityLabel={`Repeat ends ${formatDayShort(rule.until)}. Change`}
+          accessibilityLabel={t('Repeat ends {dayShort}. Change', {
+            dayShort: formatDayShort(rule.until),
+          })}
           onPress={onChooseUntil}
         />
       ) : null}
       {repeatEnd === 'count' && rule.count ? (
         <NumberStepper
-          label="Number of repeats"
+          label={t('Number of repeats')}
           value={rule.count}
           min={1}
           max={MAX_OCCURRENCE_COUNT}

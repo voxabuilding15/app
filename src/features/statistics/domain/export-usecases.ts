@@ -4,6 +4,7 @@ import { reportToCsv } from './export-csv';
 import { reportToPdf } from './export-pdf';
 import type { Words } from './summary';
 import type { StatsReport } from './usecases';
+import { currentTranslator } from '@/i18n/translate';
 
 export type ExportFormat = 'csv' | 'pdf';
 
@@ -24,6 +25,7 @@ interface ExportDeps {
 const KEEP_EXPORTS = 10;
 
 export function createExportUseCases({ files, clock }: ExportDeps) {
+  const { t } = currentTranslator();
   return {
     async exportReport(
       report: StatsReport,
@@ -41,7 +43,7 @@ export function createExportUseCases({ files, clock }: ExportDeps) {
       const old = (await files.list('cache', 'exports')).slice(KEEP_EXPORTS);
       await Promise.all(old.map((entry) => files.remove('cache', entry.path)));
 
-      const shared = await files.share(file, MIME[format], words.t('Share statistics'));
+      const shared = await files.share(file, MIME[format], words.t(t('Share statistics')));
       return { file, shared };
     },
   };

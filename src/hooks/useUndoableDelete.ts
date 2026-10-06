@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { useTranslator } from '@/i18n';
 
 export interface Notice {
   message: string;
@@ -14,10 +15,8 @@ export function useNotice() {
 }
 
 interface UndoableDeleteOptions<T> {
-  /** What was deleted, e.g. "Transaction": the message reads "Transaction deleted". */
-  noun: string;
-  /** Replaces "<noun> deleted", e.g. for moving something to the trash. */
-  deletedMessage?: string;
+  /** The messages, already translated: what was deleted, and what went wrong. */
+  messages: { deleted: string; restoreFailed: string; deleteFailed: string };
   /** Deletes the item and returns it, so it can be put back. */
   remove: (id: string) => Promise<T>;
   restore: (item: T) => Promise<void>;
@@ -33,33 +32,33 @@ interface UndoableDeleteOptions<T> {
  * puts back exactly what was removed.
  */
 export function useUndoableDelete<T>({
-  noun,
-  deletedMessage,
+  messages,
   remove,
   restore,
   onChanged,
   show,
   explain,
 }: UndoableDeleteOptions<T>): (id: string) => Promise<void> {
+  const { t } = useTranslator();
   return useCallback(
     async (id: string) => {
       try {
         const removed = await remove(id);
         show({
-          message: deletedMessage ?? `${noun} deleted`,
-          actionLabel: 'Undo',
+          message: messages.deleted,
+          actionLabel: t('Undo'),
           onAction: () => {
             show(null);
             restore(removed)
-              .catch(() => show({ message: `Couldn't restore the ${noun.toLowerCase()}` }))
+              .catch(() => show({ message: messages.restoreFailed }))
               .finally(() => void onChanged());
           },
         });
       } catch (error) {
-        show({ message: explain?.(error) ?? `Couldn't delete the ${noun.toLowerCase()}` });
+        show({ message: explain?.(error) ?? messages.deleteFailed });
       }
       await onChanged();
     },
-    [noun, deletedMessage, remove, restore, onChanged, show, explain],
+    [messages, remove, restore, onChanged, show, explain, t],
   );
 }

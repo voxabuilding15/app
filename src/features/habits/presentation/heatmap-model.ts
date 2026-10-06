@@ -5,25 +5,27 @@ import type { Habit } from '../domain/entities';
 import type { HabitEvaluator, HeatmapDay } from '../domain/progress';
 
 import { formatDay, shortMonth } from './format';
+import { currentTranslator } from '@/i18n/translate';
 
 const DAYS_PER_WEEK = 7;
 
 function describeDay(day: HeatmapDay, habit: Pick<Habit, 'period' | 'goalCount'>): string {
+  const { t } = currentTranslator();
   const when = formatDay(day.date);
   switch (day.status) {
     case 'done':
     case 'partial':
       return habit.period === 'daily'
         ? `${when}: ${day.count} of ${habit.goalCount}`
-        : `${when}: ${day.count} logged`;
+        : t('{when}: {count} logged', { when: when, count: day.count });
     case 'skipped':
-      return `${when}: skipped`;
+      return t('{when}: skipped', { when: when });
     case 'paused':
-      return `${when}: paused`;
+      return t('{when}: paused', { when: when });
     case 'off':
-      return `${when}: not scheduled`;
+      return t('{when}: not scheduled', { when: when });
     default:
-      return `${when}: nothing logged`;
+      return t('{when}: nothing logged', { when: when });
   }
 }
 

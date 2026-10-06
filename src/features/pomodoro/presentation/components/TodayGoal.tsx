@@ -4,9 +4,11 @@ import { spacing } from '@/theme';
 import { goalFraction } from '../../domain/stats';
 import { formatFocusTime } from '../format';
 import { useOverview, usePomodoroSettings } from '../queries';
+import { useTranslator } from '@/i18n';
 
 /** Today's focus time against the daily goal, under the timer. */
 export function TodayGoal() {
+  const { t } = useTranslator();
   const settings = usePomodoroSettings();
   const { data } = useOverview(settings);
   if (data === undefined) {
@@ -17,8 +19,11 @@ export function TodayGoal() {
   const fraction = goalFraction(seconds, settings.dailyGoalMinutes);
   const text =
     fraction === null
-      ? `Today: ${formatFocusTime(seconds)}`
-      : `Today: ${formatFocusTime(seconds)} of ${formatFocusTime(settings.dailyGoalMinutes * 60)}`;
+      ? t('Today: {focusTime}', { focusTime: formatFocusTime(seconds) })
+      : t('Today: {focusTime} of {focusTime2}', {
+          focusTime: formatFocusTime(seconds),
+          focusTime2: formatFocusTime(settings.dailyGoalMinutes * 60),
+        });
 
   return (
     <Card style={{ gap: spacing.sm }}>
@@ -26,7 +31,7 @@ export function TodayGoal() {
       {fraction === null ? null : (
         <ProgressBar
           progress={fraction}
-          label={`Daily goal ${Math.round(fraction * 100)} percent`}
+          label={t('Daily goal {round} percent', { round: Math.round(fraction * 100) })}
         />
       )}
     </Card>

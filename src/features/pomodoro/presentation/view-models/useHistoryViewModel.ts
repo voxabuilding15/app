@@ -5,10 +5,12 @@ import { useDebouncedValue, useNotice, useUndoableDelete } from '@/hooks';
 import type { HistoryScope } from '../../domain/entities';
 import { useHistory, useInvalidatePomodoro } from '../queries';
 import { usePomodoroModule } from '../module';
+import { useTranslator } from '@/i18n';
 
 const SEARCH_DELAY_MS = 250;
 
 export function useHistoryViewModel() {
+  const { t } = useTranslator();
   const { sessions } = usePomodoroModule();
   const invalidate = useInvalidatePomodoro();
   const { notice, show, dismiss } = useNotice();
@@ -22,15 +24,19 @@ export function useHistoryViewModel() {
     async (id: string) => {
       const removed = await sessions.remove(id);
       if (removed === null) {
-        throw new Error('The session no longer exists');
+        throw new Error(t('The session no longer exists'));
       }
       return removed;
     },
-    [sessions],
+    [sessions, t],
   );
 
   const deleteSession = useUndoableDelete({
-    noun: 'Session',
+    messages: {
+      deleted: t('Session deleted'),
+      restoreFailed: t("Couldn't restore the session"),
+      deleteFailed: t("Couldn't delete the session"),
+    },
     remove,
     restore: sessions.restore,
     onChanged: invalidate,

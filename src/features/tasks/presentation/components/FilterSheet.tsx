@@ -2,6 +2,7 @@ import { View } from 'react-native';
 
 import { Button, Chip, ChipGroup, Sheet } from '@/components';
 import { spacing } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { Category, Label, Priority } from '../../domain/entities';
 import { NO_CATEGORY, type TaskFilter } from '../../domain/filters';
@@ -30,13 +31,14 @@ export function FilterSheet({
   onReset,
   onClose,
 }: FilterSheetProps) {
+  const { t } = useTranslator();
   return (
-    <Sheet visible={visible} title="Filter tasks" onClose={onClose}>
-      <ChipGroup title="Priority">
+    <Sheet visible={visible} title={t('Filter tasks')} onClose={onClose}>
+      <ChipGroup title={t('Priority')}>
         {PRIORITY_OPTIONS.map((option) => (
           <Chip
             key={option.value}
-            label={option.label}
+            label={t(option.label)}
             selected={filter.priorities.includes(option.value)}
             onPress={() =>
               onChange({ priorities: toggle<Priority>(filter.priorities, option.value) })
@@ -44,24 +46,24 @@ export function FilterSheet({
           />
         ))}
       </ChipGroup>
-      <ChipGroup title="Due">
+      <ChipGroup title={t('Due')}>
         {DUE_OPTIONS.map((option) => (
           <Chip
             key={option.value}
-            label={option.label}
+            label={t(option.label)}
             selected={filter.due === option.value}
             onPress={() => onChange({ due: option.value })}
           />
         ))}
       </ChipGroup>
-      <ChipGroup title="Category">
+      <ChipGroup title={t('Category')}>
         <Chip
-          label="Any"
+          label={t('Any')}
           selected={filter.categoryId === null}
           onPress={() => onChange({ categoryId: null })}
         />
         <Chip
-          label="No category"
+          label={t('No category')}
           selected={filter.categoryId === NO_CATEGORY}
           onPress={() => onChange({ categoryId: NO_CATEGORY })}
         />
@@ -76,7 +78,7 @@ export function FilterSheet({
         ))}
       </ChipGroup>
       {labels.length > 0 ? (
-        <ChipGroup title="Labels (any of)">
+        <ChipGroup title={t('Labels (any of)')}>
           {labels.map((label) => (
             <Chip
               key={label.id}
@@ -89,8 +91,8 @@ export function FilterSheet({
         </ChipGroup>
       ) : null}
       <View style={{ flexDirection: 'row', gap: spacing.md, justifyContent: 'flex-end' }}>
-        <Button label="Reset" variant="outlined" onPress={onReset} />
-        <Button label="Done" onPress={onClose} />
+        <Button label={t('Reset')} variant="outlined" onPress={onReset} />
+        <Button label={t('Done')} onPress={onClose} />
       </View>
     </Sheet>
   );

@@ -6,8 +6,10 @@ import { useDiscardGuard } from '@/hooks';
 import { usePomodoroModule } from '../module';
 import { useInvalidatePomodoro, useLinkTargets, useSession, useTags } from '../queries';
 import type { SessionDetails } from '../components/SessionDetailsFields';
+import { useTranslator } from '@/i18n';
 
 export function useSessionDetailsViewModel(id: string) {
+  const { t } = useTranslator();
   const { sessions } = usePomodoroModule();
   const invalidate = useInvalidatePomodoro();
   const router = useRouter();
@@ -40,14 +42,14 @@ export function useSessionDetailsViewModel(id: string) {
     try {
       const saved = await sessions.updateDetails(id, details);
       if (!saved) {
-        setFailure('This session no longer exists.');
+        setFailure(t('This session no longer exists.'));
         return;
       }
       allowLeaving();
       await invalidate();
       router.back();
     } catch {
-      setFailure("Couldn't save your changes. Try again.");
+      setFailure(t("Couldn't save your changes. Try again."));
     } finally {
       setSaving(false);
     }

@@ -11,6 +11,7 @@ import {
   type TransactionDraft,
   type TransactionErrors,
 } from './validation';
+import { currentTranslator } from '@/i18n/translate';
 
 export type SaveTransactionResult =
   { ok: true; id: string; overBudgets: OverBudget[] } | { ok: false; errors: TransactionErrors };
@@ -29,6 +30,7 @@ export function createTransactionUseCases({
   overspentBy,
   clock,
 }: TransactionUseCaseDeps) {
+  const { t } = currentTranslator();
   return {
     list(filter: TransactionFilter, sort: TransactionSort, limit: number): Promise<Transaction[]> {
       return transactions.list(filter, sort, { now: clock.now(), limit });
@@ -50,7 +52,7 @@ export function createTransactionUseCases({
       const errors = validateTransaction(draft);
       const existing = id === null ? null : await transactions.get(id);
       if (id !== null && existing === null) {
-        throw new Error('This transaction no longer exists.');
+        throw new Error(t('This transaction no longer exists.'));
       }
 
       Object.assign(errors, await checkAccounts(accounts, draft, existing));
@@ -89,7 +91,7 @@ export function createTransactionUseCases({
     async duplicate(id: string): Promise<string> {
       const record = await transactions.get(id);
       if (record === null) {
-        throw new Error('This transaction no longer exists.');
+        throw new Error(t('This transaction no longer exists.'));
       }
       const problems = await checkAccounts(accounts, record, null);
       if (problems.account || problems.toAccount) {
@@ -113,7 +115,7 @@ export function createTransactionUseCases({
     async remove(id: string): Promise<TransactionRecord> {
       const record = await transactions.get(id);
       if (record === null) {
-        throw new Error('This transaction no longer exists.');
+        throw new Error(t('This transaction no longer exists.'));
       }
       await transactions.delete(id);
       return record;

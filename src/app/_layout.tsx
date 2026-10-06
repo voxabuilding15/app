@@ -17,18 +17,28 @@ import { NotesBridge } from '@/features/notes';
 import { PomodoroBridge } from '@/features/pomodoro';
 import { AppLockGate } from '@/features/settings';
 import { TaskNotificationBridge } from '@/features/tasks';
-import { useIsTablet } from '@/hooks';
-import { useTranslator } from '@/i18n';
+import { useIsTablet, useOnAppForeground } from '@/hooks';
+import {
+  LANGUAGE_INFO,
+  applyDirection,
+  currentLanguageChoice,
+  syncLanguage,
+  useTranslator,
+} from '@/i18n';
 import { DRAWER_ITEMS, DrawerContent, TABS_ROUTE } from '@/navigation';
 import { AppProviders } from '@/providers';
 import { DRAWER_WIDTH, useTheme } from '@/theme';
 
 void SplashScreen.preventAutoHideAsync();
+// Arabic reads right to left; React Native applies the direction at start-up, so restart once if needed.
+void applyDirection(LANGUAGE_INFO[currentLanguageChoice()].rtl);
 
 function RootNavigator() {
   const { colors, isDark } = useTheme();
   const isTablet = useIsTablet();
   const { t } = useTranslator();
+  // Follow the phone's language when the user left it on "System".
+  useOnAppForeground(syncLanguage);
 
   return (
     <AppLockGate>

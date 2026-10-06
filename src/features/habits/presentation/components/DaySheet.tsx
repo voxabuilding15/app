@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { Button, NumberStepper, Sheet, Text } from '@/components';
 import type { DateKey } from '@/core';
 import { spacing } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { Habit } from '../../domain/entities';
 import type { HabitEvaluator } from '../../domain/progress';
@@ -28,16 +29,17 @@ export function DaySheet({
   onSkip,
   onClose,
 }: DaySheetProps) {
+  const { t } = useTranslator();
   const { count, skipped } = evaluator.dayLog(day);
 
   return (
     <Sheet visible title={formatRelativeDay(day, today)} onClose={onClose}>
       <Text tone="muted">
         {skipped
-          ? 'This day is skipped, so it does not affect your streak.'
+          ? t('This day is skipped, so it does not affect your streak.')
           : count === 0
-            ? 'Nothing logged on this day.'
-            : `${count} logged on this day.`}
+            ? t('Nothing logged on this day.')
+            : t('{count} logged on this day.', { count: count })}
       </Text>
       <View
         style={{
@@ -47,9 +49,9 @@ export function DaySheet({
           gap: spacing.md,
         }}
       >
-        <Text>{`Completions of ${habit.name}`}</Text>
+        <Text>{t('Completions of {name}', { name: habit.name })}</Text>
         <NumberStepper
-          label="Completions on this day"
+          label={t('Completions on this day')}
           value={count}
           max={999}
           onChange={(value) => onAdjust(value - count)}
@@ -57,12 +59,12 @@ export function DaySheet({
       </View>
       <View style={{ flexDirection: 'row', gap: spacing.md, justifyContent: 'flex-end' }}>
         <Button
-          label={skipped ? 'Unskip day' : 'Skip day'}
+          label={skipped ? t('Unskip day') : t('Skip day')}
           variant="outlined"
           icon={skipped ? 'undo' : 'skip-next'}
           onPress={() => onSkip(!skipped)}
         />
-        <Button label="Done" onPress={onClose} />
+        <Button label={t('Done')} onPress={onClose} />
       </View>
     </Sheet>
   );

@@ -3,6 +3,7 @@ import { Alert } from 'react-native';
 
 import { toDateKey } from '@/core';
 import { useDebouncedValue, useNow, useOnAppForeground } from '@/hooks';
+import { useTranslator } from '@/i18n';
 
 import {
   DEFAULT_HABIT_FILTER,
@@ -30,6 +31,7 @@ const DEFAULT_SELECTION: FilterSelection = {
 };
 
 export function useHabitListViewModel() {
+  const { t } = useTranslator();
   const { habits } = useHabitsModule();
   const invalidate = useInvalidateHabits();
   const now = useNow();
@@ -103,63 +105,65 @@ export function useHabitListViewModel() {
 
   const adjust = useCallback(
     (summary: HabitSummary, delta: number) =>
-      run(() => habits.adjust(summary.habit.id, today, delta), "Couldn't update the habit"),
-    [run, habits, today],
+      run(() => habits.adjust(summary.habit.id, today, delta), t("Couldn't update the habit")),
+    [run, habits, today, t],
   );
 
   const toggleToday = useCallback(
     (summary: HabitSummary) =>
       run(
         () => habits.setCount(summary.habit.id, today, summary.todayCount > 0 ? 0 : 1),
-        "Couldn't update the habit",
+        t("Couldn't update the habit"),
       ),
-    [run, habits, today],
+    [run, habits, today, t],
   );
 
   const skipToday = useCallback(
     (summary: HabitSummary) =>
       run(
         () => habits.skip(summary.habit.id, today, !summary.skippedToday),
-        "Couldn't update the habit",
+        t("Couldn't update the habit"),
       ),
-    [run, habits, today],
+    [run, habits, today, t],
   );
 
   const archive = useCallback(
     (summary: HabitSummary) =>
       run(async () => {
         await habits.archive(summary.habit.id);
-        setNotice(`${summary.habit.name} archived`);
-      }, "Couldn't archive the habit"),
-    [run, habits],
+        setNotice(t('{name} archived', { name: summary.habit.name }));
+      }, t("Couldn't archive the habit")),
+    [run, habits, t],
   );
 
   const restore = useCallback(
     (summary: HabitSummary) =>
       run(async () => {
         await habits.restore(summary.habit.id);
-        setNotice(`${summary.habit.name} restored`);
-      }, "Couldn't restore the habit"),
-    [run, habits],
+        setNotice(t('{name} restored', { name: summary.habit.name }));
+      }, t("Couldn't restore the habit")),
+    [run, habits, t],
   );
 
   const confirmDelete = useCallback(
     (summary: HabitSummary) => {
       Alert.alert(
-        `Delete "${summary.habit.name}"?`,
-        'This permanently deletes the habit and its whole history. Archive it instead to keep the history.',
+        t('Delete "{name}"?', { name: summary.habit.name }),
+        t(
+          'This permanently deletes the habit and its whole history. Archive it instead to keep the history.',
+        ),
         [
-          { text: 'Cancel', style: 'cancel' },
+          { text: t('Cancel'), style: 'cancel' },
           {
-            text: 'Delete',
+            text: t('Delete'),
             style: 'destructive',
             onPress: () =>
-              void run(() => habits.remove(summary.habit.id), "Couldn't delete the habit"),
+              void run(() => habits.remove(summary.habit.id), t("Couldn't delete the habit")),
           },
         ],
       );
     },
-    [run, habits],
+    [run, habits, t],
   );
 
   return {

@@ -1,4 +1,5 @@
 import { createId } from './ids';
+import { currentTranslator } from '@/i18n/translate';
 
 /** A user-defined named, colored group (categories, labels). */
 export interface Category {
@@ -30,11 +31,14 @@ export type SaveNameResult = { ok: true; id: string } | { ok: false; error: stri
 
 /** Validates a category or label name. Returns an error message or null. */
 function validateName(name: string): string | null {
+  const { t } = currentTranslator();
   const trimmed = name.trim();
   if (trimmed.length === 0) {
-    return 'Enter a name';
+    return t('Enter a name');
   }
-  return trimmed.length > NAME_MAX_LENGTH ? `Use ${NAME_MAX_LENGTH} characters or fewer` : null;
+  return trimmed.length > NAME_MAX_LENGTH
+    ? t('Use {max} characters or fewer', { max: NAME_MAX_LENGTH })
+    : null;
 }
 
 /** Validates, rejects case-insensitive duplicates, then persists a named item. */
@@ -43,6 +47,7 @@ async function saveNamedItem(
   existing: readonly Category[],
   persist: (item: Category) => Promise<void>,
 ): Promise<SaveNameResult> {
+  const { t } = currentTranslator();
   const error = validateName(input.name);
   if (error !== null) {
     return { ok: false, error };
@@ -52,7 +57,7 @@ async function saveNamedItem(
     (item) => item.id !== input.id && item.name.toLowerCase() === name.toLowerCase(),
   );
   if (duplicate) {
-    return { ok: false, error: 'This name is already in use' };
+    return { ok: false, error: t('This name is already in use') };
   }
   const id = input.id ?? createId();
   await persist({ id, name, color: input.color });

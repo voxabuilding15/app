@@ -12,6 +12,7 @@ import {
   type DateKey,
 } from '@/core';
 import { useDiscardGuard, useNow } from '@/hooks';
+import { useTranslator } from '@/i18n';
 
 import type { Budget, BudgetPeriod } from '../../domain/entities';
 import type { BudgetDraft, BudgetErrors } from '../../domain/validation';
@@ -74,6 +75,7 @@ export function useBudgetLoader(budgetId: string | null): BudgetLoadState {
 
 /** Editing state for one budget. `budgetId` null creates a new one. */
 export function useBudgetFormViewModel(budgetId: string | null, initial: BudgetDraft) {
+  const { t } = useTranslator();
   const router = useRouter();
   const { budgets } = useFinanceModule();
   const invalidate = useInvalidateFinance();
@@ -187,11 +189,11 @@ export function useBudgetFormViewModel(budgetId: string | null, initial: BudgetD
       await invalidate();
       finish();
     } catch {
-      setSaveError("Couldn't save the budget. Please try again.");
+      setSaveError(t("Couldn't save the budget. Please try again."));
     } finally {
       setSaving(false);
     }
-  }, [saving, budgets, draft, budgetId, invalidate, finish]);
+  }, [saving, budgets, draft, budgetId, invalidate, finish, t]);
 
   const remove = useCallback(async () => {
     if (budgetId === null) {
@@ -202,16 +204,16 @@ export function useBudgetFormViewModel(budgetId: string | null, initial: BudgetD
       await invalidate();
       finish();
     } catch {
-      setSaveError("Couldn't delete the budget. Please try again.");
+      setSaveError(t("Couldn't delete the budget. Please try again."));
     }
-  }, [budgetId, budgets, invalidate, finish]);
+  }, [budgetId, budgets, invalidate, finish, t]);
 
   const confirmDelete = useCallback(() => {
-    Alert.alert('Delete this budget?', 'Your transactions are not affected.', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: () => void remove() },
+    Alert.alert(t('Delete this budget?'), t('Your transactions are not affected.'), [
+      { text: t('Cancel'), style: 'cancel' },
+      { text: t('Delete'), style: 'destructive', onPress: () => void remove() },
     ]);
-  }, [remove]);
+  }, [remove, t]);
 
   return {
     isEditing: budgetId !== null,

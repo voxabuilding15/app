@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { View } from 'react-native';
 
 import type { LockController } from '@/hooks/useLockController';
-import { useTranslator } from '@/i18n';
+import { msg, useTranslator } from '@/i18n';
 import { spacing } from '@/theme';
 
 import { Button } from './Button';
@@ -45,7 +45,7 @@ export function LockSettingsPanel({
 
   const run = async (action: () => Promise<{ ok: boolean; error?: string }>, done: string) => {
     const result = await action();
-    setMessage(result.ok ? done : t(result.error ?? 'Something went wrong.'));
+    setMessage(result.ok ? done : t(result.error ?? msg('Something went wrong.')));
   };
 
   return (

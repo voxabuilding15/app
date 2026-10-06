@@ -1,5 +1,6 @@
 import { ALL_WEEKDAYS } from './schedule';
 import type { HabitPeriod } from './entities';
+import { currentTranslator } from '@/i18n/translate';
 
 export const HABIT_NAME_MAX_LENGTH = 60;
 export const HABIT_NOTES_MAX_LENGTH = 2_000;
@@ -39,25 +40,26 @@ export function emptyHabitDraft(icon: string, color: string): HabitDraft {
 }
 
 export function validateHabitDraft(draft: HabitDraft): HabitDraftErrors {
+  const { t } = currentTranslator();
   const errors: HabitDraftErrors = {};
   const name = draft.name.trim();
 
   if (name.length === 0) {
-    errors.name = 'Enter a name';
+    errors.name = t('Enter a name');
   } else if (name.length > HABIT_NAME_MAX_LENGTH) {
-    errors.name = `Name must be ${HABIT_NAME_MAX_LENGTH} characters or fewer`;
+    errors.name = t('Name must be {max} characters or fewer', { max: HABIT_NAME_MAX_LENGTH });
   }
   if (draft.notes.length > HABIT_NOTES_MAX_LENGTH) {
-    errors.notes = `Notes must be ${HABIT_NOTES_MAX_LENGTH} characters or fewer`;
+    errors.notes = t('Notes must be {max} characters or fewer', { max: HABIT_NOTES_MAX_LENGTH });
   }
   if (!Number.isInteger(draft.goalCount) || draft.goalCount < 1 || draft.goalCount > MAX_GOAL) {
-    errors.goal = `Goal must be between 1 and ${MAX_GOAL}`;
+    errors.goal = t('Goal must be between 1 and {max}', { max: MAX_GOAL });
   }
   if (draft.period === 'daily' && (draft.weekdays < 1 || draft.weekdays > ALL_WEEKDAYS)) {
-    errors.weekdays = 'Choose at least one day';
+    errors.weekdays = t('Choose at least one day');
   }
   if (draft.reminderTime !== null && !TIME_PATTERN.test(draft.reminderTime)) {
-    errors.reminder = 'Choose a valid reminder time';
+    errors.reminder = t('Choose a valid reminder time');
   }
   return errors;
 }

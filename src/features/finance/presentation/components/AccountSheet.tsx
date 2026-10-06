@@ -2,6 +2,7 @@ import { View } from 'react-native';
 
 import { Button, Chip, ColorSwatches, Input, Sheet, Text, WRAP_ROW } from '@/components';
 import { spacing } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import { ACCOUNT_TYPES, type AccountBalance } from '../../domain/entities';
 import { NAME_MAX_LENGTH } from '../../domain/validation';
@@ -17,13 +18,18 @@ interface AccountSheetProps {
 
 /** Sheet to create or edit an account. Mount only while open so state starts fresh. */
 export function AccountSheet({ account, onClose }: AccountSheetProps) {
+  const { t } = useTranslator();
   const editor = useAccountEditor(account, onClose);
   const balanceUnreadable = editor.errors.balance === INVALID_AMOUNT;
 
   return (
-    <Sheet visible title={account === null ? 'New account' : 'Edit account'} onClose={onClose}>
+    <Sheet
+      visible
+      title={account === null ? t('New account') : t('Edit account')}
+      onClose={onClose}
+    >
       <Input
-        label="Name"
+        label={t('Name')}
         value={editor.name}
         onChangeText={editor.setName}
         error={editor.errors.name}
@@ -33,7 +39,7 @@ export function AccountSheet({ account, onClose }: AccountSheetProps) {
       />
       <View style={{ gap: spacing.sm }}>
         <Text variant="labelSmall" tone="muted">
-          Type
+          {t('Type')}
         </Text>
         <View style={WRAP_ROW}>
           {ACCOUNT_TYPES.map((type) => (
@@ -47,7 +53,7 @@ export function AccountSheet({ account, onClose }: AccountSheetProps) {
         </View>
       </View>
       <Input
-        label={`Opening balance (${editor.currency})`}
+        label={t('Opening balance ({currency})', { currency: editor.currency })}
         value={editor.balanceText}
         onChangeText={editor.setBalanceText}
         error={editor.errors.balance}
@@ -55,12 +61,12 @@ export function AccountSheet({ account, onClose }: AccountSheetProps) {
       />
       <Text variant="labelSmall" tone="muted">
         {balanceUnreadable
-          ? 'Use digits and one decimal separator.'
-          : 'Use a negative number for money you owe, such as a credit card balance.'}
+          ? t('Use digits and one decimal separator.')
+          : t('Use a negative number for money you owe, such as a credit card balance.')}
       </Text>
       <View style={{ gap: spacing.sm }}>
         <Text variant="labelSmall" tone="muted">
-          Color
+          {t('Color')}
         </Text>
         <ColorSwatches value={editor.color} onChange={editor.setColor} />
       </View>
@@ -70,8 +76,8 @@ export function AccountSheet({ account, onClose }: AccountSheetProps) {
         </Text>
       ) : null}
       <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.md }}>
-        <Button label="Cancel" variant="outlined" onPress={onClose} />
-        <Button label="Save" loading={editor.saving} onPress={() => void editor.submit()} />
+        <Button label={t('Cancel')} variant="outlined" onPress={onClose} />
+        <Button label={t('Save')} loading={editor.saving} onPress={() => void editor.submit()} />
       </View>
     </Sheet>
   );

@@ -2,6 +2,7 @@ import { memo } from 'react';
 
 import type { SwipeAction } from '@/components';
 import { useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { Transaction } from '../../domain/entities';
 import {
@@ -32,23 +33,25 @@ function TransactionRowComponent({
   onDelete,
   onDuplicate,
 }: TransactionRowProps) {
+  const { t } = useTranslator();
   const { colors } = useTheme();
 
   const accent =
     item.category?.color ?? (item.type === 'income' ? colors.success : colors.onSurfaceVariant);
-  const title = item.category?.name ?? (item.type === 'transfer' ? 'Transfer' : 'Uncategorized');
+  const title =
+    item.category?.name ?? (item.type === 'transfer' ? t('Transfer') : t('Uncategorized'));
   const subtitle = [
     item.note || null,
     describeFlow(item),
     `${formatDate(item.occurredAt, now)}, ${formatTime(item.occurredAt)}`,
-    item.recurringId === null ? null : 'Repeating',
+    item.recurringId === null ? null : t('Repeating'),
   ]
     .filter(Boolean)
     .join(' · ');
 
   const rightActions: SwipeAction[] = [
     {
-      label: 'Delete',
+      label: t('Delete'),
       icon: 'delete',
       background: colors.error,
       foreground: colors.surface,
@@ -57,7 +60,7 @@ function TransactionRowComponent({
   ];
   const leftActions: SwipeAction[] = [
     {
-      label: 'Duplicate',
+      label: t('Duplicate'),
       icon: 'content-copy',
       background: colors.secondaryContainer,
       foreground: colors.onSecondaryContainer,
@@ -83,8 +86,8 @@ function TransactionRowComponent({
       leftActions={leftActions}
       rightActions={rightActions}
       accessibilityActions={[
-        { name: 'duplicate', label: 'Duplicate', run: () => onDuplicate(item) },
-        { name: 'delete', label: 'Delete', run: () => onDelete(item) },
+        { name: 'duplicate', label: t('Duplicate'), run: () => onDuplicate(item) },
+        { name: 'delete', label: t('Delete'), run: () => onDelete(item) },
       ]}
       onPress={() => onPress(item)}
     />

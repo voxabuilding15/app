@@ -4,12 +4,14 @@ import { ActivityIndicator, Image, Modal, Pressable, View } from 'react-native';
 
 import { Chip, FormSection, Icon, IconButton, Text, WRAP_ROW } from '@/components';
 import { radius, spacing, useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { Attachment, AttachmentKind } from '../../domain/entities';
 import type { Drawing } from '../../domain/drawing';
 import { ATTACHMENT_ICON, ATTACHMENT_LABEL, formatBytes, formatDuration } from '../format';
 
 import { DrawingSvg } from './DrawingSvg';
+import { msg } from '@/i18n/msg';
 
 const THUMB = 56;
 
@@ -25,13 +27,14 @@ interface AttachmentsSectionProps {
 }
 
 const ADD_OPTIONS: readonly { kind: AttachmentKind; label: string }[] = [
-  { kind: 'image', label: 'Image' },
+  { kind: 'image', label: msg('Image') },
   { kind: 'pdf', label: 'PDF' },
-  { kind: 'audio', label: 'Voice' },
-  { kind: 'drawing', label: 'Drawing' },
+  { kind: 'audio', label: msg('Voice') },
+  { kind: 'drawing', label: msg('Drawing') },
 ];
 
 function AudioControl({ uri, durationMs }: { uri: string; durationMs: number | null }) {
+  const { t } = useTranslator();
   const { colors } = useTheme();
   const player = useAudioPlayer(uri);
   const status = useAudioPlayerStatus(player);
@@ -52,7 +55,7 @@ function AudioControl({ uri, durationMs }: { uri: string; durationMs: number | n
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
       <IconButton
         icon={status.playing ? 'pause' : 'play-arrow'}
-        label={status.playing ? 'Pause' : 'Play'}
+        label={status.playing ? t('Pause') : t('Play')}
         onPress={toggle}
       />
       <Text variant="labelLarge" style={{ color: colors.onSurface }}>
@@ -66,6 +69,7 @@ function DrawingThumb({
   attachment,
   loadDrawing,
 }: Pick<AttachmentsSectionProps, 'loadDrawing'> & { attachment: Attachment }) {
+  const { t } = useTranslator();
   const [drawing, setDrawing] = useState<Drawing | null | undefined>(undefined);
   useEffect(() => {
     let cancelled = false;
@@ -80,7 +84,7 @@ function DrawingThumb({
   }, [attachment, loadDrawing]);
 
   if (drawing === undefined) {
-    return <ActivityIndicator accessibilityLabel="Loading drawing" />;
+    return <ActivityIndicator accessibilityLabel={t('Loading drawing')} />;
   }
   return drawing === null ? (
     <Icon name="broken-image" size={THUMB / 2} />
@@ -134,19 +138,22 @@ export function AttachmentsSection({
   onOpen,
   onRemove,
 }: AttachmentsSectionProps) {
+  const { t } = useTranslator();
   return (
-    <FormSection title="Attachments" error={error ?? undefined}>
+    <FormSection title={t('Attachments')} error={error ?? undefined}>
       <View style={WRAP_ROW}>
         {ADD_OPTIONS.map((option) => (
           <Chip
             key={option.kind}
             icon={ATTACHMENT_ICON[option.kind]}
-            label={option.label}
-            accessibilityLabel={`Add ${ATTACHMENT_LABEL[option.kind].toLowerCase()}`}
+            label={t(option.label)}
+            accessibilityLabel={t('Add {lowerCase}', {
+              lowerCase: ATTACHMENT_LABEL[option.kind].toLowerCase(),
+            })}
             onPress={() => onAdd(option.kind)}
           />
         ))}
-        {busy ? <ActivityIndicator accessibilityLabel="Adding attachment" /> : null}
+        {busy ? <ActivityIndicator accessibilityLabel={t('Adding attachment')} /> : null}
       </View>
       {attachments.map((attachment) => {
         const detail =
@@ -163,7 +170,7 @@ export function AttachmentsSection({
               accessibilityRole="button"
               accessibilityLabel={`${ATTACHMENT_LABEL[attachment.kind]}: ${attachment.name}, ${detail}`}
               accessibilityHint={
-                attachment.kind === 'drawing' ? 'Edits the drawing' : 'Opens the file'
+                attachment.kind === 'drawing' ? t('Edits the drawing') : t('Opens the file')
               }
               onPress={() => onOpen(attachment)}
               style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.md }}
@@ -183,7 +190,7 @@ export function AttachmentsSection({
             ) : null}
             <IconButton
               icon="delete"
-              label={`Remove ${attachment.name}`}
+              label={t('Remove {name}', { name: attachment.name })}
               onPress={() => onRemove(attachment)}
             />
           </View>
@@ -201,6 +208,7 @@ interface ImageViewerProps {
 
 /** Full-screen view of an attached image. */
 export function ImageViewer({ uri, name, onClose }: ImageViewerProps) {
+  const { t } = useTranslator();
   return (
     <Modal visible transparent animationType="fade" onRequestClose={onClose} statusBarTranslucent>
       <View style={{ flex: 1, backgroundColor: '#000000EE', justifyContent: 'center' }}>
@@ -212,7 +220,7 @@ export function ImageViewer({ uri, name, onClose }: ImageViewerProps) {
           accessibilityIgnoresInvertColors
         />
         <View style={{ position: 'absolute', top: spacing.xxl, right: spacing.lg }}>
-          <IconButton icon="close" label="Close image" tinted onPress={onClose} />
+          <IconButton icon="close" label={t('Close image')} tinted onPress={onClose} />
         </View>
       </View>
     </Modal>

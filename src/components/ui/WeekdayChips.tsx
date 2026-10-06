@@ -1,11 +1,10 @@
 import { View } from 'react-native';
 
 import { hasWeekday, weekdayBit } from '@/core';
+import { weekdayName } from '@/i18n/formatting';
 
 import { Chip } from './Chip';
 import { WRAP_ROW } from './ChipGroup';
-
-export const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const;
 
 /** Monday-first display order; values are JS weekday numbers (Sunday = 0). */
 export const WEEKDAY_DISPLAY_ORDER = [1, 2, 3, 4, 5, 6, 0] as const;
@@ -22,7 +21,7 @@ export function WeekdayChips({ mask, onChange }: WeekdayChipsProps) {
       {WEEKDAY_DISPLAY_ORDER.map((day) => (
         <Chip
           key={day}
-          label={WEEKDAY_LABELS[day] ?? ''}
+          label={weekdayName(day)}
           selected={hasWeekday(mask, day)}
           onPress={() => onChange(mask ^ weekdayBit(day))}
         />

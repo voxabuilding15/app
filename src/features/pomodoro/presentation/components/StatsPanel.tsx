@@ -14,6 +14,7 @@ import {
   fitHeatmap,
 } from '@/components';
 import { spacing, useTheme, withAlpha } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { StatsPeriod } from '../../domain/stats';
 import type { GoalProgress } from '../../domain/stats-usecases';
@@ -25,11 +26,12 @@ import {
 } from '../format';
 import { HEATMAP_ROW_LABELS, buildHeatmapModel } from '../heatmap-model';
 import type { StatsViewModel } from '../view-models/useStatsViewModel';
+import { msg } from '@/i18n/msg';
 
 const PERIODS = [
-  { value: 'day', label: 'Day' },
-  { value: 'week', label: 'Week' },
-  { value: 'month', label: 'Month' },
+  { value: 'day', label: msg('Day') },
+  { value: 'week', label: msg('Week') },
+  { value: 'month', label: msg('Month') },
 ] as const satisfies readonly { value: StatsPeriod; label: string }[];
 
 const HEAT_GAP = 3;
@@ -38,10 +40,11 @@ const HEAT_WEEKS = 26;
 const LEVELS = [0, 0.3, 0.5, 0.75, 1] as const;
 
 function GoalRing({ title, progress }: { title: string; progress: GoalProgress }) {
+  const { t } = useTranslator();
   const fraction = progress.fraction;
   const detail =
     fraction === null
-      ? 'No goal'
+      ? t('No goal')
       : `${formatFocusTime(progress.focusSeconds)} of ${formatFocusTime(progress.goalMinutes * 60)}`;
   return (
     <View style={{ alignItems: 'center', gap: spacing.xs, flex: 1, minWidth: 96 }}>
@@ -51,8 +54,15 @@ function GoalRing({ title, progress }: { title: string; progress: GoalProgress }
         strokeWidth={8}
         label={
           fraction === null
-            ? `${title}: ${formatFocusTime(progress.focusSeconds)} focused, no goal set`
-            : `${title}: ${Math.round(fraction * 100)} percent of the goal, ${detail}`
+            ? t('{title}: {focusTime} focused, no goal set', {
+                title: title,
+                focusTime: formatFocusTime(progress.focusSeconds),
+              })
+            : t('{title}: {round} percent of the goal, {detail}', {
+                title: title,
+                round: Math.round(fraction * 100),
+                detail: detail,
+              })
         }
       >
         <Text variant="labelLarge">
@@ -80,6 +90,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 
 /** Goals, streak, deep focus, focus time per day, week and month, and the heatmap. */
 export function StatsPanel({ vm }: { vm: StatsViewModel }) {
+  const { t } = useTranslator();
   const { colors } = useTheme();
   const [width, setWidth] = useState(0);
   const { overview } = vm;
@@ -87,8 +98,8 @@ export function StatsPanel({ vm }: { vm: StatsViewModel }) {
   if (vm.isError && overview === undefined) {
     return (
       <View style={{ gap: spacing.md, alignItems: 'center' }}>
-        <Text tone="error">Couldn&apos;t load your statistics.</Text>
-        <Button label="Try again" variant="tonal" onPress={() => void vm.refetch()} />
+        <Text tone="error">{t('Couldn&apos;t load your statistics.')}</Text>
+        <Button label={t('Try again')} variant="tonal" onPress={() => void vm.refetch()} />
       </View>
     );
   }
@@ -99,8 +110,8 @@ export function StatsPanel({ vm }: { vm: StatsViewModel }) {
     return (
       <EmptyState
         icon="insights"
-        title="No focus time yet"
-        message="Complete a focus session and your goals, streak and heatmap will appear here."
+        title={t('No focus time yet')}
+        message={t('Complete a focus session and your goals, streak and heatmap will appear here.')}
       />
     );
   }
@@ -117,39 +128,42 @@ export function StatsPanel({ vm }: { vm: StatsViewModel }) {
 
   return (
     <View style={{ gap: spacing.lg }}>
-      <Section title="Goals">
+      <Section title={t('Goals')}>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md }}>
-          <GoalRing title="Today" progress={overview.today} />
-          <GoalRing title="This week" progress={overview.week} />
-          <GoalRing title="This month" progress={overview.month} />
+          <GoalRing title={t('Today')} progress={overview.today} />
+          <GoalRing title={t('This week')} progress={overview.week} />
+          <GoalRing title={t('This month')} progress={overview.month} />
         </View>
       </Section>
 
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md }}>
         <StatTile
           icon="local-fire-department"
-          label="Current streak"
+          label={t('Current streak')}
           value={`${overview.streak.current} ${overview.streak.current === 1 ? 'day' : 'days'}`}
-          caption={`Best ${overview.streak.longest} ${overview.streak.longest === 1 ? 'day' : 'days'}`}
+          caption={t('Best {longest} {value}', {
+            longest: overview.streak.longest,
+            value: overview.streak.longest === 1 ? 'day' : 'days',
+          })}
         />
         <StatTile
           icon="psychology"
-          label="Deep focus"
+          label={t('Deep focus')}
           value={overview.deepFocus === null ? '–' : `${overview.deepFocus}`}
-          caption="Average, last 30 days"
+          caption={t('Average, last 30 days')}
         />
         <StatTile
           icon="check-circle"
-          label="Sessions today"
+          label={t('Sessions today')}
           value={String(overview.today.completed)}
           caption={formatFocusTime(overview.today.focusSeconds)}
         />
       </View>
 
-      <Section title="Focus time">
+      <Section title={t('Focus time')}>
         <SegmentedControl options={PERIODS} value={vm.period} onChange={vm.setPeriod} />
         <BarChart
-          label={`Focus minutes per ${vm.period}`}
+          label={t('Focus minutes per {period}', { period: vm.period })}
           goal={vm.goalMinutes > 0 ? vm.goalMinutes : undefined}
           data={series.map((point, index) => ({
             label: formatBucketLabel(vm.period, point.from),
@@ -160,7 +174,7 @@ export function StatsPanel({ vm }: { vm: StatsViewModel }) {
         />
       </Section>
 
-      <Section title="Heatmap">
+      <Section title={t('Heatmap')}>
         <View
           testID="pomodoro-heatmap"
           onLayout={(event: LayoutChangeEvent) => setWidth(event.nativeEvent.layout.width)}
@@ -175,7 +189,7 @@ export function StatsPanel({ vm }: { vm: StatsViewModel }) {
               gap={HEAT_GAP}
               selectedKey={vm.selected?.date ?? null}
               onPressCell={vm.selectDay}
-              label={`Focus time over the last ${weeks} weeks`}
+              label={t('Focus time over the last {weeks} weeks', { weeks: weeks })}
             />
           ) : null}
         </View>
@@ -185,14 +199,14 @@ export function StatsPanel({ vm }: { vm: StatsViewModel }) {
               ? `${formatDayLabel(vm.selected.date)}: ${
                   vm.selected.focusSeconds > 0
                     ? formatFocusTime(vm.selected.focusSeconds)
-                    : 'no focus'
+                    : t('no focus')
                 }`
-              : 'Tap a day for details'}
+              : t('Tap a day for details')}
           </Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
           <Text variant="labelSmall" tone="muted">
-            Less
+            {t('Less')}
           </Text>
           {LEVELS.map((alpha) => (
             <View
@@ -207,18 +221,18 @@ export function StatsPanel({ vm }: { vm: StatsViewModel }) {
             />
           ))}
           <Text variant="labelSmall" tone="muted">
-            More · relative to your daily goal
+            {t('More · relative to your daily goal')}
           </Text>
         </View>
       </Section>
 
       {overview.links.length > 0 ? (
-        <Section title="Where the time went">
+        <Section title={t('Where the time went')}>
           {overview.links.map((link) => (
             <View
               key={`${link.kind}-${link.id}`}
               accessible
-              accessibilityLabel={`${link.kind === 'task' ? 'Task' : 'Habit'} ${link.title}: ${formatFocusTime(link.seconds)}`}
+              accessibilityLabel={`${link.kind === 'task' ? t('Task') : t('Habit')} ${link.title}: ${formatFocusTime(link.seconds)}`}
               style={{ flexDirection: 'row', justifyContent: 'space-between', gap: spacing.md }}
             >
               <Text variant="bodyLarge" style={{ flex: 1 }} numberOfLines={1}>
@@ -230,7 +244,7 @@ export function StatsPanel({ vm }: { vm: StatsViewModel }) {
             </View>
           ))}
           <Text variant="labelSmall" tone="muted">
-            Last 30 days, by linked task and habit
+            {t('Last 30 days, by linked task and habit')}
           </Text>
         </Section>
       ) : null}

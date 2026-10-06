@@ -21,6 +21,7 @@ import {
   type RecurringDraft,
   type RecurringErrors,
 } from './validation';
+import { currentTranslator } from '@/i18n/translate';
 
 export type SaveRecurringResult =
   { ok: true; id: string; posted: number } | { ok: false; errors: RecurringErrors };
@@ -74,6 +75,7 @@ function sameRule(a: RecurrenceRule, b: RecurrenceRule): boolean {
 }
 
 export function createRecurringUseCases({ recurring, accounts, clock }: RecurringUseCaseDeps) {
+  const { t } = currentTranslator();
   const todayKey = () => toDateKey(clock.now());
 
   /** Posts every occurrence that has come due since each rule last ran. Returns how many. */
@@ -134,7 +136,7 @@ export function createRecurringUseCases({ recurring, accounts, clock }: Recurrin
       const errors = validateRecurring(draft);
       const existing = id === null ? null : await recurring.get(id);
       if (id !== null && existing === null) {
-        throw new Error('This recurring transaction no longer exists.');
+        throw new Error(t('This recurring transaction no longer exists.'));
       }
       Object.assign(errors, await checkAccounts(accounts, draft, existing));
       if (hasErrors(errors) || draft.amountMinor === null || draft.accountId === null) {
@@ -211,7 +213,7 @@ export function createRecurringUseCases({ recurring, accounts, clock }: Recurrin
     async remove(id: string): Promise<RecurringRecord> {
       const record = await recurring.get(id);
       if (record === null) {
-        throw new Error('This recurring transaction no longer exists.');
+        throw new Error(t('This recurring transaction no longer exists.'));
       }
       await recurring.delete(id);
       return record;

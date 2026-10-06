@@ -4,6 +4,7 @@ import { Chip } from './Chip';
 import { WRAP_ROW } from './ChipGroup';
 import { FormSection } from './FormSection';
 import { View } from 'react-native';
+import { useTranslator } from '@/i18n';
 
 interface CategorySectionProps {
   categories: readonly Category[];
@@ -19,10 +20,11 @@ export function CategorySection({
   onSelect,
   onCreate,
 }: CategorySectionProps) {
+  const { t } = useTranslator();
   return (
-    <FormSection title="Category">
+    <FormSection title={t('Category')}>
       <View style={WRAP_ROW}>
-        <Chip label="None" selected={selectedId === null} onPress={() => onSelect(null)} />
+        <Chip label={t('None')} selected={selectedId === null} onPress={() => onSelect(null)} />
         {categories.map((category) => (
           <Chip
             key={category.id}
@@ -32,7 +34,12 @@ export function CategorySection({
             onPress={() => onSelect(category.id)}
           />
         ))}
-        <Chip icon="add" label="New" accessibilityLabel="Create a category" onPress={onCreate} />
+        <Chip
+          icon="add"
+          label={t('New')}
+          accessibilityLabel={t('Create a category')}
+          onPress={onCreate}
+        />
       </View>
     </FormSection>
   );

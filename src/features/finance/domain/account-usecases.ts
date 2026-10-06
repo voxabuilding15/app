@@ -3,13 +3,15 @@ import { createId, type Clock } from '@/core';
 import type { Account, AccountBalance } from './entities';
 import type { AccountRepository } from './ports';
 import { hasErrors, validateAccount, type AccountDraft, type AccountErrors } from './validation';
+import { currentTranslator } from '@/i18n/translate';
 
 export type SaveAccountResult = { ok: true; id: string } | { ok: false; errors: AccountErrors };
 
 /** Raised when deleting an account that transactions or recurring rules still refer to. */
 export class AccountInUseError extends Error {
   constructor() {
-    super('This account is in use.');
+    const { t } = currentTranslator();
+    super(t('This account is in use.'));
     this.name = 'AccountInUseError';
   }
 }
@@ -27,6 +29,7 @@ export function totalBalanceMinor(accounts: readonly AccountBalance[]): number {
 }
 
 export function createAccountUseCases({ accounts, clock }: AccountUseCaseDeps) {
+  const { t } = currentTranslator();
   return {
     list(includeArchived = false): Promise<AccountBalance[]> {
       return accounts.list(includeArchived);
@@ -44,7 +47,7 @@ export function createAccountUseCases({ accounts, clock }: AccountUseCaseDeps) {
         if (
           all.some((other) => other.id !== id && other.name.toLowerCase() === name.toLowerCase())
         ) {
-          errors.name = 'This name is already in use';
+          errors.name = t('This name is already in use');
         }
       }
       if (hasErrors(errors) || draft.initialBalanceMinor === null) {
@@ -53,7 +56,7 @@ export function createAccountUseCases({ accounts, clock }: AccountUseCaseDeps) {
 
       const existing = id === null ? null : await accounts.get(id);
       if (id !== null && existing === null) {
-        throw new Error('This account no longer exists.');
+        throw new Error(t('This account no longer exists.'));
       }
       const account: Account = {
         id: existing?.id ?? createId(),
@@ -80,7 +83,7 @@ export function createAccountUseCases({ accounts, clock }: AccountUseCaseDeps) {
     async remove(id: string): Promise<Account> {
       const account = await accounts.get(id);
       if (account === null) {
-        throw new Error('This account no longer exists.');
+        throw new Error(t('This account no longer exists.'));
       }
       if ((await accounts.usageCount(id)) > 0) {
         throw new AccountInUseError();

@@ -3,12 +3,13 @@ import { Chip } from './Chip';
 import { ChipGroup } from './ChipGroup';
 import { SegmentedControl } from './SegmentedControl';
 import { Sheet } from './Sheet';
+import { msg, useTranslator } from '@/i18n';
 
 type SortDirection = 'asc' | 'desc';
 
 const DIRECTIONS = [
-  { value: 'asc', label: 'Ascending' },
-  { value: 'desc', label: 'Descending' },
+  { value: 'asc', label: msg('Ascending') },
+  { value: 'desc', label: msg('Descending') },
 ] as const satisfies readonly { value: SortDirection; label: string }[];
 
 interface SortState<F extends string> {
@@ -31,15 +32,16 @@ export function SortSheet<F extends string>({
   sort,
   onChange,
   onClose,
-  title = 'Sort',
+  title,
 }: SortSheetProps<F>) {
+  const { t } = useTranslator();
   return (
-    <Sheet visible={visible} title={title} onClose={onClose}>
-      <ChipGroup title="Sort by">
+    <Sheet visible={visible} title={title ?? t('Sort')} onClose={onClose}>
+      <ChipGroup title={t('Sort by')}>
         {fields.map((field) => (
           <Chip
             key={field.value}
-            label={field.label}
+            label={t(field.label)}
             selected={sort.field === field.value}
             onPress={() => onChange({ ...sort, field: field.value })}
           />
@@ -50,7 +52,7 @@ export function SortSheet<F extends string>({
         value={sort.direction}
         onChange={(direction) => onChange({ ...sort, direction })}
       />
-      <Button label="Done" onPress={onClose} />
+      <Button label={t('Done')} onPress={onClose} />
     </Sheet>
   );
 }

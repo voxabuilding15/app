@@ -1,6 +1,7 @@
 import { View } from 'react-native';
 
 import { ReminderOffsetSection, SwitchRow, Text } from '@/components';
+import { useTranslator } from '@/i18n';
 
 import type { DueDate } from '../../domain/entities';
 import { reminderOffsetsFor } from '../../domain/reminder';
@@ -22,26 +23,30 @@ export function ReminderSection({
   onOffset,
   onAlarm,
 }: ReminderSectionProps) {
+  const { t } = useTranslator();
   return (
     <ReminderOffsetSection
       offsets={reminderOffsetsFor(due.hasTime)}
       value={offsetMinutes}
       timed={due.hasTime}
-      atLabel="At due time"
+      atLabel={t('At due time')}
       error={error}
       onChange={onOffset}
     >
       <View>
         <SwitchRow
-          title="Ring as an alarm"
-          subtitle="Uses the high-priority Alarms channel with a Complete, Snooze and Dismiss action."
+          title={t('Ring as an alarm')}
+          subtitle={t(
+            'Uses the high-priority Alarms channel with a Complete, Snooze and Dismiss action.',
+          )}
           value={isAlarm}
           onChange={onAlarm}
         />
         {isAlarm ? (
           <Text variant="labelSmall" tone="muted">
-            Exact delivery needs the system “Alarms & reminders” permission; without it Android may
-            deliver a few minutes late.
+            {t(
+              'Exact delivery needs the system “Alarms & reminders” permission; without it Android may deliver a few minutes late.',
+            )}
           </Text>
         ) : null}
       </View>

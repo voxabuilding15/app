@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { Button, Chip, ChipGroup, Sheet } from '@/components';
 import type { Category } from '@/core';
 import { spacing } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { AccountBalance, TransactionType } from '../../domain/entities';
 import { NO_CATEGORY, type TransactionFilter } from '../../domain/filters';
@@ -31,31 +32,32 @@ export function TransactionFilterSheet({
   onReset,
   onClose,
 }: TransactionFilterSheetProps) {
+  const { t } = useTranslator();
   return (
-    <Sheet visible={visible} title="Filter transactions" onClose={onClose}>
-      <ChipGroup title="Type">
+    <Sheet visible={visible} title={t('Filter transactions')} onClose={onClose}>
+      <ChipGroup title={t('Type')}>
         {TYPE_OPTIONS.map((option) => (
           <Chip
             key={option.value}
-            label={option.label}
+            label={t(option.label)}
             selected={filter.types.includes(option.value)}
             onPress={() => onChange({ types: toggle<TransactionType>(filter.types, option.value) })}
           />
         ))}
       </ChipGroup>
-      <ChipGroup title="Date">
+      <ChipGroup title={t('Date')}>
         {RANGE_OPTIONS.map((option) => (
           <Chip
             key={option.value}
-            label={option.label}
+            label={t(option.label)}
             selected={filter.range === option.value}
             onPress={() => onChange({ range: option.value })}
           />
         ))}
       </ChipGroup>
-      <ChipGroup title="Account">
+      <ChipGroup title={t('Account')}>
         <Chip
-          label="Any"
+          label={t('Any')}
           selected={filter.accountId === null}
           onPress={() => onChange({ accountId: null })}
         />
@@ -69,14 +71,14 @@ export function TransactionFilterSheet({
           />
         ))}
       </ChipGroup>
-      <ChipGroup title="Category">
+      <ChipGroup title={t('Category')}>
         <Chip
-          label="Any"
+          label={t('Any')}
           selected={filter.categoryId === null}
           onPress={() => onChange({ categoryId: null })}
         />
         <Chip
-          label="No category"
+          label={t('No category')}
           selected={filter.categoryId === NO_CATEGORY}
           onPress={() => onChange({ categoryId: NO_CATEGORY })}
         />
@@ -91,8 +93,8 @@ export function TransactionFilterSheet({
         ))}
       </ChipGroup>
       <View style={{ flexDirection: 'row', gap: spacing.md, justifyContent: 'flex-end' }}>
-        <Button label="Reset" variant="outlined" onPress={onReset} />
-        <Button label="Done" onPress={onClose} />
+        <Button label={t('Reset')} variant="outlined" onPress={onReset} />
+        <Button label={t('Done')} onPress={onClose} />
       </View>
     </Sheet>
   );

@@ -1,6 +1,7 @@
 import { ScrollView } from 'react-native';
 
 import { spacing } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import { Chip } from './Chip';
 
@@ -19,6 +20,7 @@ interface ChipTabsProps<T extends string> {
 
 /** A scrollable row of chips for switching between sections that do not fit a segmented control. */
 export function ChipTabs<T extends string>({ tabs, value, onChange, label }: ChipTabsProps<T>) {
+  const { t } = useTranslator();
   return (
     <ScrollView
       horizontal
@@ -34,7 +36,7 @@ export function ChipTabs<T extends string>({ tabs, value, onChange, label }: Chi
       {tabs.map((tab) => (
         <Chip
           key={tab.value}
-          label={tab.label}
+          label={t(tab.label)}
           selected={tab.value === value}
           onPress={() => onChange(tab.value)}
         />

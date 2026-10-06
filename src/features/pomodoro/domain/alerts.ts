@@ -1,11 +1,13 @@
 import type { AlertPlan } from './ports';
 import type { PomodoroSettings } from './settings';
 import { nextPhase, startPhase, wantsAutoStart, type TimerKind, type TimerState } from './timer';
+import { msg } from '@/i18n/msg';
+import { currentTranslator } from '@/i18n/translate';
 
 const PHASE_LABEL: Record<TimerKind, string> = {
-  focus: 'Focus',
-  short_break: 'Short break',
-  long_break: 'Long break',
+  focus: msg('Focus'),
+  short_break: msg('Short break'),
+  long_break: msg('Long break'),
 };
 
 /** How many phase ends are scheduled ahead when auto-start chains phases together. */
@@ -28,6 +30,7 @@ export function formatCountdown(ms: number): string {
  * start by themselves even when the app is closed, so their ends are scheduled too.
  */
 export function buildAlertPlan(state: TimerState, settings: PomodoroSettings): AlertPlan | null {
+  const { t } = currentTranslator();
   if (state.status === 'idle') {
     return null;
   }
@@ -35,13 +38,13 @@ export function buildAlertPlan(state: TimerState, settings: PomodoroSettings): A
   const live =
     state.status === 'running'
       ? {
-          title: `${PHASE_LABEL[state.kind]} in progress`,
-          body: `Ends at ${formatClock(state.endsAt)}`,
+          title: t('{value} in progress', { value: PHASE_LABEL[state.kind] }),
+          body: t('Ends at {clock}', { clock: formatClock(state.endsAt) }),
           paused: false,
         }
       : {
-          title: `${PHASE_LABEL[state.kind]} paused`,
-          body: `${formatCountdown(state.remainingMs)} left`,
+          title: t('{value} paused', { value: PHASE_LABEL[state.kind] }),
+          body: t('{countdown} left', { countdown: formatCountdown(state.remainingMs) }),
           paused: true,
         };
 
@@ -54,12 +57,12 @@ export function buildAlertPlan(state: TimerState, settings: PomodoroSettings): A
       const auto = wantsAutoStart(finished, settings);
       boundaries.push({
         at: current.endsAt,
-        title: `${PHASE_LABEL[finished]} finished`,
+        title: t('{value} finished', { value: PHASE_LABEL[finished] }),
         body: auto
-          ? `${PHASE_LABEL[next.kind]} has started`
+          ? t('{value} has started', { value: PHASE_LABEL[next.kind] })
           : next.kind === 'focus'
-            ? 'Ready for the next focus session?'
-            : `Time for a ${PHASE_LABEL[next.kind].toLowerCase()}`,
+            ? t('Ready for the next focus session?')
+            : t('Time for a {lowerCase}', { lowerCase: PHASE_LABEL[next.kind].toLowerCase() }),
       });
       current = auto
         ? startPhase(

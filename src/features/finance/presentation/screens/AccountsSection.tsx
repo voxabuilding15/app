@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import { EmptyState, StatTile, SwitchRow, ResponsiveList } from '@/components';
 import { formatMoney } from '@/core';
 import { spacing } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { AccountBalance } from '../../domain/entities';
 import { AccountRow } from '../components/AccountRow';
@@ -18,6 +19,7 @@ interface AccountsSectionProps {
 
 /** Cash, bank, savings and credit card accounts with their balances. */
 export function AccountsSection({ onShowTransactions }: AccountsSectionProps) {
+  const { t } = useTranslator();
   const currency = useCurrency();
   const vm = useAccountsViewModel();
   const { startEditing, remove, setArchived } = vm;
@@ -52,16 +54,19 @@ export function AccountsSection({ onShowTransactions }: AccountsSectionProps) {
           />
         )}
         extraData={currency}
-        noun="accounts"
+        loadingLabel={t('Loading accounts')}
+        errorTitle={t("Couldn't load accounts")}
         isLoading={vm.isLoading}
         isError={vm.isError}
         onRetry={() => void vm.refetch()}
         empty={
           <EmptyState
             icon="account-balance-wallet"
-            title="No accounts yet"
-            message="Add cash, a bank account, savings or a credit card to start tracking your money."
-            actionLabel="Add account"
+            title={t('No accounts yet')}
+            message={t(
+              'Add cash, a bank account, savings or a credit card to start tracking your money.',
+            )}
+            actionLabel={t('Add account')}
             onAction={() => startEditing(null)}
           />
         }
@@ -70,13 +75,13 @@ export function AccountsSection({ onShowTransactions }: AccountsSectionProps) {
             <View style={{ flexDirection: 'row' }}>
               <StatTile
                 icon="account-balance-wallet"
-                label="Total balance"
+                label={t('Total balance')}
                 value={formatMoney(vm.totalMinor, currency)}
-                caption="All active accounts"
+                caption={t('All active accounts')}
               />
             </View>
             <SwitchRow
-              title="Show archived accounts"
+              title={t('Show archived accounts')}
               value={vm.showArchived}
               onChange={vm.setShowArchived}
             />
@@ -84,7 +89,7 @@ export function AccountsSection({ onShowTransactions }: AccountsSectionProps) {
         }
         isRefreshing={vm.isRefreshing}
         onRefresh={() => void vm.refetch()}
-        fab={{ label: 'Add account', onPress: () => startEditing(null) }}
+        fab={{ label: t('Add account'), onPress: () => startEditing(null) }}
         notice={vm.notice}
         onDismissNotice={vm.dismissNotice}
       />

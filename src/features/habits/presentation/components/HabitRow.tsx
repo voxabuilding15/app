@@ -3,6 +3,7 @@ import { Pressable, View } from 'react-native';
 
 import { Icon, ProgressBar, SwipeableRow, Text, type SwipeAction } from '@/components';
 import { radius, spacing, useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import { progressFraction, type HabitSummary } from '../../domain/progress';
 import {
@@ -37,13 +38,14 @@ function HabitRowComponent({
   onRestore,
   onDelete,
 }: HabitRowProps) {
+  const { t } = useTranslator();
   const { colors } = useTheme();
   const { habit, current, streak } = summary;
   const archived = habit.archivedAt !== null;
   const canLog = !archived && !habit.paused;
 
   const deleteAction: SwipeAction = {
-    label: 'Delete',
+    label: t('Delete'),
     icon: 'delete',
     background: colors.error,
     foreground: colors.surface,
@@ -52,7 +54,7 @@ function HabitRowComponent({
   const rightActions: SwipeAction[] = archived
     ? [
         {
-          label: 'Restore',
+          label: t('Restore'),
           icon: 'unarchive',
           background: colors.primary,
           foreground: colors.onPrimary,
@@ -62,7 +64,7 @@ function HabitRowComponent({
       ]
     : [
         {
-          label: 'Archive',
+          label: t('Archive'),
           icon: 'archive',
           background: colors.secondaryContainer,
           foreground: colors.onSecondaryContainer,
@@ -73,7 +75,7 @@ function HabitRowComponent({
   const leftActions: SwipeAction[] = canLog
     ? [
         {
-          label: summary.skippedToday ? 'Unskip' : 'Skip today',
+          label: summary.skippedToday ? t('Unskip') : t('Skip today'),
           icon: summary.skippedToday ? 'undo' : 'skip-next',
           background: colors.secondaryContainer,
           foreground: colors.onSecondaryContainer,
@@ -85,13 +87,13 @@ function HabitRowComponent({
   const accessibilityActions = [
     ...(canLog
       ? [
-          { name: 'log', label: 'Add one' },
-          { name: 'unlog', label: 'Remove one' },
-          { name: 'skip', label: summary.skippedToday ? 'Unskip today' : 'Skip today' },
+          { name: 'log', label: t('Add one') },
+          { name: 'unlog', label: t('Remove one') },
+          { name: 'skip', label: summary.skippedToday ? t('Unskip today') : t('Skip today') },
         ]
       : []),
-    archived ? { name: 'restore', label: 'Restore' } : { name: 'archive', label: 'Archive' },
-    { name: 'delete', label: 'Delete' },
+    archived ? { name: 'restore', label: t('Restore') } : { name: 'archive', label: t('Archive') },
+    { name: 'delete', label: t('Delete') },
   ];
 
   return (

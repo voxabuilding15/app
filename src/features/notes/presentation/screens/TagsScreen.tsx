@@ -1,19 +1,21 @@
 import { Stack } from 'expo-router';
 
 import { CategoryManager } from '@/components';
+import { useTranslator } from '@/i18n';
 
 import { useTagsViewModel } from '../view-models/useTagsViewModel';
 
 export function TagsScreen() {
+  const { t } = useTranslator();
   const { refetch, ...vm } = useTagsViewModel();
   return (
     <>
-      <Stack.Screen options={{ title: 'Tags' }} />
+      <Stack.Screen options={{ title: t('Tags') }} />
       <CategoryManager
         {...vm}
-        noun={{ singular: 'tag', plural: 'tags' }}
+        noun="tag"
         onRetry={() => void refetch()}
-        emptyMessage="Tags group notes across folders, like Ideas, Recipes or Work."
+        emptyMessage={t('Tags group notes across folders, like Ideas, Recipes or Work.')}
       />
     </>
   );

@@ -1,6 +1,7 @@
 import { View } from 'react-native';
 
 import { Chip, FormSection, WRAP_ROW } from '@/components';
+import { useTranslator } from '@/i18n';
 
 import type { Label } from '../../domain/entities';
 
@@ -12,8 +13,9 @@ interface LabelSectionProps {
 }
 
 export function LabelSection({ labels, selectedIds, onToggle, onCreate }: LabelSectionProps) {
+  const { t } = useTranslator();
   return (
-    <FormSection title="Labels">
+    <FormSection title={t('Labels')}>
       <View style={WRAP_ROW}>
         {labels.map((label) => (
           <Chip
@@ -24,7 +26,12 @@ export function LabelSection({ labels, selectedIds, onToggle, onCreate }: LabelS
             onPress={() => onToggle(label.id)}
           />
         ))}
-        <Chip icon="add" label="New" accessibilityLabel="Create a label" onPress={onCreate} />
+        <Chip
+          icon="add"
+          label={t('New')}
+          accessibilityLabel={t('Create a label')}
+          onPress={onCreate}
+        />
       </View>
     </FormSection>
   );

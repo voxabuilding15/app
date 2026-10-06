@@ -5,6 +5,7 @@ import { Pressable, View } from 'react-native';
 
 import { Text } from '@/components';
 import { radius, useTheme, withAlpha } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { CalendarItem, EventItem } from '../../domain/items';
 import {
@@ -40,6 +41,7 @@ interface TimelineBlockViewProps {
  * changes the time (snapped to 15 minutes), horizontal movement changes the day.
  */
 export function TimelineBlockView({ block, metrics, onPress, onMove }: TimelineBlockViewProps) {
+  const { t } = useTranslator();
   const { colors } = useTheme();
   const { item, startMinutes, endMinutes, column, columns } = block;
   const { columnWidth, hourHeight } = metrics;
@@ -112,10 +114,16 @@ export function TimelineBlockView({ block, metrics, onPress, onMove }: TimelineB
       accessibilityActions={
         isEvent
           ? [
-              { name: 'earlier', label: `Move ${SNAP_MINUTES} minutes earlier` },
-              { name: 'later', label: `Move ${SNAP_MINUTES} minutes later` },
-              { name: 'previousDay', label: 'Move to the previous day' },
-              { name: 'nextDay', label: 'Move to the next day' },
+              {
+                name: 'earlier',
+                label: t('Move {minutes} minutes earlier', { minutes: SNAP_MINUTES }),
+              },
+              {
+                name: 'later',
+                label: t('Move {minutes} minutes later', { minutes: SNAP_MINUTES }),
+              },
+              { name: 'previousDay', label: t('Move to the previous day') },
+              { name: 'nextDay', label: t('Move to the next day') },
             ]
           : undefined
       }

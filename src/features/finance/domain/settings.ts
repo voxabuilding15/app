@@ -1,6 +1,7 @@
 import { minorDigits, type KeyValueStorage } from '@/core';
 
 import type { AccountRepository } from './ports';
+import { currentTranslator } from '@/i18n/translate';
 
 export interface CurrencyOption {
   code: string;
@@ -45,6 +46,7 @@ interface SettingsDeps {
 }
 
 export function createSettingsUseCases({ storage, accounts }: SettingsDeps) {
+  const { t } = currentTranslator();
   const isKnown = (code: string) => CURRENCIES.some((option) => option.code === code);
 
   function currency(): string {
@@ -61,7 +63,7 @@ export function createSettingsUseCases({ storage, accounts }: SettingsDeps) {
      */
     async setCurrency(code: string): Promise<SetCurrencyResult> {
       if (!isKnown(code)) {
-        return { ok: false, error: 'This currency is not supported.' };
+        return { ok: false, error: t('This currency is not supported.') };
       }
       const current = currency();
       if (code === current) {
@@ -70,7 +72,10 @@ export function createSettingsUseCases({ storage, accounts }: SettingsDeps) {
       if (minorDigits(code) !== minorDigits(current) && (await accounts.list(true)).length > 0) {
         return {
           ok: false,
-          error: `${current} and ${code} use a different number of decimals, so existing amounts would change. Delete your accounts first to switch.`,
+          error: t(
+            '{current} and {code} use a different number of decimals, so existing amounts would change. Delete your accounts first to switch.',
+            { current: current, code: code },
+          ),
         };
       }
       storage.setString(CURRENCY_KEY, code);

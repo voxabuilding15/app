@@ -2,6 +2,7 @@ import { View } from 'react-native';
 
 import { Button, Icon, PressableScale, Sheet, Text } from '@/components';
 import { MIN_TOUCH_TARGET, spacing, useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { FolderNode } from '../../domain/entities';
 import { flattenFolderTree } from '../../domain/folders';
@@ -75,6 +76,7 @@ export function FolderPickerSheet({
   onSelect,
   onClose,
 }: FolderPickerSheetProps) {
+  const { t } = useTranslator();
   const hidden = new Set<string>();
   const nodes = flattenFolderTree(tree).filter((node) => {
     if (node.id === excludeId) {
@@ -112,7 +114,7 @@ export function FolderPickerSheet({
           />
         ))}
       </View>
-      <Button label="Cancel" variant="outlined" onPress={onClose} />
+      <Button label={t('Cancel')} variant="outlined" onPress={onClose} />
     </Sheet>
   );
 }

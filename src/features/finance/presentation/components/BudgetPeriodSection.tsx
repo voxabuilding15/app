@@ -2,9 +2,11 @@ import { View } from 'react-native';
 
 import { Chip, FormSection, SegmentedControl, Text, WRAP_ROW } from '@/components';
 import type { DateKey } from '@/core';
+import { useTranslator } from '@/i18n';
 
 import { BUDGET_PERIODS, type BudgetPeriod } from '../../domain/entities';
 import { BUDGET_PERIOD_LABEL, formatDayKey } from '../format';
+import { msg } from '@/i18n/msg';
 
 const PERIOD_OPTIONS = BUDGET_PERIODS.map((value) => ({
   value,
@@ -12,9 +14,9 @@ const PERIOD_OPTIONS = BUDGET_PERIODS.map((value) => ({
 }));
 
 const PERIOD_HINT: Record<BudgetPeriod, string> = {
-  monthly: 'Starts over on the first of every month.',
-  weekly: 'Starts over every Monday.',
-  custom: 'Covers the dates you choose, such as a trip or a project.',
+  monthly: msg('Starts over on the first of every month.'),
+  weekly: msg('Starts over every Monday.'),
+  custom: msg('Covers the dates you choose, such as a trip or a project.'),
 };
 
 interface BudgetPeriodSectionProps {
@@ -36,21 +38,22 @@ export function BudgetPeriodSection({
   onPickStart,
   onPickEnd,
 }: BudgetPeriodSectionProps) {
+  const { t } = useTranslator();
   return (
-    <FormSection title="Period" error={error}>
+    <FormSection title={t('Period')} error={error}>
       <SegmentedControl options={PERIOD_OPTIONS} value={period} onChange={onPeriod} />
       {period === 'custom' && startDate !== null && endDate !== null ? (
         <View style={WRAP_ROW}>
           <Chip
             icon="event"
-            label={`From ${formatDayKey(startDate)}`}
-            accessibilityLabel={`Starts ${formatDayKey(startDate)}. Change`}
+            label={t('From {dayKey}', { dayKey: formatDayKey(startDate) })}
+            accessibilityLabel={t('Starts {dayKey}. Change', { dayKey: formatDayKey(startDate) })}
             onPress={onPickStart}
           />
           <Chip
             icon="event"
             label={`To ${formatDayKey(endDate)}`}
-            accessibilityLabel={`Ends ${formatDayKey(endDate)}. Change`}
+            accessibilityLabel={t('Ends {dayKey}. Change', { dayKey: formatDayKey(endDate) })}
             onPress={onPickEnd}
           />
         </View>

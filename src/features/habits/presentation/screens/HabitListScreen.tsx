@@ -13,6 +13,7 @@ import {
   SortSheet,
 } from '@/components';
 import { spacing, useTheme } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { HabitSummary } from '../../domain/progress';
 import { HabitFilterSheet } from '../components/HabitFilterSheet';
@@ -33,6 +34,7 @@ function Separator() {
 }
 
 function ListEmpty({ vm, onAdd }: { vm: HabitListViewModel; onAdd: () => void }) {
+  const { t } = useTranslator();
   const { colors } = useTheme();
 
   if (vm.isLoading) {
@@ -41,7 +43,7 @@ function ListEmpty({ vm, onAdd }: { vm: HabitListViewModel; onAdd: () => void })
         <ActivityIndicator
           size="large"
           color={colors.primary}
-          accessibilityLabel="Loading habits"
+          accessibilityLabel={t('Loading habits')}
         />
       </View>
     );
@@ -50,9 +52,9 @@ function ListEmpty({ vm, onAdd }: { vm: HabitListViewModel; onAdd: () => void })
     return (
       <EmptyState
         icon="error-outline"
-        title="Couldn't load habits"
-        message="Your habits are safe on this device. Try loading the list again."
-        actionLabel="Try again"
+        title={t("Couldn't load habits")}
+        message={t('Your habits are safe on this device. Try loading the list again.')}
+        actionLabel={t('Try again')}
         onAction={() => void vm.refetch()}
       />
     );
@@ -61,9 +63,9 @@ function ListEmpty({ vm, onAdd }: { vm: HabitListViewModel; onAdd: () => void })
     return (
       <EmptyState
         icon="search-off"
-        title="No matching habits"
-        message="Nothing matches your search and filters."
-        actionLabel="Clear search and filters"
+        title={t('No matching habits')}
+        message={t('Nothing matches your search and filters.')}
+        actionLabel={t('Clear search and filters')}
         onAction={vm.clearFilters}
       />
     );
@@ -72,23 +74,24 @@ function ListEmpty({ vm, onAdd }: { vm: HabitListViewModel; onAdd: () => void })
     return (
       <EmptyState
         icon="inventory-2"
-        title="No archived habits"
-        message="Archive habits you want to stop tracking without losing their history."
+        title={t('No archived habits')}
+        message={t('Archive habits you want to stop tracking without losing their history.')}
       />
     );
   }
   return (
     <EmptyState
       icon="local-fire-department"
-      title="No habits yet"
-      message="Build a routine: add a habit, set a goal and watch your streak grow."
-      actionLabel="Add habit"
+      title={t('No habits yet')}
+      message={t('Build a routine: add a habit, set a goal and watch your streak grow.')}
+      actionLabel={t('Add habit')}
       onAction={onAdd}
     />
   );
 }
 
 export function HabitListScreen() {
+  const { t } = useTranslator();
   const vm = useHabitListViewModel();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -130,13 +133,13 @@ export function HabitListScreen() {
 
   return (
     <View style={{ flex: 1, paddingTop: insets.top, backgroundColor: colors.background }}>
-      <ScreenToolbar title="Habits">
+      <ScreenToolbar title={t('Habits')}>
         <IconButton
           icon={vm.searchOpen ? 'close' : 'search'}
-          label={vm.searchOpen ? 'Close search' : 'Search habits'}
+          label={vm.searchOpen ? t('Close search') : t('Search habits')}
           onPress={vm.toggleSearch}
         />
-        <IconButton icon="folder" label="Manage habit categories" onPress={openCategories} />
+        <IconButton icon="folder" label={t('Manage habit categories')} onPress={openCategories} />
       </ScreenToolbar>
       <ListControls
         scopes={SCOPES}
@@ -145,8 +148,8 @@ export function HabitListScreen() {
         searchOpen={vm.searchOpen}
         searchText={vm.searchText}
         onSearchText={vm.setSearchText}
-        searchLabel="Search habits"
-        searchPlaceholder="Name or notes"
+        searchLabel={t('Search habits')}
+        searchPlaceholder={t('Name or notes')}
         activeFilterCount={vm.activeFilterCount}
         isFiltering={vm.isFiltering}
         onOpenFilter={() => setFilterOpen(true)}
@@ -188,7 +191,7 @@ export function HabitListScreen() {
         keyboardShouldPersistTaps="handled"
       />
 
-      <FAB icon="add" label="Add habit" onPress={openNew} />
+      <FAB icon="add" label={t('Add habit')} onPress={openNew} />
       {vm.notice ? (
         <Snackbar message={vm.notice} onDismiss={vm.dismissNotice} bottomOffset={FAB_CLEARANCE} />
       ) : null}
@@ -203,7 +206,7 @@ export function HabitListScreen() {
       />
       <SortSheet
         visible={sortOpen}
-        title="Sort habits"
+        title={t('Sort habits')}
         fields={SORT_FIELDS}
         sort={vm.sort}
         onChange={vm.setSort}

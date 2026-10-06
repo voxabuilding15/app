@@ -1,5 +1,5 @@
 import { readPrivacy } from '@/core';
-import { currentTranslator } from '@/i18n/translate';
+import { currentTranslator } from '@/i18n';
 import { kvStorage } from '@/services/storage';
 
 interface Visible {
@@ -13,12 +13,13 @@ interface Visible {
  * until the item behind them is next saved.
  */
 export function withPrivacy<T extends Visible>(input: T): T {
+  const { t } = currentTranslator();
   if (!readPrivacy(kvStorage).hideNotificationDetails) {
     return input;
   }
   return {
     ...input,
     title: 'FocusFlow',
-    body: currentTranslator().t('Open the app to see details'),
+    body: currentTranslator().t(t('Open the app to see details')),
   };
 }

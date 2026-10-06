@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { Chip, ColorSwatches, FormSection, Text, WRAP_ROW } from '@/components';
 import type { Category } from '@/core';
 import { spacing } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 interface ColorSectionProps {
   color: string | null;
@@ -12,10 +13,11 @@ interface ColorSectionProps {
 
 /** Pick a color for a note, or none. */
 export function ColorSection({ color, error, onChange }: ColorSectionProps) {
+  const { t } = useTranslator();
   return (
-    <FormSection title="Color" error={error}>
+    <FormSection title={t('Color')} error={error}>
       <View style={WRAP_ROW}>
-        <Chip label="No color" selected={color === null} onPress={() => onChange(null)} />
+        <Chip label={t('No color')} selected={color === null} onPress={() => onChange(null)} />
       </View>
       <ColorSwatches value={color ?? ''} onChange={onChange} />
     </FormSection>
@@ -31,8 +33,9 @@ interface TagsSectionProps {
 
 /** Pick any number of tags, or create a new one. */
 export function TagsSection({ tags, selectedIds, onToggle, onCreate }: TagsSectionProps) {
+  const { t } = useTranslator();
   return (
-    <FormSection title="Tags">
+    <FormSection title={t('Tags')}>
       <View style={WRAP_ROW}>
         {tags.map((tag) => (
           <Chip
@@ -43,12 +46,17 @@ export function TagsSection({ tags, selectedIds, onToggle, onCreate }: TagsSecti
             onPress={() => onToggle(tag.id)}
           />
         ))}
-        <Chip icon="add" label="New" accessibilityLabel="Create a tag" onPress={onCreate} />
+        <Chip
+          icon="add"
+          label={t('New')}
+          accessibilityLabel={t('Create a tag')}
+          onPress={onCreate}
+        />
       </View>
       {tags.length === 0 ? (
         <View style={{ paddingHorizontal: spacing.xs }}>
           <Text variant="labelSmall" tone="muted">
-            Tags group notes across folders, like Ideas or Recipes.
+            {t('Tags group notes across folders, like Ideas or Recipes.')}
           </Text>
         </View>
       ) : null}

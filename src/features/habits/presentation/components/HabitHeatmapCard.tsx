@@ -4,6 +4,7 @@ import { View, type LayoutChangeEvent } from 'react-native';
 import { Card, Heatmap, Text, fitHeatmap } from '@/components';
 import type { DateKey } from '@/core';
 import { spacing, useTheme, withAlpha } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { Habit } from '../../domain/entities';
 import type { HabitEvaluator } from '../../domain/progress';
@@ -35,6 +36,7 @@ export function HabitHeatmapCard({
   selectedDay,
   onSelectDay,
 }: HabitHeatmapCardProps) {
+  const { t } = useTranslator();
   const { colors } = useTheme();
   const [width, setWidth] = useState(0);
 
@@ -53,7 +55,7 @@ export function HabitHeatmapCard({
   return (
     <Card style={{ gap: spacing.md }}>
       <Text variant="titleMedium" accessibilityRole="header">
-        History
+        {t('History')}
       </Text>
       <View
         testID="heatmap-container"
@@ -69,7 +71,7 @@ export function HabitHeatmapCard({
             gap={GAP}
             selectedKey={selectedDay}
             onPressCell={onSelectDay}
-            label={`Completion history for the last ${weeks} weeks`}
+            label={t('Completion history for the last {weeks} weeks', { weeks: weeks })}
           />
         ) : null}
       </View>
@@ -77,7 +79,7 @@ export function HabitHeatmapCard({
         style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: spacing.sm }}
       >
         <Text variant="labelSmall" tone="muted">
-          Less
+          {t('Less')}
         </Text>
         {LEVELS.map((alpha) => (
           <LegendCell
@@ -86,10 +88,10 @@ export function HabitHeatmapCard({
           />
         ))}
         <Text variant="labelSmall" tone="muted">
-          More
+          {t('More')}
         </Text>
         <Text variant="labelSmall" tone="muted">
-          · Dashed: skipped or not scheduled · Grey: paused
+          {t('· Dashed: skipped or not scheduled · Grey: paused')}
         </Text>
       </View>
     </Card>

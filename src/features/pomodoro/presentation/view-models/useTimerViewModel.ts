@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 
 import { useNotice } from '@/hooks';
+import { useTranslator } from '@/i18n';
 
 import type { SessionLinks, TimerKind, TimerState } from '../../domain/timer';
 import type { TimerResult } from '../../domain/timer-usecases';
@@ -25,6 +26,7 @@ export interface TimerViewModel {
 }
 
 export function useTimerViewModel(): TimerViewModel {
+  const { t } = useTranslator();
   const state = useTimerState();
   const actions = useTimerActions();
   const targets = useLinkTargets();
@@ -38,14 +40,14 @@ export function useTimerViewModel(): TimerViewModel {
         const result = await action();
         if (result.alerts === 'blocked') {
           show({
-            message: 'Notifications are off, so the timer cannot alert you when a phase ends.',
+            message: t('Notifications are off, so the timer cannot alert you when a phase ends.'),
           });
         }
       } catch {
-        show({ message: "Couldn't update the timer. Try again." });
+        show({ message: t("Couldn't update the timer. Try again.") });
       }
     },
-    [show],
+    [show, t],
   );
 
   return {

@@ -1,3 +1,4 @@
+import { currentTranslator } from '@/i18n/translate';
 export type AmbientSound = 'none' | 'white-noise' | 'rain' | 'forest' | 'coffee-shop';
 
 export const AMBIENT_SOUNDS: readonly AmbientSound[] = [
@@ -67,12 +68,13 @@ const FLAGS = ['autoStartBreaks', 'autoStartFocus', 'tickSound', 'vibrate', 'exa
 export type SettingsErrors = Partial<Record<NumericSetting, string>>;
 
 export function validateSettings(settings: PomodoroSettings): SettingsErrors {
+  const { t } = currentTranslator();
   const errors: SettingsErrors = {};
   for (const key of NUMERIC_SETTINGS) {
     const { min, max } = SETTING_RANGES[key];
     const value = settings[key];
     if (!Number.isInteger(value) || value < min || value > max) {
-      errors[key] = `Choose a whole number from ${min} to ${max}`;
+      errors[key] = t('Choose a whole number from {min} to {max}', { min: min, max: max });
     }
   }
   return errors;

@@ -3,6 +3,7 @@ import { View } from 'react-native';
 
 import { Button, Chip, Icon, Input, Sheet, Text } from '@/components';
 import { spacing } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import type { FolderNode } from '../../domain/entities';
 import { flattenFolderTree, folderPath } from '../../domain/folders';
@@ -20,16 +21,17 @@ interface FolderSheetProps {
 
 /** Sheet to create, rename or move a folder. Mount only while open so state starts fresh. */
 export function FolderSheet({ folder, parentId, tree, onClose }: FolderSheetProps) {
+  const { t } = useTranslator();
   const editor = useFolderEditor(folder, parentId, onClose);
   const [picking, setPicking] = useState(false);
   const flat = flattenFolderTree(tree);
-  const where = editor.parentId === null ? 'Top level' : folderPath(flat, editor.parentId);
+  const where = editor.parentId === null ? t('Top level') : folderPath(flat, editor.parentId);
 
   return (
     <>
-      <Sheet visible title={folder === null ? 'New folder' : 'Edit folder'} onClose={onClose}>
+      <Sheet visible title={folder === null ? t('New folder') : t('Edit folder')} onClose={onClose}>
         <Input
-          label="Name"
+          label={t('Name')}
           value={editor.name}
           onChangeText={editor.setName}
           error={editor.errors.name}
@@ -40,13 +42,13 @@ export function FolderSheet({ folder, parentId, tree, onClose }: FolderSheetProp
         />
         <View style={{ gap: spacing.sm }}>
           <Text variant="labelSmall" tone={editor.errors.parent ? 'error' : 'muted'}>
-            Inside
+            {t('Inside')}
           </Text>
           <View style={{ flexDirection: 'row' }}>
             <Chip
               icon="folder"
               label={where}
-              accessibilityLabel={`Inside ${where}. Change`}
+              accessibilityLabel={t('Inside {where}. Change', { where: where })}
               onPress={() => setPicking(true)}
             />
           </View>
@@ -68,16 +70,16 @@ export function FolderSheet({ folder, parentId, tree, onClose }: FolderSheetProp
           </Text>
         ) : null}
         <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.md }}>
-          <Button label="Cancel" variant="outlined" onPress={onClose} />
-          <Button label="Save" loading={editor.saving} onPress={() => void editor.submit()} />
+          <Button label={t('Cancel')} variant="outlined" onPress={onClose} />
+          <Button label={t('Save')} loading={editor.saving} onPress={() => void editor.submit()} />
         </View>
       </Sheet>
       {picking ? (
         <FolderPickerSheet
-          title="Move inside"
+          title={t('Move inside')}
           tree={tree}
           selected={editor.parentId}
-          noneLabel="Top level"
+          noneLabel={t('Top level')}
           excludeId={folder?.id ?? null}
           onSelect={editor.setParentId}
           onClose={() => setPicking(false)}

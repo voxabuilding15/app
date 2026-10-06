@@ -1,15 +1,18 @@
 import { addDaysToKey, dateKeyToNoon, hasWeekday, type DateKey } from '@/core';
-import { WEEKDAY_DISPLAY_ORDER, WEEKDAY_LABELS } from '@/components';
+import { WEEKDAY_DISPLAY_ORDER } from '@/components';
+import { weekdayName } from '@/i18n/formatting';
 
 import type { Habit, HabitPeriod } from '../domain/entities';
 import type { HabitSummary, UnitProgress, UnitState } from '../domain/progress';
 import { ALL_WEEKDAYS } from '../domain/schedule';
+import { msg } from '@/i18n/msg';
+import { currentTranslator } from '@/i18n/translate';
 
 const PERIOD_NOUN: Record<HabitPeriod, string> = { daily: 'day', weekly: 'week', monthly: 'month' };
 const PERIOD_PHRASE: Record<HabitPeriod, string> = {
   daily: 'today',
-  weekly: 'this week',
-  monthly: 'this month',
+  weekly: msg('this week'),
+  monthly: msg('this month'),
 };
 
 export function periodNoun(period: HabitPeriod, count = 1): string {
@@ -18,24 +21,28 @@ export function periodNoun(period: HabitPeriod, count = 1): string {
 
 /** "Every day", "Mon, Wed, Fri", "Weekly" or "Monthly". */
 export function describeFrequency(habit: Pick<Habit, 'period' | 'weekdays'>): string {
+  const { t } = currentTranslator();
   if (habit.period === 'weekly') {
-    return 'Weekly';
+    return t('Weekly');
   }
   if (habit.period === 'monthly') {
-    return 'Monthly';
+    return t('Monthly');
   }
   if (habit.weekdays === ALL_WEEKDAYS) {
-    return 'Every day';
+    return t('Every day');
   }
   return WEEKDAY_DISPLAY_ORDER.filter((day) => hasWeekday(habit.weekdays, day))
-    .map((day) => WEEKDAY_LABELS[day])
+    .map((day) => weekdayName(day))
     .join(', ');
 }
 
 /** "3 times per week" or "Once per day". */
 export function describeGoal(habit: Pick<Habit, 'period' | 'goalCount'>): string {
+  const { t } = currentTranslator();
   const unit = PERIOD_NOUN[habit.period];
-  return habit.goalCount === 1 ? `Once per ${unit}` : `${habit.goalCount} times per ${unit}`;
+  return habit.goalCount === 1
+    ? t('Once per {unit}', { unit: unit })
+    : t('{goalCount} times per {unit}', { goalCount: habit.goalCount, unit: unit });
 }
 
 /** "2 of 3 today". */
@@ -51,11 +58,11 @@ export function describeStreak(streak: number, period: HabitPeriod): string {
 }
 
 const STATE_LABEL: Record<UnitState, string> = {
-  satisfied: 'Done',
-  missed: 'Missed',
-  excused: 'Skipped',
+  satisfied: msg('Done'),
+  missed: msg('Missed'),
+  excused: msg('Skipped'),
   pending: 'To do',
-  off: 'Not scheduled',
+  off: msg('Not scheduled'),
 };
 
 export function describeState(state: UnitState): string {
@@ -82,10 +89,11 @@ export function formatDay(key: DateKey): string {
 
 /** "Today", "Yesterday" or the formatted day. */
 export function formatRelativeDay(key: DateKey, today: DateKey): string {
+  const { t } = currentTranslator();
   if (key === today) {
-    return 'Today';
+    return t('Today');
   }
-  return key === addDaysToKey(today, -1) ? 'Yesterday' : formatDay(key);
+  return key === addDaysToKey(today, -1) ? t('Yesterday') : formatDay(key);
 }
 
 export function shortMonth(key: DateKey): string {

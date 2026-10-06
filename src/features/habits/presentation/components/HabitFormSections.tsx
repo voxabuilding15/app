@@ -13,6 +13,7 @@ import {
   type IconName,
 } from '@/components';
 import { spacing } from '@/theme';
+import { useTranslator } from '@/i18n';
 
 import { FREQUENCY_PRESETS, presetOf, type FrequencyPreset } from '../../domain/schedule';
 import type { HabitDraft, HabitDraftErrors } from '../../domain/validation';
@@ -21,12 +22,13 @@ import { periodNoun, formatReminderTime } from '../format';
 import { HABIT_ICONS } from '../icons';
 
 import { HabitIconBubble } from './HabitIconBubble';
+import { msg } from '@/i18n/msg';
 
 const PRESET_LABEL: Record<FrequencyPreset, string> = {
-  daily: 'Daily',
-  weekly: 'Weekly',
-  monthly: 'Monthly',
-  custom: 'Custom days',
+  daily: msg('Daily'),
+  weekly: msg('Weekly'),
+  monthly: msg('Monthly'),
+  custom: msg('Custom days'),
 };
 
 interface AppearanceSectionProps {
@@ -36,12 +38,13 @@ interface AppearanceSectionProps {
 }
 
 export function AppearanceSection({ draft, onIcon, onColor }: AppearanceSectionProps) {
+  const { t } = useTranslator();
   return (
-    <FormSection title="Look">
+    <FormSection title={t('Look')}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md }}>
         <HabitIconBubble icon={draft.icon} color={draft.color} size={56} />
         <Text tone="muted" style={{ flex: 1 }}>
-          Pick an icon and a color to recognize this habit at a glance.
+          {t('Pick an icon and a color to recognize this habit at a glance.')}
         </Text>
       </View>
       <IconPicker
@@ -70,10 +73,11 @@ export function FrequencySection({
   onWeekdays,
   onGoal,
 }: FrequencySectionProps) {
+  const { t } = useTranslator();
   const preset = presetOf(draft);
 
   return (
-    <FormSection title="Frequency and goal" error={errors.weekdays ?? errors.goal}>
+    <FormSection title={t('Frequency and goal')} error={errors.weekdays ?? errors.goal}>
       <View style={WRAP_ROW}>
         {FREQUENCY_PRESETS.map((option) => (
           <Chip
@@ -87,7 +91,7 @@ export function FrequencySection({
       {preset === 'custom' ? (
         <View style={{ gap: spacing.sm }}>
           <Text variant="labelSmall" tone="muted">
-            Scheduled days
+            {t('Scheduled days')}
           </Text>
           <WeekdayChips mask={draft.weekdays} onChange={onWeekdays} />
         </View>
@@ -100,9 +104,11 @@ export function FrequencySection({
           gap: spacing.md,
         }}
       >
-        <Text style={{ flex: 1 }}>{`Goal per ${periodNoun(draft.period)}`}</Text>
+        <Text style={{ flex: 1 }}>
+          {t('Goal per {periodNoun}', { periodNoun: periodNoun(draft.period) })}
+        </Text>
         <NumberStepper
-          label={`Goal per ${periodNoun(draft.period)}`}
+          label={t('Goal per {periodNoun}', { periodNoun: periodNoun(draft.period) })}
           value={draft.goalCount}
           min={1}
           max={MAX_GOAL}
@@ -111,8 +117,10 @@ export function FrequencySection({
       </View>
       <Text variant="labelSmall" tone="muted">
         {draft.period === 'daily'
-          ? 'Complete the goal on each scheduled day to keep your streak.'
-          : `Reach the goal within each ${periodNoun(draft.period)} to keep your streak.`}
+          ? t('Complete the goal on each scheduled day to keep your streak.')
+          : t('Reach the goal within each {periodNoun} to keep your streak.', {
+              periodNoun: periodNoun(draft.period),
+            })}
       </Text>
     </FormSection>
   );
@@ -131,14 +139,15 @@ export function HabitReminderSection({
   onToggle,
   onChooseTime,
 }: ReminderSectionProps) {
+  const { t } = useTranslator();
   return (
-    <FormSection title="Reminder" error={error}>
+    <FormSection title={t('Reminder')} error={error}>
       <SwitchRow
-        title="Remind me"
+        title={t('Remind me')}
         subtitle={
           draft.period === 'daily' && draft.weekdays !== 0b1111111
-            ? 'On the scheduled days'
-            : 'Every day'
+            ? t('On the scheduled days')
+            : t('Every day')
         }
         value={draft.reminderTime !== null}
         onChange={onToggle}
@@ -149,7 +158,9 @@ export function HabitReminderSection({
             icon="schedule"
             label={formatReminderTime(draft.reminderTime)}
             selected
-            accessibilityLabel={`Reminder time ${formatReminderTime(draft.reminderTime)}. Change`}
+            accessibilityLabel={t('Reminder time {reminderTime}. Change', {
+              reminderTime: formatReminderTime(draft.reminderTime),
+            })}
             onPress={onChooseTime}
           />
         </View>

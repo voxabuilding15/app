@@ -30,7 +30,7 @@ export function QuickActions() {
         {actions.map((action) => (
           <Button
             key={action.href}
-            label={action.label}
+            label={t(action.label)}
             icon={action.icon}
             variant="tonal"
             onPress={() => router.navigate(action.href)}
