@@ -16,17 +16,17 @@ interface PeriodNavigatorProps {
 }
 
 const PREVIOUS: Record<CalendarView, string> = {
-  month: msg('Previous month'),
-  week: msg('Previous week'),
-  day: msg('Previous day'),
-  agenda: msg('Previous days'),
+  month: msg('Show previous month'),
+  week: msg('Show previous week'),
+  day: msg('Show previous day'),
+  agenda: msg('Show previous days'),
 };
 
 const NEXT: Record<CalendarView, string> = {
-  month: msg('Next month'),
-  week: msg('Next week'),
-  day: msg('Next day'),
-  agenda: msg('Next days'),
+  month: msg('Show next month'),
+  week: msg('Show next week'),
+  day: msg('Show next day'),
+  agenda: msg('Show next days'),
 };
 
 /** Title of the period shown with previous, next and "Today" controls. */

@@ -70,6 +70,8 @@
   "Sign in to back up online": "Sign in to back up online",
   "The backup could not be restored, so nothing was changed.": "The backup could not be restored, so nothing was changed.",
   "The backup could not be restored, so nothing was changed. ({reason})": "The backup could not be restored, so nothing was changed. ({reason})",
+  "The backup could not be stored.": "The backup could not be stored.",
+  "The backup refers to items that it does not contain.": "The backup refers to items that it does not contain.",
   "The backup's version replaces yours": "The backup's version replaces yours",
   "The most recently edited version is kept": "The most recently edited version is kept",
   "This backup file is damaged or was changed, so it cannot be trusted.": "This backup file is damaged or was changed, so it cannot be trusted.",

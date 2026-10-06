@@ -11,6 +11,7 @@ import {
   type Schema,
   type TableInfo,
 } from '../domain/schema';
+import { currentTranslator } from '@/i18n/translate';
 
 interface MasterRow {
   name: string;
@@ -89,6 +90,7 @@ export class SqliteBackupStore implements BackupStore {
   }
 
   async replaceAll(data: TableData): Promise<ApplyResult> {
+    const { t } = currentTranslator();
     const schema = await this.schema();
     const result: ApplyResult = { inserted: 0, updated: 0, skipped: 0, repaired: 0 };
     try {
@@ -105,7 +107,10 @@ export class SqliteBackupStore implements BackupStore {
           }
         }
         if (this.findOrphans(schema).length > 0) {
-          throw new RestoreError('invalid', 'The backup refers to items that it does not contain.');
+          throw new RestoreError(
+            'invalid',
+            t('The backup refers to items that it does not contain.'),
+          );
         }
       });
     } catch (error) {
@@ -114,7 +119,7 @@ export class SqliteBackupStore implements BackupStore {
       }
       throw new RestoreError(
         'incompatible',
-        error instanceof Error ? error.message : 'The backup could not be stored.',
+        error instanceof Error ? error.message : t('The backup could not be stored.'),
       );
     }
     return result;

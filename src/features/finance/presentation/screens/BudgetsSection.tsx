@@ -13,7 +13,7 @@ import { useBudgetsViewModel } from '../view-models/useBudgetsViewModel';
 
 /** Weekly, monthly and custom budgets with how much of each is spent. */
 export function BudgetsSection() {
-  const { t } = useTranslator();
+  const { t, tn } = useTranslator();
   const router = useRouter();
   const { colors } = useTheme();
   const currency = useCurrency();
@@ -72,9 +72,11 @@ export function BudgetsSection() {
             >
               <Icon name="warning" color={colors.onErrorContainer} />
               <Text style={{ flex: 1, color: colors.onErrorContainer }}>
-                {vm.overCount === 1
-                  ? t('1 budget is over its limit')
-                  : t('{overCount} budgets are over their limit', { overCount: vm.overCount })}
+                {tn(
+                  vm.overCount,
+                  '{count} budget is over its limit',
+                  '{count} budgets are over their limit',
+                )}
               </Text>
             </View>
           </Card>

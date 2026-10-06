@@ -1,3 +1,24 @@
 {
-  "Open the app to see details": "Ouvrez l'application pour voir les détails"
+  "A short overview of your day": "Un bref aperçu de votre journée",
+  "Alarms": "Alarmes",
+  "Alarms that ring at an exact time": "Alarmes qui sonnent à une heure précise",
+  "Daily nudges to complete your habits": "Petits rappels quotidiens pour accomplir vos habitudes",
+  "Daily summary": "Résumé quotidien",
+  "Dismiss": "Ignorer",
+  "Event reminders": "Rappels d'événements",
+  "Expense reminders": "Rappels de dépenses",
+  "Focus and break session alerts": "Alertes des séances de concentration et des pauses",
+  "General": "Général",
+  "General FocusFlow notifications": "Notifications générales de FocusFlow",
+  "Habit reminders": "Rappels d'habitudes",
+  "Note reminders": "Rappels de notes",
+  "Open the app to see details": "Ouvrez l'application pour voir les détails",
+  "Reminders attached to your notes": "Rappels associés à vos notes",
+  "Reminders before calendar events": "Rappels avant les événements du calendrier",
+  "Reminders for tasks that are due": "Rappels des tâches à échéance",
+  "Reminders to log expenses and review your budget": "Rappels pour saisir vos dépenses et revoir votre budget",
+  "Running timer": "Minuteur en cours",
+  "Snooze": "Reporter",
+  "Task reminders": "Rappels de tâches",
+  "The ongoing notification with timer controls": "La notification permanente avec les commandes du minuteur"
 }

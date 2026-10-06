@@ -4,7 +4,6 @@ import { reportToCsv } from './export-csv';
 import { reportToPdf } from './export-pdf';
 import type { Words } from './summary';
 import type { StatsReport } from './usecases';
-import { currentTranslator } from '@/i18n/translate';
 
 export type ExportFormat = 'csv' | 'pdf';
 
@@ -23,9 +22,10 @@ interface ExportDeps {
 
 /** Old exports are cleared so the cache does not fill up. */
 const KEEP_EXPORTS = 10;
+/** Lets spreadsheet apps read the file as UTF-8, so accents and Arabic letters come out right. */
+const BYTE_ORDER_MARK = '\uFEFF';
 
 export function createExportUseCases({ files, clock }: ExportDeps) {
-  const { t } = currentTranslator();
   return {
     async exportReport(
       report: StatsReport,
@@ -37,13 +37,13 @@ export function createExportUseCases({ files, clock }: ExportDeps) {
       const path = `exports/${name}`;
       const file =
         format === 'csv'
-          ? await files.writeText('cache', path, reportToCsv(report, words))
+          ? await files.writeText('cache', path, `${BYTE_ORDER_MARK}${reportToCsv(report, words)}`)
           : await files.writeBytes('cache', path, reportToPdf(report, words));
 
       const old = (await files.list('cache', 'exports')).slice(KEEP_EXPORTS);
       await Promise.all(old.map((entry) => files.remove('cache', entry.path)));
 
-      const shared = await files.share(file, MIME[format], words.t(t('Share statistics')));
+      const shared = await files.share(file, MIME[format], words.t('Share statistics'));
       return { file, shared };
     },
   };

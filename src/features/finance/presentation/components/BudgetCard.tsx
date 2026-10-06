@@ -70,7 +70,7 @@ function BudgetCardComponent({ progress, currency, onPress, onDelete }: BudgetCa
             progress={fraction}
             color={barColor}
             height={10}
-            label={t('{round}% of the budget spent', { round: Math.round(fraction * 100) })}
+            label={t('{percent}% of the budget spent', { percent: Math.round(fraction * 100) })}
           />
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: spacing.md }}>
             <Text variant="bodyMedium">

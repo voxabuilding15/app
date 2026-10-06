@@ -20,8 +20,8 @@ export function ProgressSummary({ stats, onShowOverdue }: ProgressSummaryProps) 
       : doneToday === dueToday
         ? t('All done for today')
         : t('{doneToday} of {dueToday} due today done', {
-            doneToday: doneToday,
-            dueToday: dueToday,
+            doneToday,
+            dueToday,
           });
 
   return (
@@ -34,8 +34,8 @@ export function ProgressSummary({ stats, onShowOverdue }: ProgressSummaryProps) 
           <ProgressBar
             progress={doneToday / dueToday}
             label={t('{doneToday} of {dueToday} tasks due today are done', {
-              doneToday: doneToday,
-              dueToday: dueToday,
+              doneToday,
+              dueToday,
             })}
           />
         ) : null}

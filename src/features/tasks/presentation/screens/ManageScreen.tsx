@@ -15,6 +15,7 @@ import { useTranslator } from '@/i18n';
 
 import { useManageViewModel, type ManageKind } from '../view-models/useManageViewModel';
 import { msg } from '@/i18n/msg';
+import { NAMED_ITEM_TEXT } from '@/hooks';
 
 const KIND_OPTIONS = [
   { value: 'category', label: msg('Categories') },
@@ -25,8 +26,7 @@ export function ManageScreen() {
   const { t } = useTranslator();
   const { colors } = useTheme();
   const vm = useManageViewModel();
-  const noun = vm.kind === 'category' ? 'category' : 'label';
-  const plural = vm.kind === 'category' ? 'categories' : 'labels';
+  const words = NAMED_ITEM_TEXT[vm.kind === 'category' ? 'category' : 'label'];
 
   return (
     <>
@@ -39,7 +39,7 @@ export function ManageScreen() {
           ) : vm.isError ? (
             <EmptyState
               icon="error-outline"
-              title={t("Couldn't load {plural}", { plural })}
+              title={t(words.loadError)}
               message={t('Your data is safe on this device. Try again.')}
               actionLabel={t('Try again')}
               onAction={() => void vm.refetch()}
@@ -47,26 +47,26 @@ export function ManageScreen() {
           ) : vm.items.length === 0 ? (
             <EmptyState
               icon={vm.kind === 'category' ? 'folder' : 'label'}
-              title={t('No {plural} yet', { plural })}
+              title={t(words.empty)}
               message={
                 vm.kind === 'category'
                   ? t('Categories group tasks, like Work or Home.')
                   : t('Labels tag tasks across categories, like Errand or Waiting.')
               }
-              actionLabel={t('Add {noun}', { noun })}
+              actionLabel={t(words.add)}
               onAction={() => vm.startEditing(null)}
             />
           ) : (
             <NamedItemList items={vm.items} onEdit={vm.startEditing} onDelete={vm.remove} />
           )}
         </Screen>
-        <FAB icon="add" label={t('Add {noun}', { noun })} onPress={() => vm.startEditing(null)} />
+        <FAB icon="add" label={t(words.add)} onPress={() => vm.startEditing(null)} />
         {vm.failure ? <Snackbar message={vm.failure} onDismiss={vm.dismissFailure} /> : null}
       </View>
 
       {vm.editing ? (
         <NameColorSheet
-          title={`${vm.editing.item ? t('Edit') : t('New')} ${noun}`}
+          title={t(vm.editing.item ? words.edit : words.create)}
           initialName={vm.editing.item?.name ?? ''}
           initialColor={vm.editing.item?.color ?? ACCENT_COLORS[0]}
           onSave={vm.save}

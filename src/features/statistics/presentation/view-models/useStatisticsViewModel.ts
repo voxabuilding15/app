@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 
 import { toDateKey, useContainer, type DateKey } from '@/core';
 import { useNotice } from '@/hooks';
-import { useTranslator } from '@/i18n';
+import { LANGUAGE_INFO, translatorFor, useTranslator } from '@/i18n';
 
 import type { ExportFormat } from '../../domain/export-usecases';
 import { periodRange, shiftAnchor, type StatsPeriod } from '../../domain/range';
@@ -16,7 +16,7 @@ export type ChartMetric = Metric | 'spending';
 export function useStatisticsViewModel() {
   const { clock } = useContainer();
   const { exports } = useStatisticsModule();
-  const { t, locale } = useTranslator();
+  const { t, locale, language } = useTranslator();
   const { notice, show, dismiss } = useNotice();
   const [period, setPeriod] = useState<StatsPeriod>('week');
   const [anchor, setAnchor] = useState<DateKey>(() => toDateKey(clock.now()));
@@ -50,11 +50,16 @@ export function useStatisticsViewModel() {
       }
       setExporting(format);
       try {
-        const result = await exports.exportReport(report, format, { t, locale });
+        // The PDF's built-in fonts only have Latin letters, so it is written in English otherwise.
+        const inEnglish = format === 'pdf' && !LANGUAGE_INFO[language].latin;
+        const words = inEnglish ? translatorFor('en') : { t, locale };
+        const result = await exports.exportReport(report, format, words);
         show({
-          message: result.shared
-            ? t('Report exported')
-            : t('Report saved, but no app can open it on this device'),
+          message: !result.shared
+            ? t('Report saved, but no app can open it on this device')
+            : inEnglish
+              ? t('Report exported in English, because PDF reports cannot show this language yet')
+              : t('Report exported'),
         });
       } catch {
         show({ message: t("Couldn't export the report. Try again.") });
@@ -62,7 +67,7 @@ export function useStatisticsViewModel() {
         setExporting(null);
       }
     },
-    [query.data, exporting, exports, t, locale, show],
+    [query.data, exporting, exports, t, locale, language, show],
   );
 
   return {

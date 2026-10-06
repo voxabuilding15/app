@@ -40,7 +40,7 @@ export function HistoryPanel({ vm }: { vm: HistoryViewModel }) {
       />
       {vm.isError ? (
         <View style={{ gap: spacing.md, alignItems: 'center' }}>
-          <Text tone="error">{t('Couldn&apos;t load your history.')}</Text>
+          <Text tone="error">{t("Couldn't load your history.")}</Text>
           <Button label={t('Try again')} variant="tonal" onPress={() => void vm.refetch()} />
         </View>
       ) : vm.sessions.length === 0 && !vm.isLoading ? (

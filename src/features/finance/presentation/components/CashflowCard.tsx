@@ -27,10 +27,10 @@ export function CashflowCard({ points, currency }: CashflowCardProps) {
         {t('Cashflow')}
       </Text>
       <GroupedBarChart
-        label={t('Net cashflow for the last {length} months', { length: points.length })}
+        label={t('Net cashflow for the last {months} months', { months: points.length })}
         height={160}
         showLegend={false}
-        series={[{ name: 'Net', color: colors.success, negativeColor: colors.error }]}
+        series={[{ name: t('Net'), color: colors.success, negativeColor: colors.error }]}
         data={points.map((point) => ({
           label: formatMonth(point.month, 'short'),
           values: [point.netMinor],

@@ -1,4 +1,4 @@
-import { currentTranslator } from '@/i18n/translate'; /** A tiny PDF writer: pages of text, rules and filled boxes, in the two standard fonts. */
+/** A tiny PDF writer: pages of text, rules and filled boxes, in the two standard fonts. */
 
 export const PAGE_WIDTH = 595;
 export const PAGE_HEIGHT = 842;
@@ -61,10 +61,9 @@ export class PdfDocument {
   }
 
   private commands(): string[] {
-    const { t } = currentTranslator();
     const page = this.pages[this.pages.length - 1];
     if (page === undefined) {
-      throw new Error(t('Add a page first'));
+      throw new Error('Add a page first');
     }
     return page;
   }
@@ -95,34 +94,24 @@ export class PdfDocument {
 
   /** The finished file as bytes. */
   build(title: string): Uint8Array {
-    const { t } = currentTranslator();
     const objects: string[] = [];
     const pageIds = this.pages.map((_, index) => 5 + index * 2);
-    objects[1] = t('<< /Type /Catalog /Pages 2 0 R >>');
-    objects[2] = t('<< /Type /Pages /Kids [{join}] /Count {length} >>', {
-      join: pageIds.map((id) => `${id} 0 R`).join(' '),
-      length: pageIds.length,
-    });
-    objects[3] = t(
-      '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>',
-    );
-    objects[4] = t(
-      '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>',
-    );
+    objects[1] = '<< /Type /Catalog /Pages 2 0 R >>';
+    objects[2] = `<< /Type /Pages /Kids [${pageIds.map((id) => `${id} 0 R`).join(' ')}] /Count ${pageIds.length} >>`;
+    objects[3] =
+      '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>';
+    objects[4] =
+      '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>';
     this.pages.forEach((commands, index) => {
       const pageId = 5 + index * 2;
       const stream = commands.join('\n');
       objects[pageId] =
-        t('<< /Type /Page /Parent 2 0 R /MediaBox [0 0 {width} {height}] ', {
-          width: PAGE_WIDTH,
-          height: PAGE_HEIGHT,
-        }) + `/Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${pageId + 1} 0 R >>`;
+        `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PAGE_WIDTH} ${PAGE_HEIGHT}] ` +
+        `/Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${pageId + 1} 0 R >>`;
       objects[pageId + 1] = `<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`;
     });
     const infoId = objects.length;
-    objects[infoId] = t('<< /Title ({escapePdfText}) /Producer (FocusFlow) >>', {
-      escapePdfText: escapePdfText(title),
-    });
+    objects[infoId] = `<< /Title (${escapePdfText(title)}) /Producer (FocusFlow) >>`;
 
     let out = '%PDF-1.4\n';
     const offsets: number[] = [];
@@ -131,7 +120,7 @@ export class PdfDocument {
       out += `${id} 0 obj\n${objects[id]}\nendobj\n`;
     }
     const xref = out.length;
-    out += t('xref\n0 {length}\n0000000000 65535 f \n', { length: objects.length });
+    out += `xref\n0 ${objects.length}\n0000000000 65535 f \n`;
     for (let id = 1; id < objects.length; id += 1) {
       out += `${String(offsets[id]).padStart(10, '0')} 00000 n \n`;
     }

@@ -83,7 +83,7 @@ export function describeNote(note: NoteSummary, now: number): string {
     note.favorite ? 'favorite' : null,
     note.folder ? `in ${note.folder.name}` : null,
     note.tags.length > 0
-      ? t('tags {join}', { join: note.tags.map((tag) => tag.name).join(', ') })
+      ? t('tags {list}', { list: note.tags.map((tag) => tag.name).join(t(', ')) })
       : null,
     note.checklistTotal > 0
       ? t('{checklistDone} of {checklistTotal} tasks done', {

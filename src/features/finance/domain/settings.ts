@@ -2,6 +2,7 @@ import { minorDigits, type KeyValueStorage } from '@/core';
 
 import type { AccountRepository } from './ports';
 import { currentTranslator } from '@/i18n/translate';
+import { msg } from '@/i18n/msg';
 
 export interface CurrencyOption {
   code: string;
@@ -9,30 +10,30 @@ export interface CurrencyOption {
 }
 
 export const CURRENCIES: readonly CurrencyOption[] = [
-  { code: 'USD', name: 'US dollar' },
-  { code: 'EUR', name: 'Euro' },
-  { code: 'GBP', name: 'British pound' },
-  { code: 'JPY', name: 'Japanese yen' },
-  { code: 'CNY', name: 'Chinese yuan' },
-  { code: 'INR', name: 'Indian rupee' },
-  { code: 'CAD', name: 'Canadian dollar' },
-  { code: 'AUD', name: 'Australian dollar' },
-  { code: 'CHF', name: 'Swiss franc' },
-  { code: 'SEK', name: 'Swedish krona' },
-  { code: 'NOK', name: 'Norwegian krone' },
-  { code: 'DKK', name: 'Danish krone' },
-  { code: 'PLN', name: 'Polish zloty' },
-  { code: 'TRY', name: 'Turkish lira' },
-  { code: 'MXN', name: 'Mexican peso' },
-  { code: 'BRL', name: 'Brazilian real' },
-  { code: 'ZAR', name: 'South African rand' },
-  { code: 'NGN', name: 'Nigerian naira' },
-  { code: 'EGP', name: 'Egyptian pound' },
-  { code: 'MAD', name: 'Moroccan dirham' },
-  { code: 'AED', name: 'UAE dirham' },
-  { code: 'SAR', name: 'Saudi riyal' },
-  { code: 'SGD', name: 'Singapore dollar' },
-  { code: 'KRW', name: 'South Korean won' },
+  { code: 'USD', name: msg('US dollar') },
+  { code: 'EUR', name: msg('Euro') },
+  { code: 'GBP', name: msg('British pound') },
+  { code: 'JPY', name: msg('Japanese yen') },
+  { code: 'CNY', name: msg('Chinese yuan') },
+  { code: 'INR', name: msg('Indian rupee') },
+  { code: 'CAD', name: msg('Canadian dollar') },
+  { code: 'AUD', name: msg('Australian dollar') },
+  { code: 'CHF', name: msg('Swiss franc') },
+  { code: 'SEK', name: msg('Swedish krona') },
+  { code: 'NOK', name: msg('Norwegian krone') },
+  { code: 'DKK', name: msg('Danish krone') },
+  { code: 'PLN', name: msg('Polish zloty') },
+  { code: 'TRY', name: msg('Turkish lira') },
+  { code: 'MXN', name: msg('Mexican peso') },
+  { code: 'BRL', name: msg('Brazilian real') },
+  { code: 'ZAR', name: msg('South African rand') },
+  { code: 'NGN', name: msg('Nigerian naira') },
+  { code: 'EGP', name: msg('Egyptian pound') },
+  { code: 'MAD', name: msg('Moroccan dirham') },
+  { code: 'AED', name: msg('UAE dirham') },
+  { code: 'SAR', name: msg('Saudi riyal') },
+  { code: 'SGD', name: msg('Singapore dollar') },
+  { code: 'KRW', name: msg('South Korean won') },
 ];
 
 const DEFAULT_CURRENCY = 'USD';

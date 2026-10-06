@@ -41,7 +41,7 @@ export function CurrencySheet({ onClose }: CurrencySheetProps) {
           <Chip
             key={option.code}
             label={option.code}
-            accessibilityLabel={`${option.name} (${option.code})`}
+            accessibilityLabel={`${t(option.name)} (${option.code})`}
             selected={option.code === current}
             onPress={() => void choose(option.code)}
           />

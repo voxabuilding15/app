@@ -63,7 +63,9 @@ export function buildAlertPlan(state: TimerState, settings: PomodoroSettings): A
           ? t('{phase} has started', { phase: t(PHASE_LABEL[next.kind]) })
           : next.kind === 'focus'
             ? t('Ready for the next focus session?')
-            : t('Time for a {lowerCase}', { lowerCase: PHASE_LABEL[next.kind].toLowerCase() }),
+            : next.kind === 'short_break'
+              ? t('Time for a short break')
+              : t('Time for a long break'),
       });
       current = auto
         ? startPhase(

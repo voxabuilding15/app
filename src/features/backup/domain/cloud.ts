@@ -34,7 +34,7 @@ export class CloudUnavailableError extends Error {
     const { t } = currentTranslator();
     super(
       t('{providerName} backup is not available in this version of the app.', {
-        providerName: providerName,
+        providerName,
       }),
     );
     this.name = 'CloudUnavailableError';

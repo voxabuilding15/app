@@ -1,4 +1,5 @@
 import { currentTranslator } from '@/i18n/translate';
+import { appLocale } from '@/i18n/formatting';
 export const TITLE_MAX_LENGTH = 200;
 export const BODY_MAX_LENGTH = 100_000;
 export const FOLDER_NAME_MAX_LENGTH = 40;
@@ -43,8 +44,8 @@ export function validateNote(draft: NoteDraft): NoteErrors {
     errors.title = t('Titles can have up to {max} characters', { max: TITLE_MAX_LENGTH });
   }
   if (draft.body.length > BODY_MAX_LENGTH) {
-    errors.body = t('Notes can have up to {localeString} characters', {
-      localeString: BODY_MAX_LENGTH.toLocaleString('en-US'),
+    errors.body = t('Notes can have up to {max} characters', {
+      max: BODY_MAX_LENGTH.toLocaleString(appLocale()),
     });
   }
   if (draft.color !== null && !COLOR.test(draft.color)) {

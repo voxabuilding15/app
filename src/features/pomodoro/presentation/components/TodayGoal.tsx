@@ -31,7 +31,7 @@ export function TodayGoal() {
       {fraction === null ? null : (
         <ProgressBar
           progress={fraction}
-          label={t('Daily goal {round} percent', { round: Math.round(fraction * 100) })}
+          label={t('Daily goal {percent} percent', { percent: Math.round(fraction * 100) })}
         />
       )}
     </Card>

@@ -8,11 +8,7 @@
   "{count} overdue_many": "{count} en retard",
   "{count} overdue_one": "{count} en retard",
   "{count} overdue_other": "{count} en retard",
-  "{count} session_many": "{count} sessions",
-  "{count} session_one": "{count} session",
-  "{count} session_other": "{count} sessions",
   "Add expense": "Ajouter une dépense",
-  "Add task": "Ajouter une tâche",
   "Good afternoon": "Bon après-midi",
   "Good evening": "Bonsoir",
   "Good morning": "Bonjour",
@@ -21,6 +17,5 @@
   "Nothing overdue": "Rien en retard",
   "Quick actions": "Actions rapides",
   "Scheduled today": "Prévu aujourd'hui",
-  "See all statistics": "Voir toutes les statistiques",
-  "Start focus": "Démarrer la concentration"
+  "See all statistics": "Voir toutes les statistiques"
 }

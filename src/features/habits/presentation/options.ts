@@ -1,6 +1,7 @@
 import type { HabitScope, HabitSortField, HabitStatusFilter } from '../domain/filters';
 import type { HabitPeriod } from '../domain/entities';
 import { msg } from '@/i18n/msg';
+import { currentTranslator } from '@/i18n/translate';
 
 export const SCOPES = [
   { value: 'active', label: msg('Active') },
@@ -9,13 +10,13 @@ export const SCOPES = [
 
 const SORT_LABELS: Record<HabitSortField, string> = {
   created: msg('Date created'),
-  name: 'Name',
+  name: msg('Name'),
   streak: msg('Streak'),
   progress: msg('Progress'),
 };
 
 export function sortLabel(field: HabitSortField): string {
-  return SORT_LABELS[field];
+  return currentTranslator().t(SORT_LABELS[field]);
 }
 
 export const SORT_FIELDS = (Object.keys(SORT_LABELS) as HabitSortField[]).map((value) => ({

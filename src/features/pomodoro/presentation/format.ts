@@ -119,9 +119,9 @@ export function formatBucketDescription(
     return formatDayLabel(from);
   }
   if (period === 'week') {
-    return t('Week of {dayLabel} to {dayLabel2}', {
-      dayLabel: formatDayLabel(from),
-      dayLabel2: formatDayLabel(to),
+    return t('Week of {from} to {to}', {
+      from: formatDayLabel(from),
+      to: formatDayLabel(to),
     });
   }
   return new Date(dateKeyToNoon(from)).toLocaleDateString(appLocale(), {

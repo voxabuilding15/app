@@ -5,8 +5,6 @@
   "{count} done_other": "{count} done",
   "{count} overdue_one": "{count} overdue",
   "{count} overdue_other": "{count} overdue",
-  "{count} session_one": "{count} session",
-  "{count} session_other": "{count} sessions",
   "Add expense": "Add expense",
   "Good afternoon": "Good afternoon",
   "Good evening": "Good evening",

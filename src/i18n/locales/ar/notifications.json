@@ -1,1 +1,24 @@
-{}
+{
+  "A short overview of your day": "نظرة موجزة على يومك",
+  "Alarms": "المنبهات",
+  "Alarms that ring at an exact time": "منبهات ترنّ في وقت محدد بدقة",
+  "Daily nudges to complete your habits": "تنبيهات يومية لإتمام عاداتك",
+  "Daily summary": "الملخص اليومي",
+  "Dismiss": "تجاهل",
+  "Event reminders": "تذكيرات الأحداث",
+  "Expense reminders": "تذكيرات المصروفات",
+  "Focus and break session alerts": "تنبيهات جلسات التركيز والاستراحة",
+  "General": "عام",
+  "General FocusFlow notifications": "إشعارات FocusFlow العامة",
+  "Habit reminders": "تذكيرات العادات",
+  "Note reminders": "تذكيرات الملاحظات",
+  "Open the app to see details": "افتح التطبيق لعرض التفاصيل",
+  "Reminders attached to your notes": "تذكيرات مرتبطة بملاحظاتك",
+  "Reminders before calendar events": "تذكيرات قبل أحداث التقويم",
+  "Reminders for tasks that are due": "تذكيرات بالمهام المستحقة",
+  "Reminders to log expenses and review your budget": "تذكيرات لتسجيل المصروفات ومراجعة ميزانيتك",
+  "Running timer": "المؤقت الجاري",
+  "Snooze": "تأجيل",
+  "Task reminders": "تذكيرات المهام",
+  "The ongoing notification with timer controls": "الإشعار الدائم مع أزرار التحكم بالمؤقت"
+}

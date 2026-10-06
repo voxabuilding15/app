@@ -35,7 +35,6 @@ export function CategoryBreakdownCard({
   currency,
 }: CategoryBreakdownCardProps) {
   const { t } = useTranslator();
-  const noun = breakdown === 'expense' ? t('Spending') : t('Income');
 
   return (
     <Card style={{ gap: spacing.md }}>
@@ -45,7 +44,9 @@ export function CategoryBreakdownCard({
       <SegmentedControl options={BREAKDOWN_OPTIONS} value={breakdown} onChange={onBreakdown} />
       {slices.length === 0 ? (
         <Text tone="muted">
-          {t('No {lowerCase} in this period.', { lowerCase: noun.toLowerCase() })}
+          {breakdown === 'expense'
+            ? t('No spending in this period.')
+            : t('No income in this period.')}
         </Text>
       ) : (
         <View
@@ -57,10 +58,14 @@ export function CategoryBreakdownCard({
               value: slice.totalMinor,
               color: slice.color,
             }))}
-            label={t('{noun} by category: {join}', {
-              noun: noun,
-              join: slices.map((slice) => `${slice.name} ${percent(slice.share)}`).join(', '),
-            })}
+            label={t(
+              breakdown === 'expense'
+                ? 'Spending by category: {list}'
+                : 'Income by category: {list}',
+              {
+                list: slices.map((slice) => `${slice.name} ${percent(slice.share)}`).join(t(', ')),
+              },
+            )}
           >
             <Text variant="labelSmall" tone="muted">
               {t('Total')}

@@ -89,7 +89,6 @@ export function MonthComparisonCard({
   const { t } = useTranslator();
   const { colors } = useTheme();
   const visible = changes.filter((change) => change.deltaMinor !== 0).slice(0, MAX_CHANGES);
-  const noun = breakdown === 'expense' ? 'spending' : 'income';
 
   return (
     <Card style={{ gap: spacing.md }}>
@@ -118,10 +117,16 @@ export function MonthComparisonCard({
         higherIsBetter
       />
       <Text variant="labelLarge" accessibilityRole="header">
-        {t('Biggest changes in {noun}', { noun })}
+        {breakdown === 'expense'
+          ? t('Biggest changes in spending')
+          : t('Biggest changes in income')}
       </Text>
       {visible.length === 0 ? (
-        <Text tone="muted">{t('No change in {noun} between these months.', { noun })}</Text>
+        <Text tone="muted">
+          {breakdown === 'expense'
+            ? t('No change in spending between these months.')
+            : t('No change in income between these months.')}
+        </Text>
       ) : (
         visible.map((change) => {
           const up = change.deltaMinor > 0;

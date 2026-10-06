@@ -52,8 +52,8 @@ function TimeRow({
           label={dayLabel}
           selected
           accessibilityLabel={t('{label} date {dayLabel}. Change', {
-            label: label,
-            dayLabel: dayLabel,
+            label,
+            dayLabel,
           })}
           onPress={onPickDay}
         />
@@ -63,8 +63,8 @@ function TimeRow({
             label={timeLabel}
             selected
             accessibilityLabel={t('{label} time {timeLabel}. Change', {
-              label: label,
-              timeLabel: timeLabel,
+              label,
+              timeLabel,
             })}
             onPress={onPickTime}
           />

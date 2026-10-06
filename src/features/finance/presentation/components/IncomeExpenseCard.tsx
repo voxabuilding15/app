@@ -26,11 +26,11 @@ export function IncomeExpenseCard({ months, currency }: IncomeExpenseCardProps) 
         {t('Income vs expenses')}
       </Text>
       <GroupedBarChart
-        label={t('Income and expenses for the last {length} months', { length: months.length })}
+        label={t('Income and expenses for the last {months} months', { months: months.length })}
         height={160}
         series={[
-          { name: 'Income', color: colors.success },
-          { name: 'Expenses', color: colors.error },
+          { name: t('Income'), color: colors.success },
+          { name: t('Expenses'), color: colors.error },
         ]}
         data={months.map((month) => ({
           label: formatMonth(month.month, 'short'),

@@ -2,6 +2,7 @@ import * as Notifications from 'expo-notifications';
 
 import type { NotificationChannelId } from '@/core';
 import { msg } from '@/i18n/msg';
+import { currentTranslator } from '@/i18n/translate';
 
 const NOTIFICATION_CHANNELS = {
   default: 'default',
@@ -31,70 +32,70 @@ const ALARM_VIBRATION = [0, 800, 400, 800, 400, 800];
 const CHANNELS: readonly ChannelDefinition[] = [
   {
     id: NOTIFICATION_CHANNELS.default,
-    name: 'General',
+    name: msg('General'),
     description: msg('General FocusFlow notifications'),
     importance: Notifications.AndroidImportance.DEFAULT,
     vibrationPattern: STANDARD_VIBRATION,
   },
   {
     id: NOTIFICATION_CHANNELS.tasks,
-    name: 'Task reminders',
+    name: msg('Task reminders'),
     description: msg('Reminders for tasks that are due'),
     importance: Notifications.AndroidImportance.HIGH,
     vibrationPattern: STANDARD_VIBRATION,
   },
   {
     id: NOTIFICATION_CHANNELS.habits,
-    name: 'Habit reminders',
+    name: msg('Habit reminders'),
     description: msg('Daily nudges to complete your habits'),
     importance: Notifications.AndroidImportance.DEFAULT,
     vibrationPattern: STANDARD_VIBRATION,
   },
   {
     id: NOTIFICATION_CHANNELS.events,
-    name: 'Event reminders',
+    name: msg('Event reminders'),
     description: msg('Reminders before calendar events'),
     importance: Notifications.AndroidImportance.HIGH,
     vibrationPattern: STANDARD_VIBRATION,
   },
   {
     id: NOTIFICATION_CHANNELS.notes,
-    name: 'Note reminders',
+    name: msg('Note reminders'),
     description: msg('Reminders attached to your notes'),
     importance: Notifications.AndroidImportance.DEFAULT,
     vibrationPattern: STANDARD_VIBRATION,
   },
   {
     id: NOTIFICATION_CHANNELS.expenses,
-    name: 'Expense reminders',
+    name: msg('Expense reminders'),
     description: msg('Reminders to log expenses and review your budget'),
     importance: Notifications.AndroidImportance.DEFAULT,
     vibrationPattern: STANDARD_VIBRATION,
   },
   {
     id: NOTIFICATION_CHANNELS.pomodoro,
-    name: 'Pomodoro',
+    name: msg('Pomodoro'),
     description: msg('Focus and break session alerts'),
     importance: Notifications.AndroidImportance.HIGH,
     vibrationPattern: STANDARD_VIBRATION,
   },
   {
     id: NOTIFICATION_CHANNELS.summary,
-    name: 'Daily summary',
+    name: msg('Daily summary'),
     description: msg('A short overview of your day'),
     importance: Notifications.AndroidImportance.LOW,
     vibrationPattern: [0],
   },
   {
     id: NOTIFICATION_CHANNELS.timer,
-    name: 'Running timer',
+    name: msg('Running timer'),
     description: msg('The ongoing notification with timer controls'),
     importance: Notifications.AndroidImportance.LOW,
     vibrationPattern: [0],
   },
   {
     id: NOTIFICATION_CHANNELS.alarms,
-    name: 'Alarms',
+    name: msg('Alarms'),
     description: msg('Alarms that ring at an exact time'),
     importance: Notifications.AndroidImportance.MAX,
     vibrationPattern: ALARM_VIBRATION,
@@ -103,11 +104,12 @@ const CHANNELS: readonly ChannelDefinition[] = [
 ];
 
 export async function registerNotificationChannels(): Promise<void> {
+  const { t } = currentTranslator();
   await Promise.all(
     CHANNELS.map((channel) =>
       Notifications.setNotificationChannelAsync(channel.id, {
-        name: channel.name,
-        description: channel.description,
+        name: t(channel.name),
+        description: t(channel.description),
         importance: channel.importance,
         vibrationPattern: channel.vibrationPattern,
         bypassDnd: channel.bypassDnd ?? false,

@@ -13,6 +13,7 @@ import type {
 import { registerNotificationCategories } from './categories';
 import { registerNotificationChannels } from './channels';
 import { withPrivacy } from './privacy';
+import { i18n } from '@/i18n/instance';
 
 function toPermissionState(response: Notifications.NotificationPermissionsStatus): PermissionState {
   if (response.granted) {
@@ -47,6 +48,11 @@ async function setup(): Promise<void> {
   });
   await registerNotificationChannels();
   await registerNotificationCategories();
+  // Channel names and action buttons are text the system shows, so they follow the language.
+  i18n.on('languageChanged', () => {
+    void registerNotificationChannels();
+    void registerNotificationCategories();
+  });
 }
 
 class ExpoNotificationService implements NotificationService {

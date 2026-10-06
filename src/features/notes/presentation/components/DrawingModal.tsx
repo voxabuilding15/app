@@ -121,9 +121,9 @@ export function DrawingModal({ initial, onSave, onClose }: DrawingModalProps) {
                 accessibilityLabel={
                   index === 0
                     ? t('Black pen')
-                    : t('Pen color {index} of {length}', {
-                        index: index,
-                        length: ACCENT_COLORS.length,
+                    : t('Pen color {number} of {total}', {
+                        number: index,
+                        total: ACCENT_COLORS.length,
                       })
                 }
                 accessibilityState={{ selected: option === color }}

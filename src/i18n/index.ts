@@ -13,6 +13,6 @@ export {
   type LanguageCode,
 } from './languages';
 export { msg } from './msg';
-export { currentTranslator, type Translator } from './translate';
+export { currentTranslator, translatorFor, type Translator } from './translate';
 export { useLanguageChange } from './useLanguageChange';
 export { useTranslator } from './useTranslator';

@@ -1,6 +1,7 @@
 import type { DueFilter, SortField, TaskScope } from '../domain/filters';
 import type { Priority } from '../domain/entities';
 import { msg } from '@/i18n/msg';
+import { currentTranslator } from '@/i18n/translate';
 
 const SORT_LABELS: Record<SortField, string> = {
   due: msg('Due date'),
@@ -11,7 +12,7 @@ const SORT_LABELS: Record<SortField, string> = {
 };
 
 export function sortLabel(field: SortField): string {
-  return SORT_LABELS[field];
+  return currentTranslator().t(SORT_LABELS[field]);
 }
 
 export const SORT_FIELDS: Record<TaskScope, readonly SortField[]> = {

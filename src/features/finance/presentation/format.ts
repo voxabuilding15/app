@@ -135,6 +135,12 @@ export function describeTransaction(item: Transaction, now: number, currency: st
   return parts.filter(Boolean).join(', ');
 }
 
+const BUDGET_KIND: Record<string, string> = {
+  monthly: msg('Monthly budget'),
+  weekly: msg('Weekly budget'),
+  custom: msg('Custom budget'),
+};
+
 export function describeBudget(progress: BudgetProgress, currency: string): string {
   const { t } = currentTranslator();
   const { budget, spentMinor, remainingMinor } = progress;
@@ -144,7 +150,7 @@ export function describeBudget(progress: BudgetProgress, currency: string): stri
       : t('{money} left', { money: formatMoney(remainingMinor, currency) });
   return [
     budget.name,
-    t('{period} budget', { period: t(BUDGET_PERIOD_LABEL[budget.period]).toLowerCase() }),
+    t(BUDGET_KIND[budget.period]),
     t('{spent} of {limit} spent', {
       spent: formatMoney(spentMinor, currency),
       limit: formatMoney(budget.amountMinor, currency),

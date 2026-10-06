@@ -62,6 +62,24 @@ function literal(node) {
   return null;
 }
 
+/** The phrases an argument can be: a literal, or either branch of `a ? 'x' : 'y'` or `a ?? 'x'`. */
+function literals(node) {
+  if (node === undefined) {
+    return [];
+  }
+  if (ts.isParenthesizedExpression(node)) {
+    return literals(node.expression);
+  }
+  if (ts.isConditionalExpression(node)) {
+    return [...literals(node.whenTrue), ...literals(node.whenFalse)];
+  }
+  if (ts.isBinaryExpression(node) && ['??', '||'].includes(node.operatorToken.getText())) {
+    return [...literals(node.left), ...literals(node.right)];
+  }
+  const text = literal(node);
+  return text === null ? [] : [text];
+}
+
 const calleeName = (expression) =>
   ts.isIdentifier(expression)
     ? expression.text
@@ -89,8 +107,7 @@ export function usedPhrases() {
       if (ts.isCallExpression(node)) {
         const name = calleeName(node.expression);
         if (name === 't' || name === 'msg') {
-          const key = literal(node.arguments[0]);
-          if (key !== null) {
+          for (const key of literals(node.arguments[0])) {
             add(key, file);
           }
         } else if (name === 'tn') {
@@ -182,7 +199,10 @@ export function problems() {
           issues.push(`${language}: "${form}" is in ${places[form]}.json, expected ${wanted}.json`);
         }
         const reference = expected[form] ?? expected[`${key}_other`] ?? key;
-        if (placeholders(value).join() !== placeholders(reference).join()) {
+        // A plural form may leave out {count} ("one day", "two days") when the word says it already.
+        const ignore = entry.other === undefined ? [] : ['count'];
+        const same = (text) => placeholders(text).filter((name) => !ignore.includes(name)).join();
+        if (same(value) !== same(reference)) {
           issues.push(`${language}: "${form}" has different placeholders than the English`);
         }
       }
@@ -210,6 +230,24 @@ if (command === 'extract') {
     writeNamespace('en', ns, data);
   }
   process.stdout.write(`${used.size} phrases written to the English files\n`);
+} else if (command === 'normalize') {
+  // Moves every phrase to the file it belongs in (shared phrases go to common) and drops unused ones.
+  const used = usedPhrases();
+  for (const language of LANGUAGES) {
+    const have = merged(language);
+    const data = Object.fromEntries(allNamespaces().map((ns) => [ns, {}]));
+    for (const [key, value] of Object.entries(have)) {
+      const base = key.replace(/_(zero|one|two|few|many|other)$/, '');
+      const entry = used.get(key) ?? used.get(base);
+      if (entry !== undefined) {
+        data[home(entry)][key] = value;
+      }
+    }
+    for (const [ns, values] of Object.entries(data)) {
+      writeNamespace(language, ns, values);
+    }
+  }
+  process.stdout.write('normalized\n');
 } else if (command === 'check') {
   const issues = problems();
   issues.slice(0, 60).forEach((issue) => process.stdout.write(`${issue}\n`));

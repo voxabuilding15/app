@@ -61,13 +61,13 @@ function GoalRing({ title, progress }: { title: string; progress: GoalProgress }
         label={
           fraction === null
             ? t('{title}: {focusTime} focused, no goal set', {
-                title: title,
+                title,
                 focusTime: formatFocusTime(progress.focusSeconds),
               })
-            : t('{title}: {round} percent of the goal, {detail}', {
-                title: title,
-                round: Math.round(fraction * 100),
-                detail: detail,
+            : t('{title}: {percent} percent of the goal, {detail}', {
+                title,
+                percent: Math.round(fraction * 100),
+                detail,
               })
         }
       >
@@ -104,7 +104,7 @@ export function StatsPanel({ vm }: { vm: StatsViewModel }) {
   if (vm.isError && overview === undefined) {
     return (
       <View style={{ gap: spacing.md, alignItems: 'center' }}>
-        <Text tone="error">{t('Couldn&apos;t load your statistics.')}</Text>
+        <Text tone="error">{t("Couldn't load your statistics.")}</Text>
         <Button label={t('Try again')} variant="tonal" onPress={() => void vm.refetch()} />
       </View>
     );

@@ -29,6 +29,11 @@ export function buildTranslator(translate: Translate, language: string): Transla
   };
 }
 
+/** A translator fixed to one language, whatever the app is showing (e.g. English for a PDF). */
+export function translatorFor(language: LanguageCode): Translator {
+  return buildTranslator(i18n.getFixedT(language) as Translate, language);
+}
+
 /** The translator for code that is not a React component (notifications, exports, messages). */
 export function currentTranslator(): Translator {
   return buildTranslator(i18n.t.bind(i18n) as Translate, i18n.language);

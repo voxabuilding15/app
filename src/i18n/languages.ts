@@ -7,6 +7,8 @@ export interface LanguageInfo {
   /** The language's own name, always shown in that language so it can be found from any other. */
   native: string;
   rtl: boolean;
+  /** Whether the built-in Latin fonts of exported PDF reports can show the language's letters. */
+  latin: boolean;
   /**
    * BCP 47 tag for formatting dates and numbers. Arabic keeps Western digits (`nu-latn`), the
    * same ones the rest of the interface shows, and the usual choice in North Africa.
@@ -15,9 +17,9 @@ export interface LanguageInfo {
 }
 
 export const LANGUAGE_INFO: Readonly<Record<LanguageCode, LanguageInfo>> = {
-  en: { code: 'en', native: 'English', rtl: false, locale: 'en' },
-  fr: { code: 'fr', native: 'Français', rtl: false, locale: 'fr' },
-  ar: { code: 'ar', native: 'العربية', rtl: true, locale: 'ar-u-nu-latn' },
+  en: { code: 'en', native: 'English', rtl: false, latin: true, locale: 'en' },
+  fr: { code: 'fr', native: 'Français', rtl: false, latin: true, locale: 'fr' },
+  ar: { code: 'ar', native: 'العربية', rtl: true, latin: false, locale: 'ar-u-nu-latn' },
 };
 
 export const LANGUAGE_CODES = Object.keys(LANGUAGE_INFO) as LanguageCode[];

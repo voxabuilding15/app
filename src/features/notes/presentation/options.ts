@@ -1,5 +1,6 @@
 import type { NoteScope, NoteSortField } from '../domain/filters';
 import { msg } from '@/i18n/msg';
+import { currentTranslator } from '@/i18n/translate';
 
 export const SCOPES = [
   { value: 'notes', label: msg('Notes') },
@@ -17,5 +18,5 @@ const SORT_LABELS: Record<NoteSortField, string> = {
 };
 
 export function sortLabel(field: NoteSortField): string {
-  return SORT_LABELS[field];
+  return currentTranslator().t(SORT_LABELS[field]);
 }

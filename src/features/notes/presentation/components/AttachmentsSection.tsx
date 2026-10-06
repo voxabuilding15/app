@@ -26,11 +26,11 @@ interface AttachmentsSectionProps {
   onRemove: (attachment: Attachment) => void;
 }
 
-const ADD_OPTIONS: readonly { kind: AttachmentKind; label: string }[] = [
-  { kind: 'image', label: msg('Image') },
-  { kind: 'pdf', label: 'PDF' },
-  { kind: 'audio', label: msg('Voice') },
-  { kind: 'drawing', label: msg('Drawing') },
+const ADD_OPTIONS: readonly { kind: AttachmentKind; label: string; description: string }[] = [
+  { kind: 'image', label: msg('Image'), description: msg('Add image') },
+  { kind: 'pdf', label: 'PDF', description: msg('Add PDF') },
+  { kind: 'audio', label: msg('Voice'), description: msg('Add voice recording') },
+  { kind: 'drawing', label: msg('Drawing'), description: msg('Add drawing') },
 ];
 
 function AudioControl({ uri, durationMs }: { uri: string; durationMs: number | null }) {
@@ -147,9 +147,7 @@ export function AttachmentsSection({
             key={option.kind}
             icon={ATTACHMENT_ICON[option.kind]}
             label={t(option.label)}
-            accessibilityLabel={t('Add {lowerCase}', {
-              lowerCase: ATTACHMENT_LABEL[option.kind].toLowerCase(),
-            })}
+            accessibilityLabel={t(option.description)}
             onPress={() => onAdd(option.kind)}
           />
         ))}
@@ -168,7 +166,7 @@ export function AttachmentsSection({
             <Pressable
               accessible
               accessibilityRole="button"
-              accessibilityLabel={`${ATTACHMENT_LABEL[attachment.kind]}: ${attachment.name}, ${detail}`}
+              accessibilityLabel={`${t(ATTACHMENT_LABEL[attachment.kind])}: ${attachment.name}, ${detail}`}
               accessibilityHint={
                 attachment.kind === 'drawing' ? t('Edits the drawing') : t('Opens the file')
               }
