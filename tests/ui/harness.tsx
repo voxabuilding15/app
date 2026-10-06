@@ -19,6 +19,7 @@ import { getTasksModule } from '@/features/tasks/presentation/module';
 import { ThemeProvider } from '@/theme';
 
 import { FakeAuthenticator, FakePicker, FakeStorage } from '../notes/fakes';
+import { MemoryFiles } from '../support/memory-files';
 import { createTestDatabase } from '../tasks/test-database';
 
 /** The mocked router shared with every screen under test (see setup.tsx). */
@@ -88,12 +89,14 @@ export function createApp() {
   const notifications = createFakeNotifications();
   const db = createTestDatabase();
   const clock = { now: () => Date.now() };
+  const deviceFiles = new MemoryFiles();
   const container: Container = {
     clock,
     db,
     categories: (kind) => new SqliteCategoryRepository(db, kind, clock.now),
     storage: memoryStorage(),
     notifications,
+    files: deviceFiles,
   };
   const files = new FakeStorage();
   const picker = new FakePicker();
@@ -112,6 +115,7 @@ export function createApp() {
     pomodoro: getPomodoroModule(container),
     noteFakes: { files, picker, authenticator },
     notifications,
+    deviceFiles,
   };
 }
 

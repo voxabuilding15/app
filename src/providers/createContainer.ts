@@ -1,5 +1,6 @@
 import type { Container } from '@/core';
 import { SqliteCategoryRepository, getDatabase } from '@/database';
+import { fileService } from '@/services/files';
 import { notificationService } from '@/services/notifications';
 import { kvStorage } from '@/services/storage';
 
@@ -13,5 +14,6 @@ export function createContainer(): Container {
     categories: (kind) => new SqliteCategoryRepository(db, kind, clock.now),
     storage: kvStorage,
     notifications: notificationService,
+    files: fileService,
   };
 }

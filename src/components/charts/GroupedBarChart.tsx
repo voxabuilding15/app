@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 import { Text } from '@/components/ui';
 import { radius, spacing, useTheme, withAlpha } from '@/theme';
@@ -36,6 +36,9 @@ interface GroupedBarChartProps {
   showLegend?: boolean;
   /** Spoken summary of the whole chart. */
   label: string;
+  /** Makes every group tappable, reporting its index. The selected group stays emphasised. */
+  onSelect?: (index: number) => void;
+  selectedIndex?: number | null;
 }
 
 const LABEL_HEIGHT = 18;
@@ -54,6 +57,8 @@ export function GroupedBarChart({
   dimOthers = false,
   showLegend,
   label,
+  onSelect,
+  selectedIndex = null,
 }: GroupedBarChartProps) {
   const { colors } = useTheme();
   const values = data.flatMap((group) => group.values);
@@ -65,10 +70,16 @@ export function GroupedBarChart({
   const negativeHeight = floor * scale;
 
   const legend = showLegend ?? series.length > 1;
+  const interactive = onSelect !== undefined;
+  const emphasised = (group: BarGroup, index: number) =>
+    selectedIndex === null ? group.highlight === true : index === selectedIndex;
 
   return (
     <View style={{ gap: spacing.sm }}>
-      <View accessible accessibilityLabel={`${label}. ${data.map(describe).join(', ')}`}>
+      <View
+        accessible={!interactive}
+        accessibilityLabel={interactive ? label : `${label}. ${data.map(describe).join(', ')}`}
+      >
         <View style={{ height, flexDirection: 'row', alignItems: 'flex-end', gap: spacing.sm }}>
           {goal !== undefined ? (
             <View
@@ -85,7 +96,15 @@ export function GroupedBarChart({
             />
           ) : null}
           {data.map((group, index) => (
-            <View key={`${group.label}-${index}`} style={{ flex: 1, alignItems: 'center' }}>
+            <Pressable
+              key={`${group.label}-${index}`}
+              disabled={!interactive}
+              accessibilityRole={interactive ? 'button' : undefined}
+              accessibilityLabel={interactive ? describe(group) : undefined}
+              accessibilityState={interactive ? { selected: index === selectedIndex } : undefined}
+              onPress={() => onSelect?.(index)}
+              style={{ flex: 1, alignItems: 'center' }}
+            >
               <View style={{ height: plotHeight, width: '100%' }}>
                 <View
                   style={{
@@ -101,7 +120,7 @@ export function GroupedBarChart({
                       value={group.values[seriesIndex] ?? 0}
                       scale={scale}
                       color={item.color}
-                      faded={dimOthers && !group.highlight}
+                      faded={dimOthers && !emphasised(group, index)}
                       placement="above"
                     />
                   ))}
@@ -121,7 +140,7 @@ export function GroupedBarChart({
                         value={group.values[seriesIndex] ?? 0}
                         scale={scale}
                         color={item.negativeColor ?? item.color}
-                        faded={dimOthers && !group.highlight}
+                        faded={dimOthers && !emphasised(group, index)}
                         placement="below"
                       />
                     ))}
@@ -136,7 +155,7 @@ export function GroupedBarChart({
               >
                 {group.label}
               </Text>
-            </View>
+            </Pressable>
           ))}
         </View>
       </View>

@@ -640,3 +640,19 @@ describe('migration v7 (pomodoro)', () => {
     );
   });
 });
+
+describe('migration v8 (global statistics)', () => {
+  it('adds the index for completions of archived tasks and keeps existing data', () => {
+    const { db, upgrade } = createDatabaseAtVersion(7);
+    db.runSync(
+      `INSERT INTO tasks (id, title, created_at, updated_at, completed_at, archived_at) VALUES ('t', 'x', 1, 1, 5, 6)`,
+    );
+    upgrade();
+    assert.equal(getSchemaVersion(db), migrations.at(-1)?.version);
+    assert.equal(db.getFirstSync<{ n: number }>('SELECT COUNT(*) AS n FROM tasks')?.n, 1);
+    const indexes = db
+      .getAllSync<{ name: string }>(`SELECT name FROM sqlite_master WHERE type='index'`)
+      .map((row) => row.name);
+    assert.ok(indexes.includes('idx_tasks_done_archived'));
+  });
+});

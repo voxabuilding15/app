@@ -56,6 +56,27 @@ describe('BarChart', () => {
     expect(screen.getByText('W')).toBeTruthy();
   });
 
+  it('makes each bar a button when selection is wanted, and marks the chosen one', async () => {
+    const onSelect = jest.fn();
+    await render(
+      wrap(
+        <BarChart
+          label="Pick one"
+          selectedIndex={1}
+          onSelect={onSelect}
+          data={[
+            { label: 'M', value: 1, description: 'Monday: 1' },
+            { label: 'T', value: 3, description: 'Tuesday: 3' },
+          ]}
+        />,
+      ),
+    );
+    expect(screen.getByLabelText('Tuesday: 3').props.accessibilityState.selected).toBe(true);
+    expect(screen.getByLabelText('Monday: 1').props.accessibilityState.selected).toBe(false);
+    await fireEvent.press(screen.getByLabelText('Monday: 1'));
+    expect(onSelect).toHaveBeenCalledWith(0);
+  });
+
   it('renders an empty dataset without crashing', async () => {
     await render(wrap(<BarChart label="Nothing" data={[]} />));
     expect(screen.getByLabelText('Nothing. ')).toBeTruthy();

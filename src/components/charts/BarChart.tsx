@@ -20,14 +20,27 @@ interface BarChartProps {
   goal?: number;
   /** Spoken summary of the whole chart. */
   label: string;
+  onSelect?: (index: number) => void;
+  selectedIndex?: number | null;
 }
 
 /** A single-series bar chart with one emphasised bar; see `GroupedBarChart` for more series. */
-export function BarChart({ data, color, height, max, goal, label }: BarChartProps) {
+export function BarChart({
+  data,
+  color,
+  height,
+  max,
+  goal,
+  label,
+  onSelect,
+  selectedIndex,
+}: BarChartProps) {
   const { colors } = useTheme();
   return (
     <GroupedBarChart
       label={label}
+      onSelect={onSelect}
+      selectedIndex={selectedIndex}
       height={height}
       max={max}
       goal={goal}

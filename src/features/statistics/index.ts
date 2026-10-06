@@ -1,1 +1,1 @@
-export { StatisticsScreen } from './StatisticsScreen';
+export { StatisticsScreen } from './presentation/screens/StatisticsScreen';

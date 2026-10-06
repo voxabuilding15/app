@@ -533,4 +533,14 @@ export const migrations: readonly Migration[] = [
       `CREATE INDEX idx_pomodoro_session_tags_category ON pomodoro_session_tags(category_id)`,
     ],
   },
+  {
+    version: 8,
+    name: 'global_statistics',
+    statements: [
+      // Statistics count a completion even when the task was archived afterwards. Completed tasks
+      // that are not archived already have `idx_tasks_completed_at`; this covers the other half
+      // and, being partial, never competes with the list queries.
+      `CREATE INDEX idx_tasks_done_archived ON tasks(completed_at) WHERE completed_at IS NOT NULL AND archived_at IS NOT NULL AND deleted_at IS NULL`,
+    ],
+  },
 ];

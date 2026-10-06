@@ -1,6 +1,6 @@
 import { createContext, useContext, type PropsWithChildren } from 'react';
 
-import type { Clock, Database, KeyValueStorage, NotificationService } from '../ports';
+import type { Clock, Database, FileService, KeyValueStorage, NotificationService } from '../ports';
 import type { CategoryKind, CategoryRepository } from '../taxonomy';
 
 export interface Container {
@@ -10,6 +10,7 @@ export interface Container {
   categories: (kind: CategoryKind) => CategoryRepository;
   storage: KeyValueStorage;
   notifications: NotificationService;
+  files: FileService;
 }
 
 const ContainerContext = createContext<Container | null>(null);
