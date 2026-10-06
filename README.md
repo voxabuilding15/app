@@ -5,14 +5,14 @@ React Native + Expo (SDK 57) + TypeScript + Expo Router. No backend, no AI; all 
 
 ## Scripts
 
-| Command                  | Purpose                                   |
-| ------------------------ | ----------------------------------------- |
-| `npm start`              | Start Metro (use a development build)     |
-| `npm run android`        | Build and run the dev client on Android   |
-| `npm run typecheck`      | `tsc --noEmit` for the app and for tests  |
-| `npm run lint`           | ESLint, zero warnings allowed             |
-| `npm run doctor`         | `expo-doctor`                             |
-| `npm run export:android` | Bundle the Android JS (Hermes) for CI     |
+| Command                  | Purpose                                           |
+| ------------------------ | ------------------------------------------------- |
+| `npm start`              | Start Metro (use a development build)             |
+| `npm run android`        | Build and run the dev client on Android           |
+| `npm run typecheck`      | `tsc --noEmit` for the app and for tests          |
+| `npm run lint`           | ESLint, zero warnings allowed                     |
+| `npm run doctor`         | `expo-doctor`                                     |
+| `npm run export:android` | Bundle the Android JS (Hermes) for CI             |
 | `npm test`               | Domain + SQLite tests (Node), run in 3 time zones |
 | `npm run test:ui`        | Screen tests (jest-expo) against real SQLite      |
 | `npm run test:all`       | Both test suites                                  |
