@@ -12,7 +12,7 @@ export interface StatisticsModule {
 const modules = new WeakMap<Container, StatisticsModule>();
 
 /** Wires the statistics use cases to every feature's data, once per container. */
-export function getStatisticsModule(container: Container): StatisticsModule {
+function getStatisticsModule(container: Container): StatisticsModule {
   const existing = modules.get(container);
   if (existing !== undefined) {
     return existing;

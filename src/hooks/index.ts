@@ -10,5 +10,4 @@ export { useNotificationResponses } from './useNotificationResponses';
 export { useOnAppForeground } from './useOnAppForeground';
 export { useNotice, useUndoableDelete } from './useUndoableDelete';
 export type { Notice } from './useUndoableDelete';
-export { useLockController, useLockStatus, useUnlockPrompt } from './useLockController';
-export type { LockController, LockStatus } from './useLockController';
+export { useLockController } from './useLockController';

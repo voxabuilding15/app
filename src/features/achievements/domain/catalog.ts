@@ -2,7 +2,7 @@ import type { CounterId, Lifetime } from './entities';
 
 export type Tier = 'bronze' | 'silver' | 'gold' | 'platinum';
 
-export type AchievementGroup = 'badge' | 'milestone' | 'streak';
+type AchievementGroup = 'badge' | 'milestone' | 'streak';
 
 export interface AchievementDef {
   id: string;

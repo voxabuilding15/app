@@ -35,7 +35,7 @@ export function escapePdfText(text: string): string {
 }
 
 /** Approximate width of text in Helvetica, in points, good enough for right alignment. */
-export function textWidth(text: string, size: number, bold = false): number {
+function textWidth(text: string, size: number, bold = false): number {
   let units = 0;
   for (const char of text) {
     units += /[ilj.,:;'|!]/.test(char)

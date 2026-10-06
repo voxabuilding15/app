@@ -21,7 +21,6 @@ export {
   weekdayOfKey,
 } from './dates';
 export type { DateKey } from './dates';
-export { constantTimeEquals, sha256Hex, stretchedHash } from './hash';
 export { createId } from './ids';
 export { MAX_MINOR, formatMoney, minorDigits, parseMoney, toAmountText } from './money';
 export { ensureNotificationPermission, scheduleReminder } from './notifications';
@@ -47,7 +46,6 @@ export type * from './ports';
 export {
   LOCKOUT_MS,
   MAX_PIN_ATTEMPTS,
-  NO_LOCK,
   PIN_MAX_LENGTH,
   PIN_MIN_LENGTH,
   StorageLockStore,
@@ -58,11 +56,9 @@ export {
 export type {
   Authenticator,
   LockChangeResult,
-  LockConfig,
   LockMethod,
-  LockStore,
   LockUseCases,
   UnlockResult,
 } from './lock';
-export { DEFAULT_PRIVACY, PRIVACY_KEY, readPrivacy, writePrivacy } from './privacy';
+export { readPrivacy, writePrivacy } from './privacy';
 export type { PrivacySettings } from './privacy';

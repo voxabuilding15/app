@@ -17,7 +17,7 @@ const K = new Uint32Array([
 const rotr = (value: number, bits: number) => (value >>> bits) | (value << (32 - bits));
 
 /** UTF-8 bytes of a string, without relying on `TextEncoder`. */
-export function utf8Bytes(text: string): Uint8Array {
+function utf8Bytes(text: string): Uint8Array {
   const bytes: number[] = [];
   for (const char of text) {
     const code = char.codePointAt(0) ?? 0;
@@ -39,7 +39,7 @@ export function utf8Bytes(text: string): Uint8Array {
   return Uint8Array.from(bytes);
 }
 
-export function sha256(message: Uint8Array): Uint8Array {
+function sha256(message: Uint8Array): Uint8Array {
   const length = message.length;
   const padded = new Uint8Array(((length + 9 + 63) >> 6) << 6);
   padded.set(message);
@@ -102,7 +102,7 @@ export function sha256(message: Uint8Array): Uint8Array {
   return digest;
 }
 
-export function toHex(bytes: Uint8Array): string {
+function toHex(bytes: Uint8Array): string {
   return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
 }
 

@@ -33,7 +33,7 @@ export interface Facts {
   notesUpdated: readonly number[];
 }
 
-export interface TaskFigures {
+interface TaskFigures {
   completed: number;
   created: number;
   due: number;
@@ -45,7 +45,7 @@ export interface TaskFigures {
   rate: number | null;
 }
 
-export interface HabitFigures {
+interface HabitFigures {
   /** Check-ins logged in the period. */
   completions: number;
   /** Share of finished periods where the goal was met; null when there is nothing to judge yet. */
@@ -54,7 +54,7 @@ export interface HabitFigures {
   missed: number;
 }
 
-export interface FocusFigures {
+interface FocusFigures {
   seconds: number;
   sessions: number;
   completedSessions: number;
@@ -62,7 +62,7 @@ export interface FocusFigures {
   deepFocus: number | null;
 }
 
-export interface CalendarFigures {
+interface CalendarFigures {
   events: number;
   hours: number;
   daysWithEvents: number;
@@ -72,7 +72,7 @@ export interface CalendarFigures {
   busiestWeekday: number | null;
 }
 
-export interface NoteFigures {
+interface NoteFigures {
   created: number;
   updated: number;
 }

@@ -1,7 +1,6 @@
 import {
   StorageLockStore,
   createCategoryUseCases,
-  createId,
   createLockUseCases,
   type KeyValueStorage,
 } from '@/core';
@@ -19,8 +18,6 @@ import { emptyNoteDraft, type NoteDraft } from '@/features/notes/domain/validati
 import { createTestDatabase } from '../tasks/test-database';
 
 import { FakeAuthenticator, FakePicker, FakeReminders, FakeStorage } from './fakes';
-
-export { FakeAuthenticator, FakePicker, FakeStorage } from './fakes';
 
 export const at = (y: number, m: number, d: number, h = 12, min = 0) =>
   new Date(y, m - 1, d, h, min).getTime();
@@ -117,5 +114,3 @@ export async function mustSave<T extends { ok: boolean }>(
   }
   return saved as Extract<T, { ok: true }>;
 }
-
-export const newId = createId;

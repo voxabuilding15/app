@@ -5,6 +5,7 @@ import { spacing, useTheme } from '@/theme';
 
 import type { TimerKind } from '../../domain/timer';
 import { KIND_LABEL, formatClockFace, speakClock } from '../format';
+import { useCountdown } from '../use-countdown';
 import type { TimerViewModel } from '../view-models/useTimerViewModel';
 
 const RING_SIZE = 248;
@@ -21,9 +22,10 @@ interface TimerCardProps {
 export function TimerCard({ vm }: TimerCardProps) {
   const { colors } = useTheme();
   const { state } = vm;
+  const { remaining, progress, position } = useCountdown(state);
   const kind = state.kind;
   const accent = kind === 'focus' ? colors.primary : colors.success;
-  const description = `${KIND_LABEL[kind]}, ${speakClock(vm.remaining)} left${
+  const description = `${KIND_LABEL[kind]}, ${speakClock(remaining)} left${
     state.status === 'paused' ? ', paused' : ''
   }`;
 
@@ -45,7 +47,7 @@ export function TimerCard({ vm }: TimerCardProps) {
       )}
 
       <ProgressRing
-        progress={vm.progress}
+        progress={progress}
         size={RING_SIZE}
         strokeWidth={14}
         color={accent}
@@ -55,10 +57,10 @@ export function TimerCard({ vm }: TimerCardProps) {
           variant="headlineSmall"
           style={{ fontSize: 56, lineHeight: 64, fontVariant: ['tabular-nums'] }}
         >
-          {formatClockFace(vm.remaining)}
+          {formatClockFace(remaining)}
         </Text>
         <Text variant="bodyMedium" tone="muted">
-          {vm.position}
+          {position}
         </Text>
       </ProgressRing>
 

@@ -9,7 +9,7 @@ export interface LockConfig {
   pinSalt: string | null;
 }
 
-export const NO_LOCK: LockConfig = { method: 'none', pinHash: null, pinSalt: null };
+const NO_LOCK: LockConfig = { method: 'none', pinHash: null, pinSalt: null };
 
 /** Device authentication: fingerprint, face or the screen-lock PIN, pattern or password. */
 export interface Authenticator {
@@ -17,7 +17,7 @@ export interface Authenticator {
   authenticate(reason: string): Promise<boolean>;
 }
 
-export interface LockStore {
+interface LockStore {
   read(): LockConfig;
   write(config: LockConfig): void;
 }

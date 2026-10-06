@@ -16,6 +16,7 @@ const TRANSLATED = [
   'src/features/achievements',
   'src/features/backup',
   'src/features/settings',
+  'src/features/dashboard',
   'src/navigation',
   'src/features/notes/presentation/screens/LockSettingsScreen.tsx',
   'src/components/ui/LockGate.tsx',

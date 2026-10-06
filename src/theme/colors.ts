@@ -36,7 +36,7 @@ export const lightColors: ColorScheme = {
   error: '#B3261E',
   errorContainer: '#F9DEDC',
   onErrorContainer: '#410E0B',
-  success: '#2E7D32',
+  success: '#2B7A2F',
   warning: '#8A5100',
 };
 

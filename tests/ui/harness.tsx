@@ -36,6 +36,8 @@ export interface FakeNotifications extends NotificationService {
   /** Simulates the user tapping a notification or one of its action buttons. */
   emit: (response: NotificationResponse) => void;
   launchResponse: NotificationResponse | null;
+  /** How many things are listening for taps and action buttons. */
+  listenerCount: () => number;
 }
 
 function memoryStorage(): KeyValueStorage {
@@ -57,6 +59,7 @@ function createFakeNotifications(): FakeNotifications {
     cancelled,
     launchResponse: null,
     emit: (response) => listeners.forEach((listener) => listener(response)),
+    listenerCount: () => listeners.size,
     initialize: async () => undefined,
     getPermissionState: async () => 'granted',
     requestPermission: async () => 'granted',

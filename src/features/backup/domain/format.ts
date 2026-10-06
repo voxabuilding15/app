@@ -1,5 +1,3 @@
-import { sha256Hex } from '@/core';
-
 export const BACKUP_FORMAT = 'focusflow-backup';
 export const BACKUP_VERSION = 1;
 
@@ -20,7 +18,7 @@ export interface Backup {
   /** The database version the rows were read from. */
   schemaVersion: number;
   createdAt: number;
-  /** SHA-256 of the tables, to notice a file that was cut short or edited. */
+  /** A hash of the tables, to notice a file that was damaged or edited. */
   checksum: string;
   tables: TableData;
   /** Settings kept outside the database. */
@@ -33,8 +31,25 @@ export interface Backup {
 export type ParseFailure = 'not-json' | 'not-backup' | 'too-new' | 'corrupt';
 export type ParseResult = { ok: true; backup: Backup } | { ok: false; reason: ParseFailure };
 
+/**
+ * A fast 53-bit hash (cyrb53). It exists to catch damage, not attackers, so it does not need to be
+ * cryptographic, and it is many times quicker than SHA-256 in JavaScript on a large backup.
+ */
+function hash53(text: string): string {
+  let h1 = 0xdeadbeef;
+  let h2 = 0x41c6ce57;
+  for (let index = 0; index < text.length; index += 1) {
+    const code = text.charCodeAt(index);
+    h1 = Math.imul(h1 ^ code, 2654435761);
+    h2 = Math.imul(h2 ^ code, 1597334677);
+  }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(16).padStart(14, '0');
+}
+
 export function checksumOf(tables: TableData): string {
-  return sha256Hex(JSON.stringify(tables));
+  return hash53(JSON.stringify(tables));
 }
 
 export function serializeBackup(backup: Backup): string {

@@ -184,9 +184,7 @@ export function deepFocusScore(
 }
 
 /** Whether a phase that just ended is saved to the history. */
-export function shouldRecord(
-  entry: Pick<SessionEntry, 'kind' | 'outcome' | 'durationSeconds'>,
-): boolean {
+function shouldRecord(entry: Pick<SessionEntry, 'kind' | 'outcome' | 'durationSeconds'>): boolean {
   if (entry.outcome === 'completed') {
     return true;
   }

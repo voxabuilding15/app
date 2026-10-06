@@ -4,7 +4,7 @@ import type { CounterId, PeriodCounts } from './entities';
 
 export type ChallengePeriod = 'week' | 'month';
 
-export type ChallengeCounter = CounterId | 'activeDays';
+type ChallengeCounter = CounterId | 'activeDays';
 
 export interface ChallengeTemplate {
   id: string;
@@ -52,7 +52,7 @@ export const CHALLENGE_TEMPLATES: readonly ChallengeTemplate[] = [
 ];
 
 const PICKS: Record<ChallengePeriod, number> = { week: 3, month: 2 };
-export const CHALLENGE_XP: Record<ChallengePeriod, number> = { week: 60, month: 200 };
+const CHALLENGE_XP: Record<ChallengePeriod, number> = { week: 60, month: 200 };
 
 export interface Challenge {
   key: string;

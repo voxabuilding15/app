@@ -11,7 +11,7 @@ export interface AutoBackupSettings {
   includeFiles: boolean;
 }
 
-export const DEFAULT_AUTO_BACKUP: AutoBackupSettings = {
+const DEFAULT_AUTO_BACKUP: AutoBackupSettings = {
   enabled: true,
   frequency: 'weekly',
   keep: 5,
@@ -27,7 +27,7 @@ export const FREQUENCY_MS: Record<BackupFrequency, number> = {
 const SETTINGS_KEY = 'backup.settings';
 const LAST_KEY = 'backup.last-auto';
 
-export function normalizeAutoBackup(raw: unknown): AutoBackupSettings {
+function normalizeAutoBackup(raw: unknown): AutoBackupSettings {
   const data = (typeof raw === 'object' && raw !== null ? raw : {}) as Record<string, unknown>;
   const keep = data.keep;
   return {

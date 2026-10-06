@@ -24,7 +24,7 @@ export function memoryStorage(): KeyValueStorage {
   };
 }
 
-export class FakeAlerts implements PhaseAlerts {
+class FakeAlerts implements PhaseAlerts {
   plans: (AlertPlan | null)[] = [];
   outcome: AlertOutcome = 'scheduled';
   fail = false;

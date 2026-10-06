@@ -64,7 +64,9 @@
     "verify": "npm run typecheck && npm run lint && npm run doctor && npm run export:android",
     "test": "node scripts/run-tests.mjs",
     "test:ui": "jest",
-    "test:all": "npm test && npm run test:ui"
+    "test:all": "npm test && npm run test:ui",
+    "knip": "knip",
+    "perf": "node scripts/performance-report.mjs"
   },
   "private": true
 }

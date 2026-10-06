@@ -7,7 +7,7 @@ import type { StatsReport } from '../domain/usecases';
 
 import { useStatisticsModule } from './module';
 
-export const STATISTICS_ROOT = ['statistics'] as const;
+const STATISTICS_ROOT = ['statistics'] as const;
 
 export function useReport(period: StatsPeriod, anchor: DateKey): UseQueryResult<StatsReport> {
   const { stats } = useStatisticsModule();

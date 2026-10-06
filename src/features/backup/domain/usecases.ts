@@ -15,7 +15,7 @@ import {
 import { planMerge, totals, type ConflictPolicy } from './merge';
 import { BACKUP_FOLDER, backupPath, kindOfName, type BackupKind } from './names';
 import { clearPreferences, readPreferences, writePreferences } from './preferences';
-import { RestoreError, type ApplyResult, type BackupStore, type RestoreEffects } from './ports';
+import type { ApplyResult, BackupStore, RestoreEffects } from './ports';
 import { BackupSettingsStore, FREQUENCY_MS, type AutoBackupSettings } from './settings';
 import { projectAll } from './schema';
 
@@ -23,8 +23,8 @@ import { projectAll } from './schema';
 const ATTACHMENT_TABLE = 'note_attachments';
 const ATTACHMENT_PATH = 'path';
 
-export const MAX_FILE_BYTES = 10 * 1024 * 1024;
-export const MAX_FILES_BYTES = 50 * 1024 * 1024;
+const MAX_FILE_BYTES = 10 * 1024 * 1024;
+const MAX_FILES_BYTES = 50 * 1024 * 1024;
 /** Safety copies made before a restore, kept in case the restore was a mistake. */
 const KEEP_SAFETY = 3;
 
@@ -329,4 +329,3 @@ export function createBackupUseCases({
 }
 
 export type BackupUseCases = ReturnType<typeof createBackupUseCases>;
-export { RestoreError };

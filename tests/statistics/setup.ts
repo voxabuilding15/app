@@ -9,7 +9,7 @@ import { createTestDatabase } from '../tasks/test-database';
 export const at = (y: number, m: number, d: number, h = 12, min = 0) =>
   new Date(y, m - 1, d, h, min).getTime();
 
-export function memoryStorage() {
+function memoryStorage() {
   const values = new Map<string, string>();
   return {
     getString: (key: string) => values.get(key),

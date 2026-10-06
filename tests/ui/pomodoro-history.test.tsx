@@ -208,3 +208,20 @@ describe('statistics', () => {
     expect(await screen.findByText(/: 30m$/)).toBeTruthy();
   });
 });
+
+describe('long histories', () => {
+  it('draws a page at a time', async () => {
+    const app = createApp();
+    for (let index = 0; index < 35; index += 1) {
+      await addSession(app, { minutesAgo: 100 + index * 40, note: `Session ${index}` });
+    }
+    await renderWithApp(<PomodoroScreen />, app);
+    await open('History');
+    expect(await screen.findByText('Session 0')).toBeTruthy();
+    expect(screen.getAllByLabelText(/^Delete Focus/)).toHaveLength(30);
+    await fireEvent.press(screen.getByLabelText('Show 5 more'));
+    expect(await screen.findByText('Session 34')).toBeTruthy();
+    expect(screen.getAllByLabelText(/^Delete Focus/)).toHaveLength(35);
+    expect(screen.queryByLabelText(/^Show \d+ more/)).toBeNull();
+  });
+});

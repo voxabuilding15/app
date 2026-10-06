@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { DEFAULT_PRIVACY, readPrivacy, writePrivacy } from '@/core';
+import { readPrivacy, writePrivacy } from '@/core';
 import { SqliteDataUsage } from '@/features/settings/data/sqlite-usage';
 import {
   FEEDBACK_MAX_LENGTH,
@@ -43,7 +43,7 @@ describe('security settings', () => {
 describe('privacy settings', () => {
   it('stores the choice and treats anything unreadable as off', () => {
     const storage = memoryStorage();
-    assert.deepEqual(readPrivacy(storage), DEFAULT_PRIVACY);
+    assert.deepEqual(readPrivacy(storage), { hideNotificationDetails: false });
     writePrivacy(storage, { hideNotificationDetails: true });
     assert.equal(readPrivacy(storage).hideNotificationDetails, true);
     storage.setString('settings.privacy', '{nope');

@@ -9,7 +9,7 @@ export const LANGUAGES: readonly { value: Language; native: string }[] = [
 
 export type Dictionary = Readonly<Record<string, string>>;
 
-export type Vars = Readonly<Record<string, string | number>>;
+type Vars = Readonly<Record<string, string | number>>;
 
 export interface Translator {
   language: ResolvedLanguage;

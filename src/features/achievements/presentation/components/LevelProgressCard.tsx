@@ -59,7 +59,10 @@ export function LevelProgressCard({ onPress }: LevelProgressCardProps) {
       pressedScale={0.99}
       onPress={onPress}
     >
-      {body}
+      {/* The button's own label already says all of this. */}
+      <View importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
+        {body}
+      </View>
     </PressableScale>
   );
 }

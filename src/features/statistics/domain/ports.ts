@@ -1,5 +1,3 @@
-import type { DateKey } from '@/core';
-
 import type { CategoryTotal, FlowTotals } from '../../finance/domain/entities';
 import type { TimeRange } from '../../finance/domain/filters';
 import type { EventEntry } from '../../calendar/domain/entities';
@@ -20,19 +18,19 @@ export interface TaskSource {
   dueIn(span: TimeSpan): Promise<DueTask[]>;
 }
 
-export interface HabitSource {
+interface HabitSource {
   entries(): Promise<HabitEntry[]>;
 }
 
-export interface EventSource {
+interface EventSource {
   listInRange(from: number, to: number): Promise<EventEntry[]>;
 }
 
-export interface FocusSource {
+interface FocusSource {
   listFocus(from: number, to: number): Promise<FocusRow[]>;
 }
 
-export interface MoneySource {
+interface MoneySource {
   flow(range: TimeRange): Promise<FlowTotals>;
   categoryTotals(type: 'income' | 'expense', range: TimeRange): Promise<CategoryTotal[]>;
   currency(): string;
@@ -53,5 +51,3 @@ export interface StatsSources {
   money: MoneySource;
   notes: NoteSource;
 }
-
-export type { DateKey };

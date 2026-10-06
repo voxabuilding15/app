@@ -40,6 +40,4 @@ export { ScreenToolbar } from './ScreenToolbar';
 export { SortSheet } from './SortSheet';
 export { WEEKDAY_DISPLAY_ORDER, WEEKDAY_LABELS, WeekdayChips } from './WeekdayChips';
 export { LockGate } from './LockGate';
-export { PinSheet } from './PinSheet';
 export { LockSettingsPanel } from './LockSettingsPanel';
-export type { LockSettingsCopy } from './LockSettingsPanel';

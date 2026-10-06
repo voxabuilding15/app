@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import { View } from 'react-native';
 
 import { Button, EmptyState, Input, SegmentedControl, Text } from '@/components';
@@ -15,9 +16,13 @@ const SCOPES: readonly { value: HistoryScope; label: string }[] = [
   { value: 'all', label: 'All' },
 ];
 
+/** Sessions drawn at first; the rest is one tap away, so a long history opens quickly. */
+const PAGE_SIZE = 30;
+
 /** Past sessions, newest first, with search and undoable delete. */
 export function HistoryPanel({ vm }: { vm: HistoryViewModel }) {
   const router = useRouter();
+  const [shown, setShown] = useState(PAGE_SIZE);
 
   return (
     <View style={{ gap: spacing.md }}>
@@ -46,17 +51,26 @@ export function HistoryPanel({ vm }: { vm: HistoryViewModel }) {
           }
         />
       ) : (
-        vm.sessions.map((session) => (
-          <SessionRow
-            key={session.id}
-            session={session}
-            onOpen={(item) =>
-              router.push({ pathname: '/pomodoro/session/[id]', params: { id: item.id } })
-            }
-            onDelete={(item) => void vm.deleteSession(item.id)}
-          />
-        ))
+        vm.sessions
+          .slice(0, shown)
+          .map((session) => (
+            <SessionRow
+              key={session.id}
+              session={session}
+              onOpen={(item) =>
+                router.push({ pathname: '/pomodoro/session/[id]', params: { id: item.id } })
+              }
+              onDelete={(item) => void vm.deleteSession(item.id)}
+            />
+          ))
       )}
+      {vm.sessions.length > shown ? (
+        <Button
+          label={`Show ${Math.min(PAGE_SIZE, vm.sessions.length - shown)} more`}
+          variant="text"
+          onPress={() => setShown((count) => count + PAGE_SIZE)}
+        />
+      ) : null}
     </View>
   );
 }

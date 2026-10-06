@@ -10,7 +10,7 @@ export interface Words {
 
 type Unit = 'count' | 'percent' | 'score' | 'hours' | 'minutes' | 'money';
 
-export interface SummaryRow {
+interface SummaryRow {
   label: string;
   unit: Unit;
   /** Number for spreadsheets; money is in major units. Null when there is nothing to report. */

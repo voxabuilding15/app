@@ -16,7 +16,6 @@ import type {
   NoteSummary,
 } from '../domain/entities';
 import type { NoteFilter, NoteSort } from '../domain/filters';
-import { useLockStatus as useLockState, type LockStatus } from '@/hooks';
 
 import { useNotesModule } from './module';
 
@@ -81,12 +80,6 @@ export function useFolderTree(): UseQueryResult<FolderNode[]> {
 export function useTags(): UseQueryResult<Category[]> {
   const { tags } = useNotesModule();
   return useQuery({ queryKey: keys.tags, queryFn: () => tags.list() });
-}
-
-/** How notes are locked and whether they are open right now. */
-export function useLockStatus(): LockStatus {
-  const { lock } = useNotesModule();
-  return useLockState(lock, keys.lock);
 }
 
 /** Refreshes every Notes query after a write. */

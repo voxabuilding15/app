@@ -1,5 +1,3 @@
-import type { DateKey } from '@/core';
-
 /** What can be counted across the app. */
 export type CounterId =
   'tasks' | 'checkIns' | 'focusSessions' | 'focusMinutes' | 'notes' | 'events' | 'transactions';
@@ -38,5 +36,3 @@ export interface Unlock {
   unlockedAt: number;
   seen: boolean;
 }
-
-export type { DateKey };

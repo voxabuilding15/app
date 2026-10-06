@@ -4,7 +4,7 @@ import type { KeyValueStorage } from '@/core';
  * The settings that travel with a backup. Security settings (the app lock and the notes lock) are
  * left out on purpose: a PIN hash has no business sitting in a file that can be shared.
  */
-export const PREFERENCE_KEYS: readonly string[] = [
+const PREFERENCE_KEYS: readonly string[] = [
   'theme-preference',
   'language-preference',
   'finance.currency',

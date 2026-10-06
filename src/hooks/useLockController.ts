@@ -10,7 +10,7 @@ export interface LockStatus {
 }
 
 /** How something is locked and whether it is open right now, refreshed whenever `key` is invalidated. */
-export function useLockStatus(lock: LockUseCases, key: readonly unknown[]): LockStatus {
+function useLockStatus(lock: LockUseCases, key: readonly unknown[]): LockStatus {
   const { data } = useQuery({
     queryKey: key,
     queryFn: (): LockStatus => ({ method: lock.method(), unlocked: lock.isUnlocked() }),

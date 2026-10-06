@@ -4,7 +4,7 @@ import type { DataUsage } from '../domain/usage';
 
 import { useSettingsModule } from './module';
 
-export const SETTINGS_ROOT = ['settings'] as const;
+const SETTINGS_ROOT = ['settings'] as const;
 
 export function useUsage(): UseQueryResult<DataUsage> {
   const { usage } = useSettingsModule();
