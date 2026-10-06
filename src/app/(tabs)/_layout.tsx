@@ -3,12 +3,14 @@ import { DrawerToggleButton } from 'expo-router/drawer';
 
 import { Icon } from '@/components';
 import { useIsTablet } from '@/hooks';
+import { useTranslator } from '@/i18n';
 import { TAB_ITEMS } from '@/navigation';
 import { tabBarStyleFor, useTheme } from '@/theme';
 
 export default function TabsLayout() {
   const { colors } = useTheme();
   const isTablet = useIsTablet();
+  const { t } = useTranslator();
 
   return (
     <Tabs
@@ -33,7 +35,7 @@ export default function TabsLayout() {
           key={item.name}
           name={item.name}
           options={{
-            title: item.title,
+            title: t(item.title),
             headerShown: item.ownHeader !== true,
             tabBarIcon: ({ color, size }) => <Icon name={item.icon} size={size} color={color} />,
           }}

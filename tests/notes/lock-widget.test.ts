@@ -4,10 +4,10 @@ import { beforeEach, describe, it } from 'node:test';
 import {
   LOCKOUT_MS,
   MAX_PIN_ATTEMPTS,
+  StorageLockStore,
   UNLOCK_WINDOW_MS,
   validatePin,
-} from '@/features/notes/domain/lock';
-import { StorageLockStore } from '@/features/notes/data/storage-adapters';
+} from '@/core';
 import {
   WIDGET_NOTE_LIMIT,
   WIDGET_SNAPSHOT_KEY,
@@ -181,11 +181,11 @@ describe('lock storage', () => {
     ]) {
       const storage = memoryStorage();
       storage.setString('notes.lock', raw);
-      assert.equal(new StorageLockStore(storage).read().method, 'none', raw);
+      assert.equal(new StorageLockStore(storage, 'notes.lock').read().method, 'none', raw);
     }
     const storage = memoryStorage();
     storage.setString('notes.lock', '{"method":"device"}');
-    assert.deepEqual(new StorageLockStore(storage).read(), {
+    assert.deepEqual(new StorageLockStore(storage, 'notes.lock').read(), {
       method: 'device',
       pinHash: null,
       pinSalt: null,

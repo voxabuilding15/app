@@ -7,7 +7,6 @@ import type {
   NoteSummary,
 } from './entities';
 import type { NoteQuery, NoteSort } from './filters';
-import type { LockConfig } from './lock';
 import type { WidgetSnapshot } from './widget';
 
 export interface NoteRepository {
@@ -88,17 +87,6 @@ export type ScheduleOutcome =
 export interface NoteReminderScheduler {
   schedule(reminder: ScheduledNoteReminder): Promise<ScheduleOutcome>;
   cancel(notificationId: string): Promise<void>;
-}
-
-/** Device authentication: fingerprint, face or the screen-lock PIN, pattern or password. */
-export interface Authenticator {
-  isAvailable(): Promise<boolean>;
-  authenticate(reason: string): Promise<boolean>;
-}
-
-export interface LockStore {
-  read(): LockConfig;
-  write(config: LockConfig): void;
 }
 
 /** Hands a summary of the notes to whatever draws a home screen widget. */

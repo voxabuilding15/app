@@ -1,5 +1,6 @@
 import { createContext, useContext, type PropsWithChildren } from 'react';
 
+import type { Authenticator } from '../lock';
 import type { Clock, Database, FileService, KeyValueStorage, NotificationService } from '../ports';
 import type { CategoryKind, CategoryRepository } from '../taxonomy';
 
@@ -11,6 +12,7 @@ export interface Container {
   storage: KeyValueStorage;
   notifications: NotificationService;
   files: FileService;
+  authenticator: Authenticator;
 }
 
 const ContainerContext = createContext<Container | null>(null);

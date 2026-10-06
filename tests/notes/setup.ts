@@ -1,12 +1,17 @@
-import { createCategoryUseCases, createId, type KeyValueStorage } from '@/core';
+import {
+  StorageLockStore,
+  createCategoryUseCases,
+  createId,
+  createLockUseCases,
+  type KeyValueStorage,
+} from '@/core';
 import { SqliteCategoryRepository } from '@/database/category-repository';
 import { SqliteAttachmentRepository } from '@/features/notes/data/sqlite-attachment-repository';
 import { SqliteFolderRepository } from '@/features/notes/data/sqlite-folder-repository';
 import { SqliteNoteRepository } from '@/features/notes/data/sqlite-note-repository';
-import { StorageLockStore, StorageWidgetPublisher } from '@/features/notes/data/storage-adapters';
+import { StorageWidgetPublisher } from '@/features/notes/data/storage-adapters';
 import { createAttachmentUseCases } from '@/features/notes/domain/attachment-usecases';
 import { createFolderUseCases } from '@/features/notes/domain/folder-usecases';
-import { createLockUseCases } from '@/features/notes/domain/lock';
 import { createNoteUseCases } from '@/features/notes/domain/note-usecases';
 import { createWidgetUseCases } from '@/features/notes/domain/widget-usecases';
 import { emptyNoteDraft, type NoteDraft } from '@/features/notes/domain/validation';
@@ -85,7 +90,7 @@ export function createNotes(start = at(2026, 10, 15)) {
       clock,
     }),
     lock: createLockUseCases({
-      store: new StorageLockStore(storage),
+      store: new StorageLockStore(storage, 'notes.lock'),
       authenticator,
       clock,
       newSalt: () => `salt${(salts += 1)}`,

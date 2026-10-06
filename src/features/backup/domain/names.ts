@@ -1,4 +1,4 @@
-export type BackupKind = 'manual' | 'auto' | 'before-restore';
+export type BackupKind = 'manual' | 'auto' | 'safety';
 
 export const BACKUP_FOLDER = 'backups';
 
@@ -15,6 +15,6 @@ export function backupPath(at: number, kind: BackupKind): string {
 
 /** What kind a stored backup is, from its file name; anything else counts as manual. */
 export function kindOfName(name: string): BackupKind {
-  const match = /-(manual|auto|before-restore)\.json$/.exec(name);
+  const match = /-(manual|auto|safety)\.json$/.exec(name);
   return (match?.[1] as BackupKind | undefined) ?? 'manual';
 }

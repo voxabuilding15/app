@@ -1,5 +1,6 @@
 import type { Container } from '@/core';
 import { SqliteCategoryRepository, getDatabase } from '@/database';
+import { deviceAuthenticator } from '@/services/authentication';
 import { fileService } from '@/services/files';
 import { notificationService } from '@/services/notifications';
 import { kvStorage } from '@/services/storage';
@@ -15,5 +16,6 @@ export function createContainer(): Container {
     storage: kvStorage,
     notifications: notificationService,
     files: fileService,
+    authenticator: deviceAuthenticator,
   };
 }

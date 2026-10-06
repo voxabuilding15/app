@@ -15,8 +15,10 @@ import { FinanceBridge } from '@/features/finance';
 import { HabitNotificationBridge } from '@/features/habits';
 import { NotesBridge } from '@/features/notes';
 import { PomodoroBridge } from '@/features/pomodoro';
+import { AppLockGate } from '@/features/settings';
 import { TaskNotificationBridge } from '@/features/tasks';
 import { useIsTablet } from '@/hooks';
+import { useTranslator } from '@/i18n';
 import { DRAWER_ITEMS, DrawerContent, TABS_ROUTE } from '@/navigation';
 import { AppProviders } from '@/providers';
 import { DRAWER_WIDTH, useTheme } from '@/theme';
@@ -26,9 +28,10 @@ void SplashScreen.preventAutoHideAsync();
 function RootNavigator() {
   const { colors, isDark } = useTheme();
   const isTablet = useIsTablet();
+  const { t } = useTranslator();
 
   return (
-    <>
+    <AppLockGate>
       <StatusBar style={isDark ? 'light' : 'dark'} />
       <TaskNotificationBridge />
       <HabitNotificationBridge />
@@ -58,14 +61,14 @@ function RootNavigator() {
             key={item.name}
             name={item.name}
             options={{
-              title: item.title,
+              title: t(item.title),
               headerShown: item.ownHeader ? false : undefined,
               headerLeft: isTablet ? () => null : undefined,
             }}
           />
         ))}
       </Drawer>
-    </>
+    </AppLockGate>
   );
 }
 

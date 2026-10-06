@@ -16,11 +16,14 @@ import type {
   NoteSummary,
 } from '../domain/entities';
 import type { NoteFilter, NoteSort } from '../domain/filters';
-import type { LockMethod } from '../domain/lock';
+import { useLockStatus as useLockState, type LockStatus } from '@/hooks';
 
 import { useNotesModule } from './module';
 
 const ROOT = ['notes'] as const;
+
+/** The query key behind the lock state, shared with the lock controls. */
+export const NOTES_LOCK_KEY = [...ROOT, 'lock'] as const;
 
 const keys = {
   list: (filter: NoteFilter, sort: NoteSort, limit: number) =>
@@ -29,7 +32,7 @@ const keys = {
   attachments: (id: string) => [...ROOT, 'attachments', id] as const,
   folders: [...ROOT, 'folders'] as const,
   tags: [...ROOT, 'tags'] as const,
-  lock: [...ROOT, 'lock'] as const,
+  lock: NOTES_LOCK_KEY,
 };
 
 export function useNotes(
@@ -80,21 +83,10 @@ export function useTags(): UseQueryResult<Category[]> {
   return useQuery({ queryKey: keys.tags, queryFn: () => tags.list() });
 }
 
-export interface LockStatus {
-  method: LockMethod;
-  unlocked: boolean;
-}
-
 /** How notes are locked and whether they are open right now. */
 export function useLockStatus(): LockStatus {
   const { lock } = useNotesModule();
-  const { data } = useQuery({
-    queryKey: keys.lock,
-    queryFn: (): LockStatus => ({ method: lock.method(), unlocked: lock.isUnlocked() }),
-    initialData: () => ({ method: lock.method(), unlocked: lock.isUnlocked() }),
-    staleTime: 0,
-  });
-  return data;
+  return useLockState(lock, keys.lock);
 }
 
 /** Refreshes every Notes query after a write. */

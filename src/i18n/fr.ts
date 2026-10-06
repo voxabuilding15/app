@@ -192,8 +192,8 @@ export const fr: Readonly<Record<string, string>> = {
     '{count} éléments ignorés car ils entrent en conflit avec des éléments existants',
   '{count} links to skipped items were cleaned up':
     '{count} liens vers des éléments ignorés ont été nettoyés',
-  'Reminders are set again when you next save each item. A copy of your previous data is under “Before a restore”.':
-    'Les rappels sont reprogrammés à la prochaine modification de chaque élément. Une copie de vos anciennes données se trouve sous « Avant une restauration ».',
+  'Reminders are set again when you next save each item. A copy of your previous data is under “Safety copy”.':
+    'Les rappels sont reprogrammés à la prochaine modification de chaque élément. Une copie de vos anciennes données se trouve sous « Copie de sécurité ».',
   Done: 'Terminé',
   Cancel: 'Annuler',
   Replace: 'Remplacer',
@@ -241,7 +241,7 @@ export const fr: Readonly<Record<string, string>> = {
     'Créez-en une ci-dessus, ou laissez les sauvegardes automatiques le faire.',
   Manual: 'Manuelle',
   Automatic: 'Automatique',
-  'Before a restore': 'Avant une restauration',
+  'Safety copy': 'Copie de sécurité',
   'Restore {name}': 'Restaurer {name}',
   'Share {name}': 'Partager {name}',
   'Delete {name}': 'Supprimer {name}',
@@ -252,6 +252,148 @@ export const fr: Readonly<Record<string, string>> = {
   Connect: 'Connecter',
   'Until then, export a backup file and keep it in the cloud service of your choice.':
     'En attendant, exportez un fichier de sauvegarde et conservez-le dans le service en ligne de votre choix.',
+
+  // Navigation
+  Home: 'Accueil',
+  Dashboard: 'Tableau de bord',
+  Pomodoro: 'Pomodoro',
+  Settings: 'Paramètres',
+  // Settings
+  Appearance: 'Apparence',
+  'Choose how {app} looks.': "Choisissez l'apparence de {app}.",
+  System: 'Système',
+  Light: 'Clair',
+  Dark: 'Sombre',
+  Language: 'Langue',
+  'Choose the language of the app. System follows your phone.':
+    "Choisissez la langue de l'application. « Système » suit votre téléphone.",
+  'Settings, statistics, achievements and backups are translated. Other screens are still in English.':
+    'Les paramètres, statistiques, succès et sauvegardes sont traduits. Les autres écrans sont encore en anglais.',
+  Notifications: 'Notifications',
+  'Notifications are allowed': 'Les notifications sont autorisées',
+  'Notifications are blocked in system settings':
+    'Les notifications sont bloquées dans les paramètres du système',
+  'Notifications have not been allowed yet': "Les notifications n'ont pas encore été autorisées",
+  'Notifications are working': 'Les notifications fonctionnent',
+  'Open system settings': 'Ouvrir les paramètres du système',
+  'Allow notifications': 'Autoriser les notifications',
+  'Send a test notification': 'Envoyer une notification de test',
+  'Test notification sent': 'Notification de test envoyée',
+  'Each part of the app has its own notification category. You can turn them on or off, and choose sounds, in your phone’s settings.':
+    "Chaque partie de l'application a sa propre catégorie de notifications. Vous pouvez les activer ou les désactiver, et choisir les sons, dans les paramètres de votre téléphone.",
+  'Manage categories in system settings': 'Gérer les catégories dans les paramètres du système',
+  Privacy: 'Confidentialité',
+  'Your data stays on this device. FocusFlow has no account, no ads and sends nothing to anyone.':
+    "Vos données restent sur cet appareil. FocusFlow n'a ni compte ni publicité et n'envoie rien à personne.",
+  'Hide notification details': 'Masquer le contenu des notifications',
+  'Notifications only say that something needs attention, so nothing private shows on the lock screen. Reminders already scheduled change the next time you save them.':
+    "Les notifications indiquent seulement que quelque chose demande votre attention, rien de privé ne s'affiche sur l'écran verrouillé. Les rappels déjà programmés changent à leur prochain enregistrement.",
+  'Open the app to see details': "Ouvrez l'application pour voir les détails",
+  Data: 'Données',
+  'Export, import and automatic backups': 'Export, import et sauvegardes automatiques',
+  'Storage used': 'Espace utilisé',
+  Transactions: 'Transactions',
+  'Focus sessions': 'Sessions de concentration',
+  'Delete all data': 'Supprimer toutes les données',
+  'Delete all data?': 'Supprimer toutes les données ?',
+  'Every task, habit, event, transaction, note and setting on this device will be deleted. This cannot be undone unless you keep a safety copy.':
+    "Toutes les tâches, habitudes, événements, transactions, notes et réglages de cet appareil seront supprimés. C'est irréversible, sauf si vous gardez une copie de sécurité.",
+  'Delete, keep a safety copy': 'Supprimer, garder une copie de sécurité',
+  'Delete everything': 'Tout supprimer',
+  'All data deleted. A safety copy was kept in your backups.':
+    'Toutes les données ont été supprimées. Une copie de sécurité est conservée dans vos sauvegardes.',
+  'All data deleted.': 'Toutes les données ont été supprimées.',
+  "Couldn't delete your data. Nothing was changed.":
+    "Impossible de supprimer vos données. Rien n'a été modifié.",
+  About: 'À propos',
+  'Version {version}': 'Version {version}',
+  'Offline storage': 'Stockage hors ligne',
+  'All data stays on this device (database v{version})':
+    'Toutes les données restent sur cet appareil (base de données v{version})',
+  'Works without internet': 'Fonctionne sans internet',
+  'Nothing in the app needs a connection.': "Rien dans l'application ne nécessite de connexion.",
+  Security: 'Sécurité',
+  'App lock': "Verrouillage de l'application",
+  'Fingerprint, face, screen lock or PIN': 'Empreinte, visage, verrouillage de l’écran ou code PIN',
+  Feedback: 'Retour',
+  'Send feedback': 'Envoyer un retour',
+  'Ideas, problems and thanks': 'Idées, problèmes et remerciements',
+  FocusFlow: 'FocusFlow',
+  'Erase everything and reset?': 'Tout effacer et réinitialiser ?',
+  'This deletes all data in FocusFlow on this device, including backups, and removes the app lock. It cannot be undone.':
+    "Cela supprime toutes les données de FocusFlow sur cet appareil, sauvegardes comprises, et retire le verrouillage. C'est irréversible.",
+  'Erase and reset': 'Effacer et réinitialiser',
+  'Turn off app lock': "Désactiver le verrouillage de l'application",
+  'Forgot your PIN?': 'Code PIN oublié ?',
+  Immediately: 'Immédiatement',
+  'After 1 minute': 'Après 1 minute',
+  'After 5 minutes': 'Après 5 minutes',
+  'Ask for your fingerprint, face, screen lock or a PIN before FocusFlow opens.':
+    "Demander votre empreinte, votre visage, le verrouillage de l'écran ou un code PIN avant d'ouvrir FocusFlow.",
+  'If you forget your PIN you can still get back in, but only by erasing all data in the app. Backups kept on the device are erased too. The lock keeps other people out of the app; the data itself is not encrypted.':
+    "Si vous oubliez votre code PIN, vous pouvez revenir dans l'application, mais seulement en effaçant toutes ses données. Les sauvegardes conservées sur l'appareil sont effacées aussi. Le verrou empêche les autres d'entrer dans l'application ; les données elles-mêmes ne sont pas chiffrées.",
+  'The app now uses your phone’s lock':
+    "L'application utilise désormais le verrouillage de votre téléphone",
+  'Lock when I leave the app': "Verrouiller quand je quitte l'application",
+  Idea: 'Idée',
+  Problem: 'Problème',
+  Other: 'Autre',
+  'Write a few words first': "Écrivez d'abord quelques mots",
+  'Use {count} characters or fewer': 'Utilisez {count} caractères ou moins',
+  'Thank you for your feedback': 'Merci pour votre retour',
+  "Couldn't open the share sheet": "Impossible d'ouvrir le menu de partage",
+  'Tell us what works, what does not and what you would like. Your message is shared through the app you choose, so nothing is sent without you.':
+    "Dites-nous ce qui marche, ce qui ne marche pas et ce que vous aimeriez. Votre message est partagé via l'application de votre choix, rien n'est envoyé sans vous.",
+  'Your message': 'Votre message',
+  'Include technical details': 'Inclure les détails techniques',
+  'App version, database version, phone system and language. Never your data.':
+    "Version de l'application, de la base de données, système du téléphone et langue. Jamais vos données.",
+  'Share feedback': 'Partager le retour',
+  // Locks
+  'Lock settings': 'Réglages du verrouillage',
+  'How locked notes open': 'Comment s’ouvrent les notes verrouillées',
+  'Mark a note as locked in its settings. Locked notes hide their text in lists and search, and ask to be unlocked before opening. They lock again after 5 minutes or when you leave the app.':
+    "Marquez une note comme verrouillée dans ses réglages. Les notes verrouillées masquent leur texte dans les listes et la recherche, et demandent à être déverrouillées avant d'ouvrir. Elles se reverrouillent après 5 minutes ou quand vous quittez l'application.",
+  'Locking keeps notes private from anyone using your phone, but the text is stored on the device without encryption. Use your phone’s own encryption for full protection.':
+    "Le verrouillage protège vos notes de toute personne utilisant votre téléphone, mais le texte est stocké sans chiffrement sur l'appareil. Utilisez le chiffrement de votre téléphone pour une protection complète.",
+  'Notes now use your phone’s lock':
+    'Les notes utilisent désormais le verrouillage de votre téléphone',
+  'Your notes': 'Vos notes',
+  'locked notes': 'les notes verrouillées',
+  '{subject} is locked': '{subject} est verrouillé(e)',
+  'Enter your PIN to open it.': 'Saisissez votre code PIN pour ouvrir.',
+  'Use your fingerprint, face or screen lock to open it.':
+    "Utilisez votre empreinte, votre visage ou le verrouillage de l'écran pour ouvrir.",
+  PIN: 'Code PIN',
+  Unlock: 'Déverrouiller',
+  'The two PINs do not match': 'Les deux codes PIN ne correspondent pas',
+  'Choose a PIN': 'Choisir un code PIN',
+  'Use {min} to {max} digits. If you forget it, {what} cannot be opened, so pick something you will remember.':
+    "Utilisez de {min} à {max} chiffres. Si vous l'oubliez, {what} ne pourra pas être ouvert(e), choisissez donc un code dont vous vous souviendrez.",
+  'New PIN': 'Nouveau code PIN',
+  'Repeat PIN': 'Répéter le code PIN',
+  'Save PIN': 'Enregistrer le code PIN',
+  'Unlock with': 'Déverrouiller avec',
+  'Fingerprint, face or screen lock': "Empreinte, visage ou verrouillage de l'écran",
+  Off: 'Désactivé',
+  'Locking is off': 'Le verrouillage est désactivé',
+  'Lock now': 'Verrouiller maintenant',
+  'Your PIN is set': 'Votre code PIN est défini',
+  'Something went wrong.': "Une erreur s'est produite.",
+  'Wrong PIN.': 'Code PIN incorrect.',
+  'Too many attempts. Try again in {seconds} seconds.':
+    'Trop de tentatives. Réessayez dans {seconds} secondes.',
+  'Fingerprint, face or screen lock is not set up on this phone.':
+    "L'empreinte, le visage ou le verrouillage de l'écran n'est pas configuré sur ce téléphone.",
+  'Authentication was cancelled.': "L'authentification a été annulée.",
+  '{count} try left.': '{count} essai restant.',
+  '{count} tries left.': '{count} essais restants.',
+  'Unlock your notes first.': "Déverrouillez d'abord vos notes.",
+  'Unlock your app first.': "Déverrouillez d'abord l'application.",
+  'Use digits only': 'Utilisez uniquement des chiffres',
+  'Use 4 to 8 digits': 'Utilisez de 4 à 8 chiffres',
+  'Set up a fingerprint, face or screen lock in your phone settings first, or use a PIN.':
+    "Configurez d'abord une empreinte, un visage ou un verrouillage de l'écran dans les paramètres de votre téléphone, ou utilisez un code PIN.",
   // Export files
   'Statistics report': 'Rapport de statistiques',
   'compared with': 'comparé à',

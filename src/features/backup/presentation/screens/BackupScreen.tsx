@@ -45,7 +45,7 @@ export function BackupScreen() {
               ) : null}
               <Text variant="labelSmall" tone="muted">
                 {t(
-                  'Reminders are set again when you next save each item. A copy of your previous data is under “Before a restore”.',
+                  'Reminders are set again when you next save each item. A copy of your previous data is under “Safety copy”.',
                 )}
               </Text>
             </View>

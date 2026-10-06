@@ -14,7 +14,7 @@ export function StoredBackups({ vm }: { vm: BackupViewModel }) {
   const kindLabel: Record<BackupKind, string> = {
     manual: t('Manual'),
     auto: t('Automatic'),
-    'before-restore': t('Before a restore'),
+    safety: t('Safety copy'),
   };
 
   return (

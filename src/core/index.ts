@@ -44,3 +44,25 @@ export type {
   SaveNameResult,
 } from './taxonomy';
 export type * from './ports';
+export {
+  LOCKOUT_MS,
+  MAX_PIN_ATTEMPTS,
+  NO_LOCK,
+  PIN_MAX_LENGTH,
+  PIN_MIN_LENGTH,
+  StorageLockStore,
+  UNLOCK_WINDOW_MS,
+  createLockUseCases,
+  validatePin,
+} from './lock';
+export type {
+  Authenticator,
+  LockChangeResult,
+  LockConfig,
+  LockMethod,
+  LockStore,
+  LockUseCases,
+  UnlockResult,
+} from './lock';
+export { DEFAULT_PRIVACY, PRIVACY_KEY, readPrivacy, writePrivacy } from './privacy';
+export type { PrivacySettings } from './privacy';

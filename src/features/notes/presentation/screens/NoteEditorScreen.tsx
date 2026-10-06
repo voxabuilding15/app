@@ -16,6 +16,7 @@ import {
   SwitchRow,
   Text,
   WRAP_ROW,
+  LockGate,
 } from '@/components';
 import { useHideTabBar } from '@/hooks';
 import { ACCENT_COLORS, spacing, useTheme } from '@/theme';
@@ -27,7 +28,6 @@ import { AttachmentsSection, ImageViewer } from '../components/AttachmentsSectio
 import { DrawingModal } from '../components/DrawingModal';
 import { FolderPickerSheet } from '../components/FolderPickerSheet';
 import { FormatToolbar } from '../components/FormatToolbar';
-import { LockGate } from '../components/LockGate';
 import { MarkdownView } from '../components/MarkdownView';
 import { ColorSection, TagsSection } from '../components/NoteDetailsSections';
 import { RecorderSheet } from '../components/RecorderSheet';

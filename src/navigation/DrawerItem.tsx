@@ -1,6 +1,7 @@
 import { View } from 'react-native';
 
 import { Icon, PressableScale, Text } from '@/components';
+import { useTranslator } from '@/i18n';
 import { radius, spacing, useTheme } from '@/theme';
 
 import type { NavItem } from './routes';
@@ -13,12 +14,13 @@ interface DrawerItemProps {
 
 export function DrawerItem({ item, active, onPress }: DrawerItemProps) {
   const { colors } = useTheme();
+  const { t } = useTranslator();
   const color = active ? colors.onSecondaryContainer : colors.onSurfaceVariant;
 
   return (
     <PressableScale
       accessibilityRole="button"
-      accessibilityLabel={item.title}
+      accessibilityLabel={t(item.title)}
       accessibilityState={{ selected: active }}
       pressedScale={0.99}
       onPress={() => onPress(item.name)}
@@ -38,7 +40,7 @@ export function DrawerItem({ item, active, onPress }: DrawerItemProps) {
       >
         <Icon name={item.icon} color={color} />
         <Text variant="labelLarge" style={{ color }}>
-          {item.title}
+          {t(item.title)}
         </Text>
       </View>
     </PressableScale>

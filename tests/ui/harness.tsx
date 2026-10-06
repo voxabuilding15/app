@@ -92,6 +92,7 @@ export function createApp() {
   const db = createTestDatabase();
   const clock = { now: () => Date.now() };
   const deviceFiles = new MemoryFiles();
+  const authenticator = new FakeAuthenticator();
   const container: Container = {
     clock,
     db,
@@ -99,10 +100,10 @@ export function createApp() {
     storage: memoryStorage(),
     notifications,
     files: deviceFiles,
+    authenticator,
   };
   const files = new FakeStorage();
   const picker = new FakePicker();
-  const authenticator = new FakeAuthenticator();
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false, staleTime: Infinity, gcTime: 0 } },
   });

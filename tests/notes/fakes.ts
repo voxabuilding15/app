@@ -1,6 +1,6 @@
+import type { Authenticator } from '@/core';
 import type {
   AttachmentStorage,
-  Authenticator,
   FilePicker,
   NoteReminderScheduler,
   PickedFile,

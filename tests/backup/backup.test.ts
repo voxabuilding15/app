@@ -152,7 +152,7 @@ describe('creating a backup', () => {
     );
     await a.backups.remove(listed[0]!.file.path);
     assert.equal((await a.backups.list()).length, 1);
-    assert.equal(kindOfName('focusflow-20260101-000000-before-restore.json'), 'before-restore');
+    assert.equal(kindOfName('focusflow-20260101-000000-safety.json'), 'safety');
     assert.equal(kindOfName('mine.json'), 'manual');
   });
 });
@@ -277,7 +277,7 @@ describe('restoring over everything', () => {
     const result = await a.backups.restore(backup, REPLACE);
     const copy = await stored(a, result.safetyCopy.path);
     assert.equal(copy.tables.tasks?.length, 2);
-    assert.match(result.safetyCopy.path, /-before-restore\.json$/);
+    assert.match(result.safetyCopy.path, /-safety\.json$/);
     assert.equal(a.storage.getString('pomodoro.timer'), undefined);
     assert.equal(a.storage.getString('pomodoro.alerts'), undefined);
     assert.equal(a.cancelled.count, 1);
@@ -286,10 +286,7 @@ describe('restoring over everything', () => {
       a.state.now += 1000;
       await a.backups.restore(backup, REPLACE);
     }
-    assert.equal(
-      (await a.backups.list()).filter((entry) => entry.kind === 'before-restore').length,
-      3,
-    );
+    assert.equal((await a.backups.list()).filter((entry) => entry.kind === 'safety').length, 3);
   });
 
   it('restores attachment files, and removes the files of notes that are gone', async () => {
@@ -397,10 +394,7 @@ describe('a restore that cannot finish', () => {
       tables.tasks![0]!.priority = 99;
     });
     await assert.rejects(a.backups.restore(bad, REPLACE));
-    assert.equal(
-      (await a.backups.list()).filter((entry) => entry.kind === 'before-restore').length,
-      1,
-    );
+    assert.equal((await a.backups.list()).filter((entry) => entry.kind === 'safety').length, 1);
   });
 });
 

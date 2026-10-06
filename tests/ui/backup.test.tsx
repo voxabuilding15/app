@@ -152,9 +152,7 @@ describe('restoring', () => {
     ).toBe(3);
     // A safety copy was made first.
     expect(
-      (await backupFiles(target.created)).some((file) =>
-        file.name.endsWith('-before-restore.json'),
-      ),
+      (await backupFiles(target.created)).some((file) => file.name.endsWith('-safety.json')),
     ).toBe(true);
     await fireEvent.press(screen.getByLabelText('Done'));
     await waitFor(() => expect(screen.queryByText('Backup restored')).toBeNull());

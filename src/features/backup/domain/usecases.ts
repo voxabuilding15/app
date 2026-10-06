@@ -14,7 +14,7 @@ import {
 } from './format';
 import { planMerge, totals, type ConflictPolicy } from './merge';
 import { BACKUP_FOLDER, backupPath, kindOfName, type BackupKind } from './names';
-import { readPreferences, writePreferences } from './preferences';
+import { clearPreferences, readPreferences, writePreferences } from './preferences';
 import { RestoreError, type ApplyResult, type BackupStore, type RestoreEffects } from './ports';
 import { BackupSettingsStore, FREQUENCY_MS, type AutoBackupSettings } from './settings';
 import { projectAll } from './schema';
@@ -26,7 +26,7 @@ const ATTACHMENT_PATH = 'path';
 export const MAX_FILE_BYTES = 10 * 1024 * 1024;
 export const MAX_FILES_BYTES = 50 * 1024 * 1024;
 /** Safety copies made before a restore, kept in case the restore was a mistake. */
-const KEEP_BEFORE_RESTORE = 3;
+const KEEP_SAFETY = 3;
 
 export interface BackupSummary {
   createdAt: number;
@@ -166,8 +166,8 @@ export function createBackupUseCases({
       backupPath(clock.now(), kind),
       serializeBackup(backup),
     );
-    if (kind === 'before-restore') {
-      await prune(kind, KEEP_BEFORE_RESTORE);
+    if (kind === 'safety') {
+      await prune(kind, KEEP_SAFETY);
     }
     return { file, kind };
   }
@@ -240,7 +240,7 @@ export function createBackupUseCases({
       const schema = await store.schema();
       const incoming = projectAll(schema, backup.tables);
       const before = await localData();
-      const safety = await create('before-restore', true);
+      const safety = await create('safety', true);
 
       const applied =
         mode === 'replace'
@@ -273,6 +273,32 @@ export function createBackupUseCases({
 
       await effects.afterRestore();
       return { ...applied, mode, safetyCopy: safety.file, filesRestored };
+    },
+
+    /**
+     * Wipes every item and every setting except theme and language, as if the app were new. By
+     * default a safety copy is kept so it can still be undone; without it, every backup on the
+     * device goes too, and nothing of the data is left.
+     */
+    async eraseEverything({
+      keepSafetyCopy,
+    }: {
+      keepSafetyCopy: boolean;
+    }): Promise<{ safetyCopy: StoredFile | null }> {
+      const before = await localData();
+      const safety = keepSafetyCopy ? await create('safety', true) : null;
+      await store.replaceAll({ achievement_state: [{ id: 1, peak_xp: 0 }] });
+      for (const path of attachmentPaths(before[ATTACHMENT_TABLE])) {
+        await files.remove('documents', path);
+      }
+      if (!keepSafetyCopy) {
+        for (const entry of await listBackups()) {
+          await files.remove('documents', entry.file.path);
+        }
+      }
+      clearPreferences(storage);
+      await effects.afterRestore();
+      return { safetyCopy: safety?.file ?? null };
     },
 
     autoSettings: (): AutoBackupSettings => settingsStore.read(),

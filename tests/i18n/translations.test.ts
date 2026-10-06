@@ -6,6 +6,7 @@ import { describe, it } from 'node:test';
 import { ALL_ACHIEVEMENTS } from '@/features/achievements/domain/catalog';
 import { CHALLENGE_TEMPLATES } from '@/features/achievements/domain/challenges';
 import { levelTitle } from '@/features/achievements/domain/levels';
+import { HOME_ITEM, DRAWER_ITEMS, TAB_ITEMS } from '@/navigation/routes';
 import { fr } from '@/i18n/fr';
 import { createTranslator, resolveLanguage } from '@/i18n/translator';
 
@@ -16,6 +17,11 @@ const TRANSLATED = [
   'src/features/backup',
   'src/features/settings',
   'src/navigation',
+  'src/features/notes/presentation/screens/LockSettingsScreen.tsx',
+  'src/components/ui/LockGate.tsx',
+  'src/components/ui/PinSheet.tsx',
+  'src/components/ui/LockSettingsPanel.tsx',
+  'src/hooks/useLockController.ts',
 ];
 
 function files(dir: string): string[] {
@@ -41,7 +47,7 @@ function usedPhrases(): Map<string, string> {
     if (!existsSync(dir)) {
       continue;
     }
-    for (const file of files(dir)) {
+    for (const file of statSync(dir).isDirectory() ? files(dir) : [dir]) {
       const source = readFileSync(file, 'utf8');
       for (const match of source.matchAll(T_CALL)) {
         found.set(unescape(match[1] ?? match[2] ?? match[3] ?? ''), file);
@@ -63,6 +69,23 @@ function usedPhrases(): Map<string, string> {
   for (let level = 1; level <= 99; level += 1) {
     found.set(levelTitle(level), 'level titles');
   }
+  for (const item of [HOME_ITEM, ...TAB_ITEMS, ...DRAWER_ITEMS]) {
+    found.set(item.title, 'navigation routes');
+  }
+  // Messages the lock use cases return, for the notes and for the app itself.
+  for (const subject of ['notes', 'app']) {
+    found.set(`Unlock your ${subject} first.`, 'lock messages');
+  }
+  for (const message of [
+    'Something went wrong.',
+    'Use digits only',
+    'Use 4 to 8 digits',
+    'Authentication was cancelled.',
+    'Set up a fingerprint, face or screen lock in your phone settings first, or use a PIN.',
+  ]) {
+    found.set(message, 'lock messages');
+  }
+  found.set('Open the app to see details', 'notification privacy');
   found.set('Weekly challenge completed', 'unlock text');
   found.set('Monthly challenge completed', 'unlock text');
   return found;

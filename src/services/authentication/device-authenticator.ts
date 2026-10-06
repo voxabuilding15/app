@@ -1,15 +1,15 @@
 import * as LocalAuthentication from 'expo-local-authentication';
 
-import type { Authenticator } from '../domain/ports';
+import type { Authenticator } from '@/core';
 
 /** Fingerprint, face or the phone's screen lock, whichever the device has set up. */
-export class DeviceAuthenticator implements Authenticator {
+export const deviceAuthenticator: Authenticator = {
   async isAvailable(): Promise<boolean> {
     return (
       (await LocalAuthentication.hasHardwareAsync()) &&
       (await LocalAuthentication.isEnrolledAsync())
     );
-  }
+  },
 
   async authenticate(reason: string): Promise<boolean> {
     const result = await LocalAuthentication.authenticateAsync({
@@ -19,5 +19,5 @@ export class DeviceAuthenticator implements Authenticator {
       disableDeviceFallback: false,
     });
     return result.success;
-  }
-}
+  },
+};

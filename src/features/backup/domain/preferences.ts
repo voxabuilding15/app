@@ -36,3 +36,22 @@ export function writePreferences(
     }
   }
 }
+
+/** Everything kept outside the database that goes when the app is reset; theme and language stay. */
+const RESET_KEYS: readonly string[] = [
+  ...PREFERENCE_KEYS.filter((key) => key !== 'theme-preference' && key !== 'language-preference'),
+  'notes.lock',
+  'notes.widget',
+  'security.applock',
+  'security.settings',
+  'backup.settings',
+  'backup.last-auto',
+  'pomodoro.timer',
+  'pomodoro.alerts',
+];
+
+export function clearPreferences(storage: KeyValueStorage): void {
+  for (const key of RESET_KEYS) {
+    storage.remove(key);
+  }
+}

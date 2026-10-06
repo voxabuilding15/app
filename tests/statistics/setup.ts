@@ -34,6 +34,7 @@ export function createStats(start = at(2026, 10, 15, 18)) {
       throw new Error('not used');
     },
     notifications: undefined as never,
+    authenticator: undefined as never,
   });
   const seed = createSeeder(db, () => state.now);
 

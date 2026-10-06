@@ -12,6 +12,7 @@ import type {
 
 import { registerNotificationCategories } from './categories';
 import { registerNotificationChannels } from './channels';
+import { withPrivacy } from './privacy';
 
 function toPermissionState(response: Notifications.NotificationPermissionsStatus): PermissionState {
   if (response.granted) {
@@ -74,7 +75,8 @@ class ExpoNotificationService implements NotificationService {
     return toPermissionState(await Notifications.requestPermissionsAsync());
   }
 
-  scheduleAt(input: ScheduleAtInput): Promise<string> {
+  scheduleAt(raw: ScheduleAtInput): Promise<string> {
+    const input = withPrivacy(raw);
     return Notifications.scheduleNotificationAsync({
       content: {
         title: input.title,
@@ -90,7 +92,8 @@ class ExpoNotificationService implements NotificationService {
     });
   }
 
-  scheduleRecurring(input: ScheduleRecurringInput): Promise<string> {
+  scheduleRecurring(raw: ScheduleRecurringInput): Promise<string> {
+    const input = withPrivacy(raw);
     const channelId = input.channelId ?? 'default';
     return Notifications.scheduleNotificationAsync({
       content: {
@@ -117,7 +120,8 @@ class ExpoNotificationService implements NotificationService {
     });
   }
 
-  present(input: PresentInput): Promise<string> {
+  present(raw: PresentInput): Promise<string> {
+    const input = withPrivacy(raw);
     return Notifications.scheduleNotificationAsync({
       content: {
         title: input.title,

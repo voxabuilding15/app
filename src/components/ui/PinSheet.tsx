@@ -1,19 +1,26 @@
 import { useState } from 'react';
 import { View } from 'react-native';
 
-import { Button, Input, Sheet, Text } from '@/components';
+import { PIN_MAX_LENGTH, PIN_MIN_LENGTH } from '@/core';
+import { useTranslator } from '@/i18n';
 import { spacing } from '@/theme';
 
-import { PIN_MAX_LENGTH, PIN_MIN_LENGTH } from '../../domain/lock';
+import { Button } from './Button';
+import { Input } from './Input';
+import { Sheet } from './Sheet';
+import { Text } from './Text';
 
 interface PinSheetProps {
   /** Resolves to an error message, or null once the PIN is saved. */
   onSave: (pin: string) => Promise<string | null>;
   onClose: () => void;
+  /** What the PIN protects, already translated and in the plural, e.g. "locked notes". */
+  protects: string;
 }
 
 /** Sheet to choose a PIN, typed twice. Mount only while open so state starts fresh. */
-export function PinSheet({ onSave, onClose }: PinSheetProps) {
+export function PinSheet({ onSave, onClose, protects }: PinSheetProps) {
+  const { t } = useTranslator();
   const [pin, setPin] = useState('');
   const [again, setAgain] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +28,7 @@ export function PinSheet({ onSave, onClose }: PinSheetProps) {
 
   const submit = async () => {
     if (pin !== again) {
-      setError('The two PINs do not match');
+      setError(t('The two PINs do not match'));
       return;
     }
     setBusy(true);
@@ -30,12 +37,15 @@ export function PinSheet({ onSave, onClose }: PinSheetProps) {
   };
 
   return (
-    <Sheet visible title="Choose a PIN" onClose={onClose}>
+    <Sheet visible title={t('Choose a PIN')} onClose={onClose}>
       <Text variant="bodyMedium" tone="muted">
-        {`Use ${PIN_MIN_LENGTH} to ${PIN_MAX_LENGTH} digits. If you forget it, locked notes cannot be opened, so pick something you will remember.`}
+        {t(
+          'Use {min} to {max} digits. If you forget it, {what} cannot be opened, so pick something you will remember.',
+          { min: PIN_MIN_LENGTH, max: PIN_MAX_LENGTH, what: protects },
+        )}
       </Text>
       <Input
-        label="New PIN"
+        label={t('New PIN')}
         value={pin}
         onChangeText={(text) => {
           setPin(text);
@@ -47,7 +57,7 @@ export function PinSheet({ onSave, onClose }: PinSheetProps) {
         autoFocus
       />
       <Input
-        label="Repeat PIN"
+        label={t('Repeat PIN')}
         value={again}
         onChangeText={(text) => {
           setAgain(text);
@@ -60,8 +70,8 @@ export function PinSheet({ onSave, onClose }: PinSheetProps) {
         onSubmitEditing={() => void submit()}
       />
       <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.md }}>
-        <Button label="Cancel" variant="outlined" onPress={onClose} />
-        <Button label="Save PIN" loading={busy} onPress={() => void submit()} />
+        <Button label={t('Cancel')} variant="outlined" onPress={onClose} />
+        <Button label={t('Save PIN')} loading={busy} onPress={() => void submit()} />
       </View>
     </Sheet>
   );

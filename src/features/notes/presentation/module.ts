@@ -1,25 +1,33 @@
-import { createCategoryUseCases, createId, useContainer, type Container } from '@/core';
+import {
+  StorageLockStore,
+  createCategoryUseCases,
+  createId,
+  createLockUseCases,
+  useContainer,
+  type Authenticator,
+  type Container,
+  type LockUseCases,
+} from '@/core';
 
-import { DeviceAuthenticator } from '../data/device-authenticator';
 import { DocumentAttachmentStorage } from '../data/file-attachment-storage';
 import { NotificationNoteReminderScheduler } from '../data/notification-reminder-scheduler';
 import { SqliteAttachmentRepository } from '../data/sqlite-attachment-repository';
 import { SqliteFolderRepository } from '../data/sqlite-folder-repository';
 import { SqliteNoteRepository } from '../data/sqlite-note-repository';
-import { StorageLockStore, StorageWidgetPublisher } from '../data/storage-adapters';
+import { StorageWidgetPublisher } from '../data/storage-adapters';
 import { SystemFilePicker } from '../data/system-file-picker';
 import { createAttachmentUseCases, type AttachmentUseCases } from '../domain/attachment-usecases';
 import { createFolderUseCases, type FolderUseCases } from '../domain/folder-usecases';
-import { createLockUseCases, type LockUseCases } from '../domain/lock';
 import { createNoteUseCases, type NoteUseCases } from '../domain/note-usecases';
-import type { Authenticator, AttachmentStorage, FilePicker } from '../domain/ports';
+import type { AttachmentStorage, FilePicker } from '../domain/ports';
 import { createWidgetUseCases, type WidgetUseCases } from '../domain/widget-usecases';
 
 /** The device-facing pieces of Notes, swappable so tests need no real files or biometrics. */
 export interface NotesAdapters {
   storage: AttachmentStorage;
   picker: FilePicker;
-  authenticator: Authenticator;
+  /** Defaults to the one on the container. */
+  authenticator?: Authenticator;
 }
 
 export interface NotesModule {
@@ -37,7 +45,6 @@ function deviceAdapters(): NotesAdapters {
   return {
     storage: new DocumentAttachmentStorage(),
     picker: new SystemFilePicker(),
-    authenticator: new DeviceAuthenticator(),
   };
 }
 
@@ -84,8 +91,8 @@ export function getNotesModule(
       clock,
     }),
     lock: createLockUseCases({
-      store: new StorageLockStore(container.storage),
-      authenticator: adapters.authenticator,
+      store: new StorageLockStore(container.storage, 'notes.lock'),
+      authenticator: adapters.authenticator ?? container.authenticator,
       clock,
       newSalt: createId,
     }),

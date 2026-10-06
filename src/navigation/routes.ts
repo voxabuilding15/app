@@ -25,5 +25,5 @@ export const DRAWER_ITEMS: readonly NavItem[] = [
   { name: 'pomodoro', title: 'Pomodoro', icon: 'timer', ownHeader: true },
   { name: 'statistics', title: 'Statistics', icon: 'bar-chart', ownHeader: true },
   { name: 'achievements', title: 'Achievements', icon: 'emoji-events', ownHeader: true },
-  { name: 'settings', title: 'Settings', icon: 'settings' },
+  { name: 'settings', title: 'Settings', icon: 'settings', ownHeader: true },
 ];
