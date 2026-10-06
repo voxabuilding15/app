@@ -14,6 +14,7 @@ import { getCalendarModule } from '@/features/calendar/presentation/module';
 import { getFinanceModule } from '@/features/finance/presentation/module';
 import { getNotesModule } from '@/features/notes/presentation/module';
 import { getHabitsModule } from '@/features/habits/presentation/module';
+import { getPomodoroModule } from '@/features/pomodoro/presentation/module';
 import { getTasksModule } from '@/features/tasks/presentation/module';
 import { ThemeProvider } from '@/theme';
 
@@ -27,6 +28,7 @@ export const router: Record<'push' | 'back' | 'navigate', jest.Mock> = (
 
 export interface FakeNotifications extends NotificationService {
   scheduled: string[];
+  presented: { title: string; body: string; categoryId?: string }[];
   cancelled: string[];
   /** Simulates the user tapping a notification or one of its action buttons. */
   emit: (response: NotificationResponse) => void;
@@ -45,6 +47,7 @@ function memoryStorage(): KeyValueStorage {
 function createFakeNotifications(): FakeNotifications {
   const scheduled: string[] = [];
   const cancelled: string[] = [];
+  const presented: { title: string; body: string; categoryId?: string }[] = [];
   const listeners = new Set<(response: NotificationResponse) => void>();
   return {
     scheduled,
@@ -62,6 +65,11 @@ function createFakeNotifications(): FakeNotifications {
       scheduled.push(input.title);
       return `r-${scheduled.length}`;
     },
+    present: async (input) => {
+      presented.push({ title: input.title, body: input.body, categoryId: input.categoryId });
+      return `p-${presented.length}`;
+    },
+    presented,
     cancel: async (id) => void cancelled.push(id),
     cancelAll: async () => undefined,
     onResponse: (listener) => {
@@ -101,6 +109,7 @@ export function createApp() {
     calendar: getCalendarModule(container).calendar,
     finance: getFinanceModule(container),
     notes: getNotesModule(container, { storage: files, picker, authenticator }),
+    pomodoro: getPomodoroModule(container),
     noteFakes: { files, picker, authenticator },
     notifications,
   };

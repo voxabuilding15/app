@@ -473,4 +473,64 @@ export const migrations: readonly Migration[] = [
       `CREATE INDEX idx_note_attachments_note ON note_attachments(note_id, created_at)`,
     ],
   },
+  {
+    version: 7,
+    name: 'pomodoro_feature',
+    rebuildsTables: true,
+    statements: [
+      // `categories.kind` gains 'pomodoro' (session tags), by the same table rebuild as before.
+      `CREATE TABLE categories_new (
+        id TEXT PRIMARY KEY NOT NULL,
+        kind TEXT NOT NULL CHECK (kind IN ('task','habit','event','expense','income','note','pomodoro')),
+        name TEXT NOT NULL,
+        color TEXT NOT NULL,
+        icon TEXT NOT NULL,
+        created_at INTEGER NOT NULL
+      )`,
+      `INSERT INTO categories_new (id, kind, name, color, icon, created_at)
+         SELECT id, kind, name, color, icon, created_at FROM categories`,
+      `DROP TABLE categories`,
+      `ALTER TABLE categories_new RENAME TO categories`,
+      `CREATE INDEX idx_categories_kind ON categories(kind)`,
+      `CREATE UNIQUE INDEX idx_categories_kind_name ON categories(kind, name COLLATE NOCASE)`,
+
+      // One row per finished timer phase. `planned_seconds` is what the timer was set to and
+      // `duration_seconds` how long it actually ran, so a stopped session keeps its real length.
+      `CREATE TABLE pomodoro_sessions_new (
+        id TEXT PRIMARY KEY NOT NULL,
+        kind TEXT NOT NULL CHECK (kind IN ('focus','short_break','long_break')),
+        planned_seconds INTEGER NOT NULL CHECK (planned_seconds > 0),
+        duration_seconds INTEGER NOT NULL CHECK (duration_seconds >= 0),
+        started_at INTEGER NOT NULL,
+        ended_at INTEGER NOT NULL,
+        outcome TEXT NOT NULL CHECK (outcome IN ('completed','stopped','skipped')),
+        pauses INTEGER NOT NULL DEFAULT 0 CHECK (pauses >= 0),
+        deep_focus INTEGER CHECK (deep_focus IS NULL OR deep_focus BETWEEN 0 AND 100),
+        note TEXT NOT NULL DEFAULT '',
+        task_id TEXT REFERENCES tasks(id) ON DELETE SET NULL,
+        habit_id TEXT REFERENCES habits(id) ON DELETE SET NULL,
+        CHECK (ended_at >= started_at)
+      )`,
+      `INSERT INTO pomodoro_sessions_new
+           (id, kind, planned_seconds, duration_seconds, started_at, ended_at, outcome, pauses, deep_focus)
+         SELECT id, kind, duration_seconds, duration_seconds, started_at,
+                started_at + duration_seconds * 1000,
+                CASE WHEN completed = 1 THEN 'completed' ELSE 'stopped' END, 0,
+                CASE WHEN completed = 1 AND kind = 'focus' THEN 100 END
+         FROM pomodoro_sessions`,
+      `DROP TABLE pomodoro_sessions`,
+      `ALTER TABLE pomodoro_sessions_new RENAME TO pomodoro_sessions`,
+      `CREATE INDEX idx_pomodoro_started ON pomodoro_sessions(started_at)`,
+      `CREATE INDEX idx_pomodoro_focus ON pomodoro_sessions(started_at) WHERE kind = 'focus'`,
+      `CREATE INDEX idx_pomodoro_task ON pomodoro_sessions(task_id) WHERE task_id IS NOT NULL`,
+      `CREATE INDEX idx_pomodoro_habit ON pomodoro_sessions(habit_id) WHERE habit_id IS NOT NULL`,
+
+      `CREATE TABLE pomodoro_session_tags (
+        session_id TEXT NOT NULL REFERENCES pomodoro_sessions(id) ON DELETE CASCADE,
+        category_id TEXT NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
+        PRIMARY KEY (session_id, category_id)
+      ) WITHOUT ROWID`,
+      `CREATE INDEX idx_pomodoro_session_tags_category ON pomodoro_session_tags(category_id)`,
+    ],
+  },
 ];

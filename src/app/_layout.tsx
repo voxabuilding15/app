@@ -12,6 +12,7 @@ import { EventNotificationBridge } from '@/features/calendar';
 import { FinanceBridge } from '@/features/finance';
 import { HabitNotificationBridge } from '@/features/habits';
 import { NotesBridge } from '@/features/notes';
+import { PomodoroBridge } from '@/features/pomodoro';
 import { TaskNotificationBridge } from '@/features/tasks';
 import { useIsTablet } from '@/hooks';
 import { DRAWER_ITEMS, DrawerContent, TABS_ROUTE } from '@/navigation';
@@ -32,6 +33,7 @@ function RootNavigator() {
       <FinanceBridge />
       <EventNotificationBridge />
       <NotesBridge />
+      <PomodoroBridge />
       <Drawer
         drawerContent={(props) => <DrawerContent {...props} />}
         screenOptions={{

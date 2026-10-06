@@ -55,7 +55,7 @@
         "expo-audio",
         {
           "microphonePermission": "FocusFlow uses the microphone only while you record a voice note.",
-          "enableBackgroundPlayback": false
+          "enableBackgroundPlayback": true
         }
       ],
       [

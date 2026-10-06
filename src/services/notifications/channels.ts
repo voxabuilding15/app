@@ -11,6 +11,7 @@ const NOTIFICATION_CHANNELS = {
   expenses: 'expenses',
   pomodoro: 'pomodoro',
   summary: 'summary',
+  timer: 'timer',
   alarms: 'alarms',
 } as const satisfies Record<NotificationChannelId, NotificationChannelId>;
 
@@ -80,6 +81,13 @@ const CHANNELS: readonly ChannelDefinition[] = [
     id: NOTIFICATION_CHANNELS.summary,
     name: 'Daily summary',
     description: 'A short overview of your day',
+    importance: Notifications.AndroidImportance.LOW,
+    vibrationPattern: [0],
+  },
+  {
+    id: NOTIFICATION_CHANNELS.timer,
+    name: 'Running timer',
+    description: 'The ongoing notification with timer controls',
     importance: Notifications.AndroidImportance.LOW,
     vibrationPattern: [0],
   },

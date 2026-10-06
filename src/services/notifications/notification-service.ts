@@ -5,6 +5,7 @@ import type {
   NotificationResponse,
   NotificationService,
   PermissionState,
+  PresentInput,
   ScheduleAtInput,
   ScheduleRecurringInput,
 } from '@/core';
@@ -19,7 +20,15 @@ function toPermissionState(response: Notifications.NotificationPermissionsStatus
   return response.canAskAgain ? 'undetermined' : 'denied';
 }
 
-const KNOWN_ACTIONS: readonly NotificationActionId[] = ['complete', 'snooze', 'skip', 'dismiss'];
+const KNOWN_ACTIONS: readonly NotificationActionId[] = [
+  'complete',
+  'snooze',
+  'skip',
+  'dismiss',
+  'pause',
+  'resume',
+  'stop',
+];
 
 function toResponse(response: Notifications.NotificationResponse): NotificationResponse {
   const actionId = KNOWN_ACTIONS.find((known) => known === response.actionIdentifier) ?? 'default';
@@ -108,8 +117,25 @@ class ExpoNotificationService implements NotificationService {
     });
   }
 
-  cancel(identifier: string): Promise<void> {
-    return Notifications.cancelScheduledNotificationAsync(identifier);
+  present(input: PresentInput): Promise<string> {
+    return Notifications.scheduleNotificationAsync({
+      content: {
+        title: input.title,
+        body: input.body,
+        data: input.data,
+        categoryIdentifier: input.categoryId,
+        sticky: input.ongoing ?? false,
+        autoDismiss: !(input.ongoing ?? false),
+      },
+      trigger: { channelId: input.channelId ?? 'default' },
+    });
+  }
+
+  async cancel(identifier: string): Promise<void> {
+    await Promise.all([
+      Notifications.cancelScheduledNotificationAsync(identifier),
+      Notifications.dismissNotificationAsync(identifier),
+    ]);
   }
 
   cancelAll(): Promise<void> {

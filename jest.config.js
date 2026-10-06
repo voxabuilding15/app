@@ -4,5 +4,9 @@ module.exports = {
   roots: ['<rootDir>/tests/ui'],
   testMatch: ['**/*.test.tsx'],
   setupFilesAfterEnv: ['<rootDir>/tests/ui/setup.tsx'],
-  moduleNameMapper: { '^@/(.*)$': '<rootDir>/src/$1' },
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+    // Audio files are bundled by Metro; tests only need something to hand to the (mocked) player.
+    '\\.ogg$': '<rootDir>/tests/ui/audio-stub.ts',
+  },
 };

@@ -121,10 +121,34 @@ jest.mock('expo-audio', () => {
     }),
     seekTo: jest.fn(async () => undefined),
   };
+  // Looping players for the ambient sound and the tick, which the tests inspect.
+  const loops: {
+    source: unknown;
+    loop: boolean;
+    volume: number;
+    play: jest.Mock;
+    remove: jest.Mock;
+    setActiveForLockScreen: jest.Mock;
+    clearLockScreenControls: jest.Mock;
+  }[] = [];
   return {
     __state: state,
     __recorder: recorder,
     __player: player,
+    __loops: loops,
+    createAudioPlayer: jest.fn((source: unknown) => {
+      const created = {
+        source,
+        loop: false,
+        volume: 1,
+        play: jest.fn(),
+        remove: jest.fn(),
+        setActiveForLockScreen: jest.fn(),
+        clearLockScreenControls: jest.fn(),
+      };
+      loops.push(created);
+      return created;
+    }),
     RecordingPresets: { HIGH_QUALITY: {} },
     requestRecordingPermissionsAsync: jest.fn(async () => ({ granted: state.permission })),
     setAudioModeAsync: jest.fn(async () => undefined),

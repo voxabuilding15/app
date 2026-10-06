@@ -6,6 +6,7 @@ export type {
   NotificationChannelId,
   NotificationResponse,
   NotificationService,
+  PresentInput,
   PermissionState,
   ScheduleAtInput,
   ScheduleRecurringInput,

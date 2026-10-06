@@ -22,7 +22,7 @@ export const TAB_ITEMS: readonly NavItem[] = [
 
 export const DRAWER_ITEMS: readonly NavItem[] = [
   { name: 'notes', title: 'Notes', icon: 'sticky-note-2', ownHeader: true },
-  { name: 'pomodoro', title: 'Pomodoro', icon: 'timer' },
+  { name: 'pomodoro', title: 'Pomodoro', icon: 'timer', ownHeader: true },
   { name: 'statistics', title: 'Statistics', icon: 'bar-chart' },
   { name: 'achievements', title: 'Achievements', icon: 'emoji-events' },
   { name: 'settings', title: 'Settings', icon: 'settings' },

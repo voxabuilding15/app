@@ -489,3 +489,154 @@ describe('migration v6 (notes)', () => {
     );
   });
 });
+
+describe('migration v7 (pomodoro)', () => {
+  const run = (
+    db: ReturnType<typeof createTestDatabase>,
+    sql: string,
+    params: (string | number | null)[] = [],
+  ) => db.runSync(sql, params);
+  const session = (
+    db: ReturnType<typeof createTestDatabase>,
+    id: string,
+    overrides: Record<string, string | number | null> = {},
+  ) => {
+    const row = {
+      id,
+      kind: 'focus',
+      planned_seconds: 1500,
+      duration_seconds: 1500,
+      started_at: 1000,
+      ended_at: 2000,
+      outcome: 'completed',
+      pauses: 0,
+      deep_focus: 100,
+      task_id: null,
+      habit_id: null,
+      ...overrides,
+    };
+    run(
+      db,
+      `INSERT INTO pomodoro_sessions (id,kind,planned_seconds,duration_seconds,started_at,ended_at,outcome,pauses,deep_focus,task_id,habit_id)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
+      [
+        row.id,
+        row.kind,
+        row.planned_seconds,
+        row.duration_seconds,
+        row.started_at,
+        row.ended_at,
+        row.outcome,
+        row.pauses,
+        row.deep_focus,
+        row.task_id,
+        row.habit_id,
+      ],
+    );
+  };
+
+  it('upgrades a v6 database, keeping categories and old sessions with their meaning', () => {
+    const { db, upgrade } = createDatabaseAtVersion(6);
+    db.runSync(`INSERT INTO categories VALUES ('c1','note','Idea','#111','folder',1)`);
+    db.runSync(`INSERT INTO pomodoro_sessions VALUES ('a','focus',1500,5000,1)`);
+    db.runSync(`INSERT INTO pomodoro_sessions VALUES ('b','focus',600,6000,0)`);
+    db.runSync(`INSERT INTO pomodoro_sessions VALUES ('c','short_break',300,7000,1)`);
+    upgrade();
+
+    assert.equal(getSchemaVersion(db), migrations.at(-1)?.version);
+    assert.equal(db.getAllSync('PRAGMA foreign_key_check').length, 0);
+    assert.equal(db.getFirstSync<{ n: number }>('SELECT COUNT(*) AS n FROM categories')?.n, 1);
+    const rows = db.getAllSync<Record<string, unknown>>(
+      'SELECT id, kind, planned_seconds, duration_seconds, started_at, ended_at, outcome, deep_focus FROM pomodoro_sessions ORDER BY id',
+    );
+    assert.deepEqual(rows, [
+      {
+        id: 'a',
+        kind: 'focus',
+        planned_seconds: 1500,
+        duration_seconds: 1500,
+        started_at: 5000,
+        ended_at: 1_505_000,
+        outcome: 'completed',
+        deep_focus: 100,
+      },
+      {
+        id: 'b',
+        kind: 'focus',
+        planned_seconds: 600,
+        duration_seconds: 600,
+        started_at: 6000,
+        ended_at: 606_000,
+        outcome: 'stopped',
+        deep_focus: null,
+      },
+      {
+        id: 'c',
+        kind: 'short_break',
+        planned_seconds: 300,
+        duration_seconds: 300,
+        started_at: 7000,
+        ended_at: 307_000,
+        outcome: 'completed',
+        deep_focus: null,
+      },
+    ]);
+    db.runSync(`INSERT INTO categories VALUES ('p','pomodoro','Deep work','#222','folder',1)`);
+  });
+
+  it('validates sessions', () => {
+    const db = createTestDatabase();
+    session(db, 'ok');
+    assert.throws(() => session(db, 'k', { kind: 'nap' }));
+    assert.throws(() => session(db, 'o', { outcome: 'paused' }));
+    assert.throws(() => session(db, 'p', { planned_seconds: 0 }));
+    assert.throws(() => session(db, 'd', { duration_seconds: -1 }));
+    assert.throws(() => session(db, 'e', { started_at: 5, ended_at: 4 }));
+    assert.throws(() => session(db, 'f', { deep_focus: 101 }));
+    assert.throws(() => session(db, 'g', { pauses: -1 }));
+    session(db, 'none', { deep_focus: null });
+  });
+
+  it('keeps a session when its task or habit goes, and cascades tags', () => {
+    const db = createTestDatabase();
+    run(db, `INSERT INTO tasks (id,title,created_at,updated_at) VALUES ('t','T',1,1)`);
+    run(
+      db,
+      `INSERT INTO habits (id,name,icon,color,goal_period,created_at) VALUES ('h','H','i','#111','daily',1)`,
+    );
+    run(db, `INSERT INTO categories VALUES ('c','pomodoro','Deep','#111','folder',1)`);
+    session(db, 's', { task_id: 't', habit_id: 'h' });
+    assert.throws(() => session(db, 'bad', { task_id: 'ghost' }));
+    run(db, `INSERT INTO pomodoro_session_tags VALUES ('s','c')`);
+    assert.throws(() => run(db, `INSERT INTO pomodoro_session_tags VALUES ('s','c')`));
+    assert.throws(() => run(db, `INSERT INTO pomodoro_session_tags VALUES ('s','ghost')`));
+
+    run(db, `DELETE FROM tasks WHERE id='t'`);
+    run(db, `DELETE FROM habits WHERE id='h'`);
+    assert.deepEqual(db.getFirstSync('SELECT task_id, habit_id FROM pomodoro_sessions'), {
+      task_id: null,
+      habit_id: null,
+    });
+    run(db, `DELETE FROM categories WHERE id='c'`);
+    assert.equal(
+      db.getFirstSync<{ n: number }>('SELECT COUNT(*) AS n FROM pomodoro_session_tags')?.n,
+      0,
+    );
+    run(db, `INSERT INTO categories VALUES ('c2','pomodoro','Again','#111','folder',1)`);
+    run(db, `INSERT INTO pomodoro_session_tags VALUES ('s','c2')`);
+    run(db, `DELETE FROM pomodoro_sessions WHERE id='s'`);
+    assert.equal(
+      db.getFirstSync<{ n: number }>('SELECT COUNT(*) AS n FROM pomodoro_session_tags')?.n,
+      0,
+    );
+  });
+
+  it('keeps pomodoro tags separate from other categories', () => {
+    const db = createTestDatabase();
+    run(db, `INSERT INTO categories VALUES ('a','note','Deep','#111','folder',1)`);
+    run(db, `INSERT INTO categories VALUES ('b','pomodoro','Deep','#111','folder',1)`);
+    assert.throws(() =>
+      run(db, `INSERT INTO categories VALUES ('c','pomodoro','deep','#111','folder',1)`),
+    );
+  });
+});

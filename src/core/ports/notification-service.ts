@@ -9,9 +9,10 @@ export type NotificationChannelId =
   | 'expenses'
   | 'pomodoro'
   | 'summary'
+  | 'timer'
   | 'alarms';
 
-type NotificationCategoryId = 'reminder' | 'alarm' | 'habit';
+type NotificationCategoryId = 'reminder' | 'alarm' | 'habit' | 'timer-running' | 'timer-paused';
 
 export interface ScheduleAtInput {
   title: string;
@@ -20,6 +21,17 @@ export interface ScheduleAtInput {
   channelId?: NotificationChannelId;
   categoryId?: NotificationCategoryId;
   data?: Record<string, string>;
+}
+
+/** A notification shown right away, such as a running timer. */
+export interface PresentInput {
+  title: string;
+  body: string;
+  channelId?: NotificationChannelId;
+  categoryId?: NotificationCategoryId;
+  data?: Record<string, string>;
+  /** Stays in the shade until the app removes it, instead of being swiped away. */
+  ongoing?: boolean;
 }
 
 export interface ScheduleRecurringInput {
@@ -36,7 +48,8 @@ export interface ScheduleRecurringInput {
 }
 
 /** What the user did with a delivered notification. `default` means they tapped it. */
-export type NotificationActionId = 'default' | 'complete' | 'snooze' | 'skip' | 'dismiss';
+export type NotificationActionId =
+  'default' | 'complete' | 'snooze' | 'skip' | 'dismiss' | 'pause' | 'resume' | 'stop';
 
 export interface NotificationResponse {
   actionId: NotificationActionId;
@@ -49,6 +62,9 @@ export interface NotificationService {
   requestPermission(): Promise<PermissionState>;
   scheduleAt(input: ScheduleAtInput): Promise<string>;
   scheduleRecurring(input: ScheduleRecurringInput): Promise<string>;
+  /** Shows a notification immediately; resolves to its identifier. */
+  present(input: PresentInput): Promise<string>;
+  /** Cancels a scheduled notification and removes it from the shade if it is showing. */
   cancel(identifier: string): Promise<void>;
   cancelAll(): Promise<void>;
   /** Subscribes to user responses (taps and action buttons). Returns an unsubscribe function. */
