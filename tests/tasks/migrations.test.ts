@@ -656,3 +656,34 @@ describe('migration v8 (global statistics)', () => {
     assert.ok(indexes.includes('idx_tasks_done_archived'));
   });
 });
+
+describe('migration v9 (achievements)', () => {
+  it('creates the unlock table and the single state row', () => {
+    const { db, upgrade } = createDatabaseAtVersion(8);
+    upgrade();
+    assert.equal(getSchemaVersion(db), migrations.at(-1)?.version);
+    assert.equal(
+      db.getFirstSync<{ n: number }>('SELECT COUNT(*) AS n FROM achievement_state')?.n,
+      1,
+    );
+    assert.equal(
+      db.getFirstSync<{ peak_xp: number }>('SELECT peak_xp FROM achievement_state')?.peak_xp,
+      0,
+    );
+  });
+
+  it('enforces its constraints', () => {
+    const db = createTestDatabase();
+    const unlock = (key: string, kind: string, xp: number) =>
+      db.runSync(
+        `INSERT INTO achievement_unlocks (key, kind, ref, xp, unlocked_at) VALUES (?, ?, 'r', ?, 1)`,
+        [key, kind, xp],
+      );
+    unlock('a', 'badge', 10);
+    assert.throws(() => unlock('a', 'badge', 10));
+    assert.throws(() => unlock('b', 'trophy', 10));
+    assert.throws(() => unlock('c', 'badge', -1));
+    assert.throws(() => db.runSync('INSERT INTO achievement_state (id, peak_xp) VALUES (2, 0)'));
+    assert.throws(() => db.runSync('UPDATE achievement_state SET peak_xp = -1'));
+  });
+});

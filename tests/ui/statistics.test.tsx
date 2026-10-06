@@ -2,7 +2,7 @@ import { fireEvent, screen, waitFor } from '@testing-library/react-native';
 
 import { StatisticsScreen } from '@/features/statistics/presentation/screens/StatisticsScreen';
 
-import { createApp, renderWithApp } from './harness';
+import { createApp, renderWithApp, router } from './harness';
 import { createSeeder } from '../support/seed';
 
 jest.mock('react-native/Libraries/Utilities/useWindowDimensions', () => ({
@@ -46,6 +46,14 @@ describe('StatisticsScreen', () => {
     }
     expect(screen.getByLabelText(/^Spending: \$250\.00/)).toBeTruthy();
     expect(screen.getByLabelText(/^Income: \$1,000\.00/)).toBeTruthy();
+  });
+
+  it('shows the level and opens the achievements from it', async () => {
+    const { app } = seeded();
+    await renderWithApp(<StatisticsScreen />, app);
+    const card = await screen.findByLabelText(/^Level \d+, Beginner, \d+ XP\. Open achievements/);
+    await fireEvent.press(card);
+    expect(router.navigate).toHaveBeenCalledWith('/achievements');
   });
 
   it('is calm about an empty app', async () => {

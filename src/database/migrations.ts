@@ -543,4 +543,27 @@ export const migrations: readonly Migration[] = [
       `CREATE INDEX idx_tasks_done_archived ON tasks(completed_at) WHERE completed_at IS NOT NULL AND archived_at IS NOT NULL AND deleted_at IS NULL`,
     ],
   },
+  {
+    version: 9,
+    name: 'achievements',
+    statements: [
+      // One row per achievement earned. `key` is the achievement, or for a challenge the challenge
+      // together with the week or month it was set for, so each is earned once.
+      `CREATE TABLE achievement_unlocks (
+        key TEXT PRIMARY KEY NOT NULL,
+        kind TEXT NOT NULL CHECK (kind IN ('badge','milestone','streak','challenge')),
+        ref TEXT NOT NULL,
+        xp INTEGER NOT NULL CHECK (xp >= 0),
+        unlocked_at INTEGER NOT NULL,
+        seen INTEGER NOT NULL DEFAULT 0 CHECK (seen IN (0,1))
+      )`,
+      `CREATE INDEX idx_achievement_unseen ON achievement_unlocks(unlocked_at) WHERE seen = 0`,
+      // The most XP ever reached, so deleting data never lowers a level. Always a single row.
+      `CREATE TABLE achievement_state (
+        id INTEGER PRIMARY KEY NOT NULL CHECK (id = 1),
+        peak_xp INTEGER NOT NULL DEFAULT 0 CHECK (peak_xp >= 0)
+      )`,
+      `INSERT INTO achievement_state (id, peak_xp) VALUES (1, 0)`,
+    ],
+  },
 ];

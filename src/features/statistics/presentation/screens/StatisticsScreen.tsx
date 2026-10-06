@@ -1,7 +1,9 @@
+import { useRouter } from 'expo-router';
 import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button, IconButton, ScreenToolbar, SegmentedControl, Snackbar, Text } from '@/components';
+import { LevelProgressCard } from '@/features/achievements';
 import { useIsTablet } from '@/hooks';
 import { useTranslator } from '@/i18n';
 import { CONTENT_MAX_WIDTH, spacing, useTheme } from '@/theme';
@@ -22,6 +24,7 @@ export function StatisticsScreen() {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const isTablet = useIsTablet();
+  const router = useRouter();
 
   const periods: readonly { value: StatsPeriod; label: string }[] = STATS_PERIODS.map((value) => ({
     value,
@@ -90,6 +93,7 @@ export function StatisticsScreen() {
         ) : report === undefined ? null : isTablet ? (
           <View style={{ flexDirection: 'row', gap: spacing.lg, alignItems: 'flex-start' }}>
             <View style={{ flex: 1, gap: spacing.lg }}>
+              <LevelProgressCard onPress={() => router.navigate('/achievements')} />
               <ScoresCard report={report} />
               <TrendCard vm={vm} report={report} />
             </View>
@@ -99,6 +103,7 @@ export function StatisticsScreen() {
           </View>
         ) : (
           <>
+            <LevelProgressCard onPress={() => router.navigate('/achievements')} />
             <ScoresCard report={report} />
             <TrendCard vm={vm} report={report} />
             <SummaryCards report={report} />

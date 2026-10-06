@@ -3,6 +3,9 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, it } from 'node:test';
 
+import { ALL_ACHIEVEMENTS } from '@/features/achievements/domain/catalog';
+import { CHALLENGE_TEMPLATES } from '@/features/achievements/domain/challenges';
+import { levelTitle } from '@/features/achievements/domain/levels';
 import { fr } from '@/i18n/fr';
 import { createTranslator, resolveLanguage } from '@/i18n/translator';
 
@@ -49,6 +52,19 @@ function usedPhrases(): Map<string, string> {
       }
     }
   }
+  // Texts that live in data rather than next to a call to `t`.
+  for (const def of ALL_ACHIEVEMENTS) {
+    found.set(def.title, 'achievement catalog');
+    found.set(def.description, 'achievement catalog');
+  }
+  for (const template of CHALLENGE_TEMPLATES) {
+    found.set(template.title, 'challenge templates');
+  }
+  for (let level = 1; level <= 99; level += 1) {
+    found.set(levelTitle(level), 'level titles');
+  }
+  found.set('Weekly challenge completed', 'unlock text');
+  found.set('Monthly challenge completed', 'unlock text');
   return found;
 }
 

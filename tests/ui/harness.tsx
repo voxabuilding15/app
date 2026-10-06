@@ -14,6 +14,7 @@ import { getCalendarModule } from '@/features/calendar/presentation/module';
 import { getFinanceModule } from '@/features/finance/presentation/module';
 import { getNotesModule } from '@/features/notes/presentation/module';
 import { getHabitsModule } from '@/features/habits/presentation/module';
+import { getAchievementsModule } from '@/features/achievements/presentation/module';
 import { getPomodoroModule } from '@/features/pomodoro/presentation/module';
 import { getTasksModule } from '@/features/tasks/presentation/module';
 import { ThemeProvider } from '@/theme';
@@ -113,6 +114,7 @@ export function createApp() {
     finance: getFinanceModule(container),
     notes: getNotesModule(container, { storage: files, picker, authenticator }),
     pomodoro: getPomodoroModule(container),
+    achievements: getAchievementsModule(container).achievements,
     noteFakes: { files, picker, authenticator },
     notifications,
     deviceFiles,

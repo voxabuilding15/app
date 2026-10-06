@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 import '../global.css';
 
 import { APP_NAME } from '@/constants/app';
+import { AchievementsBridge } from '@/features/achievements';
 import { EventNotificationBridge } from '@/features/calendar';
 import { FinanceBridge } from '@/features/finance';
 import { HabitNotificationBridge } from '@/features/habits';
@@ -34,6 +35,7 @@ function RootNavigator() {
       <EventNotificationBridge />
       <NotesBridge />
       <PomodoroBridge />
+      <AchievementsBridge />
       <Drawer
         drawerContent={(props) => <DrawerContent {...props} />}
         screenOptions={{
