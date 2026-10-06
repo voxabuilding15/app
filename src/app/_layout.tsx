@@ -9,6 +9,7 @@ import '../global.css';
 
 import { APP_NAME } from '@/constants/app';
 import { AchievementsBridge } from '@/features/achievements';
+import { AutoBackupBridge } from '@/features/backup';
 import { EventNotificationBridge } from '@/features/calendar';
 import { FinanceBridge } from '@/features/finance';
 import { HabitNotificationBridge } from '@/features/habits';
@@ -36,6 +37,7 @@ function RootNavigator() {
       <NotesBridge />
       <PomodoroBridge />
       <AchievementsBridge />
+      <AutoBackupBridge />
       <Drawer
         drawerContent={(props) => <DrawerContent {...props} />}
         screenOptions={{

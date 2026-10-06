@@ -147,6 +147,111 @@ export const fr: Readonly<Record<string, string>> = {
   'Be active on {count} days': 'Être actif {count} jours',
   'Weekly challenge completed': 'Défi de la semaine terminé',
   'Monthly challenge completed': 'Défi du mois terminé',
+
+  // Backup and restore
+  'Backup and restore': 'Sauvegarde et restauration',
+  'Back up now': 'Sauvegarder maintenant',
+  'Everything stays on this device unless you share the file yourself.':
+    'Tout reste sur cet appareil, sauf si vous partagez vous-même le fichier.',
+  'Include attachments': 'Inclure les pièces jointes',
+  'Photos, PDFs and recordings (files over 10 MB are left out)':
+    'Photos, PDF et enregistrements (les fichiers de plus de 10 Mo sont exclus)',
+  'Save backup': 'Enregistrer la sauvegarde',
+  'Export and share': 'Exporter et partager',
+  'Restore from a file': 'Restaurer depuis un fichier',
+  'Choose a backup file you exported earlier. You decide whether to replace or merge before anything changes.':
+    'Choisissez un fichier de sauvegarde exporté précédemment. Vous décidez de remplacer ou de fusionner avant tout changement.',
+  'Choose backup file': 'Choisir un fichier de sauvegarde',
+  'Backup saved on this device': 'Sauvegarde enregistrée sur cet appareil',
+  "Couldn't create the backup. Is there enough free space?":
+    "Impossible de créer la sauvegarde. Reste-t-il assez d'espace libre ?",
+  'Share backup': 'Partager la sauvegarde',
+  'Backup exported': 'Sauvegarde exportée',
+  'Backup saved, but no app can open it on this device':
+    "Sauvegarde enregistrée, mais aucune application de cet appareil ne peut l'ouvrir",
+  "Couldn't export the backup.": "Impossible d'exporter la sauvegarde.",
+  "Couldn't read that file.": 'Impossible de lire ce fichier.',
+  "Couldn't read that backup.": 'Impossible de lire cette sauvegarde.',
+  'No app on this device can open it': "Aucune application de cet appareil ne peut l'ouvrir",
+  "Couldn't share that backup.": 'Impossible de partager cette sauvegarde.',
+  'Backup deleted': 'Sauvegarde supprimée',
+  "Couldn't delete that backup.": 'Impossible de supprimer cette sauvegarde.',
+  'This backup was made by a newer version of the app. Update FocusFlow to restore it.':
+    "Cette sauvegarde a été créée par une version plus récente de l'application. Mettez FocusFlow à jour pour la restaurer.",
+  'This backup file is damaged or was changed, so it cannot be trusted.':
+    'Ce fichier de sauvegarde est endommagé ou a été modifié ; on ne peut pas lui faire confiance.',
+  'This file is not a FocusFlow backup.': "Ce fichier n'est pas une sauvegarde FocusFlow.",
+  'The backup could not be restored, so nothing was changed. ({reason})':
+    "La sauvegarde n'a pas pu être restaurée, rien n'a donc été modifié. ({reason})",
+  'The backup could not be restored, so nothing was changed.':
+    "La sauvegarde n'a pas pu être restaurée, rien n'a donc été modifié.",
+  'Backup restored': 'Sauvegarde restaurée',
+  '{count} items added': '{count} éléments ajoutés',
+  '{count} items updated': '{count} éléments mis à jour',
+  '{count} items were skipped because they clash with existing ones':
+    '{count} éléments ignorés car ils entrent en conflit avec des éléments existants',
+  '{count} links to skipped items were cleaned up':
+    '{count} liens vers des éléments ignorés ont été nettoyés',
+  'Reminders are set again when you next save each item. A copy of your previous data is under “Before a restore”.':
+    'Les rappels sont reprogrammés à la prochaine modification de chaque élément. Une copie de vos anciennes données se trouve sous « Avant une restauration ».',
+  Done: 'Terminé',
+  Cancel: 'Annuler',
+  Replace: 'Remplacer',
+  'Replace everything?': 'Tout remplacer ?',
+  'All data on this device will be replaced by the backup. A copy of your current data is saved first, so you can undo this.':
+    'Toutes les données de cet appareil seront remplacées par la sauvegarde. Une copie de vos données actuelles est enregistrée avant, pour pouvoir annuler.',
+  'Restore backup': 'Restaurer la sauvegarde',
+  '{count} items': '{count} éléments',
+  '{count} attachments': '{count} pièces jointes',
+  '{count} attachments were not included in this backup':
+    "{count} pièces jointes n'étaient pas incluses dans cette sauvegarde",
+  'Merge with my data': 'Fusionner avec mes données',
+  'Replace everything': 'Tout remplacer',
+  'If the same item differs': 'Si le même élément diffère',
+  'Newest wins': 'Le plus récent gagne',
+  'The most recently edited version is kept': 'La version modifiée en dernier est conservée',
+  'Keep this device': 'Garder cet appareil',
+  'Your current version is kept': 'Votre version actuelle est conservée',
+  'Keep the backup': 'Garder la sauvegarde',
+  "The backup's version replaces yours": 'La version de la sauvegarde remplace la vôtre',
+  '{count} new items will be added': '{count} nouveaux éléments seront ajoutés',
+  '{count} are already here': '{count} sont déjà présents',
+  '{count} differ, {taken} will come from the backup':
+    '{count} diffèrent, {taken} viendront de la sauvegarde',
+  'Nothing on this device is deleted when merging.':
+    "Rien n'est supprimé de cet appareil lors d'une fusion.",
+  'Everything on this device will be replaced. A copy of your current data is saved first.':
+    'Tout sera remplacé sur cet appareil. Une copie de vos données actuelles est enregistrée avant.',
+  'Merge backup': 'Fusionner la sauvegarde',
+  'Replace with backup': 'Remplacer par la sauvegarde',
+  'Automatic backups': 'Sauvegardes automatiques',
+  'Back up automatically': 'Sauvegarder automatiquement',
+  'Made when the app opens and a backup is due. Kept on this device only.':
+    "Créée à l'ouverture de l'application quand une sauvegarde est due. Conservée uniquement sur cet appareil.",
+  Daily: 'Quotidienne',
+  Weekly: 'Hebdomadaire',
+  'Backups to keep': 'Sauvegardes à conserver',
+  'Photos, PDFs and recordings make backups much larger':
+    'Les photos, PDF et enregistrements alourdissent beaucoup les sauvegardes',
+  'No automatic backup yet': 'Aucune sauvegarde automatique pour le moment',
+  'Last automatic backup: {when}': 'Dernière sauvegarde automatique : {when}',
+  'Backups on this device': 'Sauvegardes sur cet appareil',
+  'No backups yet': 'Aucune sauvegarde',
+  'Create one above, or let automatic backups do it for you.':
+    'Créez-en une ci-dessus, ou laissez les sauvegardes automatiques le faire.',
+  Manual: 'Manuelle',
+  Automatic: 'Automatique',
+  'Before a restore': 'Avant une restauration',
+  'Restore {name}': 'Restaurer {name}',
+  'Share {name}': 'Partager {name}',
+  'Delete {name}': 'Supprimer {name}',
+  'Cloud backup': 'Sauvegarde en ligne',
+  'Not available in this version yet': 'Pas encore disponible dans cette version',
+  Ready: 'Prêt',
+  'Sign in to back up online': 'Connectez-vous pour sauvegarder en ligne',
+  Connect: 'Connecter',
+  'Until then, export a backup file and keep it in the cloud service of your choice.':
+    'En attendant, exportez un fichier de sauvegarde et conservez-le dans le service en ligne de votre choix.',
   // Export files
   'Statistics report': 'Rapport de statistiques',
   'compared with': 'comparé à',

@@ -21,7 +21,7 @@ export {
   weekdayOfKey,
 } from './dates';
 export type { DateKey } from './dates';
-export { constantTimeEquals, stretchedHash } from './hash';
+export { constantTimeEquals, sha256Hex, stretchedHash } from './hash';
 export { createId } from './ids';
 export { MAX_MINOR, formatMoney, minorDigits, parseMoney, toAmountText } from './money';
 export { ensureNotificationPermission, scheduleReminder } from './notifications';
